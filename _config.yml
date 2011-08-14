@@ -3,16 +3,16 @@
 # ----------------------- #
 
 url: http://yoursite.com
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+title: The Software Simpleton
+subtitle: Nomadic cattle rustler and inventor of the electric lasso
+author: Paul Cowan
 simple_search: http://google.com/search
 
 # RSS / Email (optional) subscription links (change if using something like Feedburner)
 subscribe_rss: /atom.xml
-subscribe_email:
+subscribe_email: 
 # RSS feeds can list your email address if you like
-email:
+email: dagda1@scotalt.net
 
 # ----------------------- #
 #    Jekyll & Plugins     #
