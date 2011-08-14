@@ -7,8 +7,8 @@ custom_index = false
 
 ## -- Rsync Deploy config -- ##
 # Be sure your public key is listed in your server's ~/.ssh/authorized_keys file
-ssh_user       = "user@domain.com"
-document_root  = "~/website.com/"
+ssh_user       = "dagda1@thesoftwaresimpleton.com"
+document_root  = "~/thesoftwaresimpleton.com/"
 deploy_default = "rsync"
 
 # This will be configured for you when you run config_deploy
