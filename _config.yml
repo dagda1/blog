@@ -2,7 +2,7 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://yoursite.com
+url: http://thesoftwaresimpleton.com/
 title: The Software Simpleton
 subtitle: Nomadic cattle rustler and inventor of the electric lasso
 author: Paul Cowan
@@ -47,7 +47,7 @@ default_asides: [asides/recent_posts.html, asides/twitter.html, asides/delicious
 # ----------------------- #
 
 # Twitter
-twitter_user:
+twitter_user: dagda1
 twitter_tweet_count: 4
 twitter_show_replies: false
 twitter_follow_button: true
@@ -67,7 +67,7 @@ delicious_user:
 delicious_count: 3
 
 # Disqus Comments
-disqus_short_name:
+disqus_short_name: thesoftwaresimpleton
 
 # Google Analytics
 google_analytics_tracking_id:
