@@ -39,3 +39,9 @@ The above is my main rails layout file.  The following are the main points of in
 - On line 14, the **hgroup** tag is used to group the document's title and associated subtitles.  The **hgroup** tag can only contain a group of _h1_ to _h6_ elements.
 
 ## SASS Folder Structure
+
+When I first started using SASS there was nowhere near the level of docs and blog posts available to the end user.  As part of this site refresh, I took a look on <a href="http://github.com/" target="_blank">github</a> at some of the open source projects using SASS to find guidance on how some of the SASS officiados, such as <a href="http://github.com/imathis" target="_blank">Brandon Mathis</a> use SASS.
+
+The screenshot below outlines a popular file organisation pattern for structuring your SASS files:
+
+{% img /images/site-refresh-part1/sass-structure.png %}
