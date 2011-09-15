@@ -49,16 +49,26 @@ $subtitle-color: lighten($header-bg, 58)
 {% endcodeblock %}
 The lighten function that is used to generate the value of $subtitle-color is one of the many utility functions that are included in SASS.  The lighten function unsurprisingly lightens the colour by a percentage value.  In the above example, we can tie the $subtitle-color variable to the $header-bg variable so they will always be in ratio.  A quick look at the <a href="http://sass-lang.com/" target="_bland">sass docs</a> will broaden your knowledge of what sass functions are available.
 
+Before carrying on, below is the rendered HTML from our main application.html.haml file which we will be applying css rules to:
+{% gist 1202722 %}
+
 ## Typography
 
-The sass partial file that we are importing is the **_typography.sass** file, which currently looks like this:
+The next sass partial file that we are importing from the parent screen.sass is the **_typography.sass** file, which currently looks like this:
 {% gist 1218685 %}
 
-On line 1 of _typography.sass, we are declaring a css class with a name of heading and then declaring the font-family we want to use and the fall back options.  It is unlikely you will have heard of the Orbitron font-family but that is because we are importing it from the <a href="http://code.google.com/apis/webfonts/" target="_blank">Google Web Fonts API</a>.  I mentioned this in the previous <a href="/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/" target="_blank">post</a>.  We can import fonts from the google web fonts api by declaring a separate <link> element for each font we want to import. The declaration for importing the Orbitron font is below:
+This file as the file name suggests is were all the type face instructions will be held.  On line 1 of _typography.sass, we are declaring a css class with a name of heading and then declaring the font-family we want to use and the fall back options.  It is unlikely you will have heard of the Orbitron font-family and that is because we are importing it from the <a href="http://code.google.com/apis/webfonts/" target="_blank">Google Web Fonts API</a>.  I mentioned this in the previous <a href="/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/" target="_blank">post</a>.  We can import fonts from the google web fonts api by declaring a separate &lt;link&gt; element for each font we want to import. The declaration for importing the Orbitron font is below:
 {% codeblock %}
 %link{:rel => "stylesheet", :type => "text/css", :href => "http://fonts.googleapis.com/css?family=Orbitron:regular,italic,bold,bolditalic"}
 {% endcodeblock %}
 
-Below is the html that is rendered from the main application layout file **application.html.haml** as it stands thus far:
-{% gist 1202722 %}
-On line 11 of the _typography.sass file, we are using the css selector **body > header h1** to select the first **h1** element of the new html5 **header** element. On line 13 of _typography.sass, **@extend** is used to tell sass that we want the **body > header h1** selector to inherit all the styles defined in another selector.  This is worth the sass price of admission alone.  The ability to **DRY** up your css by inheriting other selectors rules reduces repeating yourself tenfold. 
+On line 4 of the _typography.sass file, we are using the css selector **body > header h1** to select the first **h1** element of the new html5 **header** element. On line 7 of _typography.sass, **@extend** is used to tell sass that we want the **body > header h1** selector to inherit all the styles defined in another selector.  This is worth the sass price of admission alone.  The ability to **DRY** up your css by inheriting other selectors rules reduces repeating yourself tenfold. This is one of the many reasons why sass will (not should) become the new css.  All the innovation lies in this language.
+
+On line 18 of _typography.sass, we come across the strange syntax of   **#{headings()}**.  This helper <a href="http://compass-style.org/reference/compass/helpers/selectors/#headings" target="_blank">function</a> is part of the compass library.  This helper function will emit all the h[n] headings for you.  Below is the css that is rendered from this function:
+{% codeblock %}
+.heading, body > header h1, h1, h2, h3, h4, h5, h6 {
+  font-family: "Orbitron", "Georgia", "Helvetica Neue", Arial, San-Serif;
+}
+{% endcodeblock %}
+
+
