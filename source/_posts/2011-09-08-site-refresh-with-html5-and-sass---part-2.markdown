@@ -6,9 +6,9 @@ comments: true
 categories: SASS HTML5
 --- 
 ### Previous Posts
-- [Part 1]("/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/") 
+- [Part 1]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1//") 
 
-In the last [post]("/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/") I took a walk through the basic set up of my sass files that I will be using for the update of my site to the new landscape of html5.
+In the last [post]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1//") I took a walk through the basic set up of my sass files that I will be using for the update of my site to the new landscape of html5.
 
 Below is the file layout for my sass files:
 {% img /images/site-refresh-part1/sass-structure.png %}
@@ -37,7 +37,7 @@ The point of *_colors.sass* is to have a central location were we can adjust the
 
 One of the glaring misses in CSS is the ability to store reusable values in variables.  This can lead you to having to use potentially faulty search and replace techniques in your text editor to swap hex code values and manage colour palette changes in your stylesheets.  With sass you can assign values to variables, and manage colours, border sizes etc. in a single location.
 
-SASS variables start with the *$* character and can contain any character that is valid in a CSS class name.  In line 1 of **_colors.sass**, I am storing the hex value of the colour that I will use for the header section of my page.  As _colors.sass is imported in screen.sass, the variables that are declared in _colors.sass will be available in any partials that are imported in screen.sass.  Below is an example of how the sass variable can be used:
+SASS variables start with the *$* character and can contain any character that is valid in a CSS class name.  In line 1 of **_colors.sass**, I am storing the hex value of the colour that I will use for the header section of my page.  As colors.sass is imported in screen.sass, the variables that are declared in _colors.sass will be available in any partials that are imported in screen.sass.  Below is an example of how the sass variable can be used:
 
 {% codeblock %}
 body > header
@@ -57,12 +57,12 @@ Before carrying on, below is the rendered HTML from our main application.html.ha
 The next sass partial file that we are importing from the parent screen.sass is the **_typography.sass** file, which currently looks like this:
 {% gist 1218685 %}
 
-This file as the file name suggests is where all the type face instructions will be centrally held.  On line 1 of _typography.sass, we are declaring a css class with a name of heading and then declaring the font-family we want to use and the fall back options.  It is unlikely you will have heard of the Orbitron font-family and that is because we are importing it from the <a href="http://code.google.com/apis/webfonts/" target="_blank">Google Web Fonts API</a>.  I mentioned this in the previous <a href="/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/" target="_blank">post</a>.  We can import fonts from the google web fonts api by declaring a separate &lt;link&gt; element for each font we want to import. The declaration for importing the Orbitron font is below:
+This file as the file name suggests is where all the type face instructions will be centrally held.  On line 1 of _typography.sass, we are declaring a css class with a name of heading and then declaring the font-family we want to use and the fall back options.  It is unlikely you will have heard of the Orbitron font-family and that is because we are importing it from the <a href="http://code.google.com/apis/webfonts/" target="_blank">Google Web Fonts API</a>.  I mentioned this in the previous <a href="http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1//" target="_blank">post</a>.  We can import fonts from the google web fonts api by declaring a separate &lt;link&gt; element for each font we want to import. The declaration for importing the Orbitron font is below:
 {% codeblock %}
 %link{:rel => "stylesheet", :type => "text/css", :href => "http://fonts.googleapis.com/css?family=Orbitron:regular,italic,bold,bolditalic"}
 {% endcodeblock %}
 
-On line 4 of the typography.sass file, we are using the css selector **body > header h1** to select the first **h1** element of the new html5 **header** element. On line 7 of **_typography.sass**, **@extend** is used to tell sass that we want the **body > header h1** selector to inherit all the styles defined in another selector.  This is worth the sass price of admission alone.  The ability to **DRY** up your css by inheriting other selectors rules reduces repeating yourself tenfold. This is one of the many reasons why sass will (not should) become the new css.
+On line 4 of the typography.sass file, we are using the css selector **body > header h1** to select the first **h1** element of the new html5 **header** element. On line 7 of **_typography.sass**, **@extend** is used to tell sass that we want the **body > header h1** selector to inherit all the styles defined in another selector.  This is worth the sass price of admission alone.  The ability to **DRY** up your css by inheriting other selector rules reduces repeating yourself tenfold. This is one of the many reasons why sass will (not should) become the new css.
 
 In line 11 of _typography.sass we come across the first use of what is arguably sass's most important feature which is known as a *sass mixin*.  A *mixin* as the name suggests, mixes in rules into other rules.  We extract the rules using the **@mixin** directive.  For example we could create a *mixin* defined like below:
 {% codeblock %}
