@@ -69,7 +69,7 @@ I want to take this opportunity to show the power of both sass variables and the
 {% gist 1225069 %}
 Only on line 1 do we actually specify any hex value for a variable, in the subsequent variable declarations, we pass in relevant percentage values to the lighten and darken functions to keep everything in ratio. We can change the **$nav-bg** variable and the other variables will adjust accordingly.
 
-A full list of similar sass colour functions can found <a href="http://sass-lang.com/docs/yardoc/Sass/Script/Functions.html" target-"_blank">here</a>
+A full list of similar sass colour functions can be found <a href="http://sass-lang.com/docs/yardoc/Sass/Script/Functions.html" target-"_blank">here</a>
 
 Below is the listing for the **_navigation.sass** partial file that contains the rules for the &lt;nav&gt; tag outlined above:
 {% gist 1225073 %}
