@@ -43,3 +43,39 @@ body > header {
 ##Navigation Bar##
 We pretty  much use the same technique for the navigation bar:
 {% img /images/post3/nav.png %}
+We are going to use the new &lt;nav&gt; element of css to mark up the navigation and then use css to style.  Below is the haml for the new navigation bar:
+{% gist 1225066 %}
+And here is the rendered output of the above haml
+{% codeblock %}
+<nav role="navigation">
+    <ul role="user">
+      <li>
+        <a href="/logout">log Out</a>
+      </li>
+    </ul>
+    <ul role="main-navigation">
+      <li>
+        <a href="/Home/Index" data-method="get">Capture</a>
+      </li>
+      <li>
+        <a href="/Archive/Index" data-method="get">Archives</a>
+      </li>
+    </ul>
+</nav>
+{% endcodeblock %}
+I am also using the new html5 semantic attribute <a href="http://www.w3.org/wiki/PF/XTech/HTML5/RoleAttribute" target="_blank">role attribute</a>. HTML5 has many of these new semantic markers to help with picking our sections for screen readers etc.
+ 
+I want to take this opportunity to show the power of both sass variables and the extremely useful sass functions desaturate, darken and lighten to dry up your css.  Below are  the variable declarations we will be using for the navigation bar:
+{% gist 1225069 %}
+Only on line 1 do we actually specify any hex value for a variable, in the subsequent variable declarations, we pass in relevant percentage values to the lighten and darken functions to keep everything in ratio. We can change the **$nav-bg** variable and the other variables will adjust accordingly.
+
+Below is the listing for the **_navigation.sass** partial file that contains the rules for the &lt;nav&gt; tag outlined above:
+{% gist 1225073 %}
+
+Besides the **background-image** mixin that I described previously, we are taking advantage of a couple of other useful sass mixins:
+- <a href="http://compass-style.org/reference/compass/utilities/lists/horizontal_list/" target="_blank">Horizontal List</a> (line 11): which transforms a a &lt;ul&gt; list horizontally.
+- <a href="http://compass-style.org/reference/compass/utilities/links/link_colors/" target="_blank">link-colors</a>(line 20): Which sets the colors for a link in one mixin.
+
+That will do for this post but I will post about the layout I am going to use for the main section of the page.  I have previously used blueprint for a css table grid layout but the world has moved on and I am going to see what else is available.
+
+Please leave any comments below, feedback is very useful.
