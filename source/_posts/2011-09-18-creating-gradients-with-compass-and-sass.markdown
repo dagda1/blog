@@ -13,7 +13,7 @@ In the previous two posts, I have started charting the progress of transitioning
 
 A gradient in the context of css is a gradual transition between two colours.  This transition can be transformed through a vertical axis or a horizontal axis.  Below is how my application looks after I have applied the styles that I will create in this article.  
 {% img /images/post3/gradients.png %}
-I have applied gradients to both the header section and the navigation bar of the html document.  CSS3 comes with a gradient property and most of the modern browsers have their own prefixed slants on this property.  As we are using compass and sass, we can forget about the need to create these vendor specific duplicated linear-gradient properties.  Yet another reason for using compass is that it will do that for us.  The latest version of compass has the excellent <a href="http://compass-style.org/reference/compass/css3/images/" target="_blank">images module</a> and I am going to take advantage of the **background-image** mixin to create the following rule which will generate the relevant vendor prefixed rules.  Below is the rule that will be applied to the new html5 &lt;header&gt; element of our document:
+I have applied gradients to both the header section and the navigation bar of the html document.  CSS3 comes with a gradient property and most of the modern browsers have their own prefixed slants on this property.  As we are using compass and sass, we can forget about the need to create these vendor specific duplicated linear-gradient properties.  Yet another reason for using compass is that it will do that for us.  The latest version of compass has the excellent <a href="http://compass-style.org/reference/compass/css3/images/" target="_blank">images module</a> and I am going to take advantage of the **background-image** mixin to create the gradient effect.  Below is the rule that will be applied to the new html5 &lt;header&gt; element of our document:
 {% codeblock %}
 body > header
   background-color: $header-bg
@@ -69,7 +69,7 @@ I want to take this opportunity to show the power of both sass variables and the
 {% gist 1225069 %}
 Only on line 1 do we actually specify any hex value for a variable, in the subsequent variable declarations, we pass in relevant percentage values to the lighten and darken functions to keep everything in ratio. We can change the **$nav-bg** variable and the other variables will adjust accordingly.
 
-A full list of similar sass colour functions can be found <a href="http://sass-lang.com/docs/yardoc/Sass/Script/Functions.html" target-"_blank">here</a>
+A full list of similar sass colour functions can be found <a href="http://sass-lang.com/docs/yardoc/Sass/Script/Functions.html" target-"_blank">here</a>.
 
 Below is the listing for the **_navigation.sass** partial file that contains the rules for the &lt;nav&gt; tag outlined above:
 {% gist 1225073 %}
@@ -79,6 +79,6 @@ Besides the **background-image** mixin on line 4 that I described previously, we
 - <a href="http://compass-style.org/reference/compass/utilities/lists/horizontal_list/" target="_blank">Horizontal List</a> (line 11): which transforms a &lt;ul&gt; list horizontally.
 - <a href="http://compass-style.org/reference/compass/utilities/links/link_colors/" target="_blank">link-colors</a> (line 20): Which sets the colors for a link in one mixin.
 
-I will leave things here for this post but I will post about the layout I am going to use for the main section of the page.  I have previously used the compass blueprint library which is a css grid layout framework but the world has moved on and I am going to see what else is available.  If anyone can recommend a more modern approach please leave a comment below.
+I will leave things here for this post but in the next post I will describe the layout I am going to use for the main section of the page.  I had previously used the compass blueprint library which is a css grid layout framework but the world has moved on and I am going to see what else is available.  If anyone can recommend a more modern approach please leave a comment below.
 
 Please leave any comments below.  Feedback is always appreciated.
