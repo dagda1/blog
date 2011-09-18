@@ -6,9 +6,9 @@ comments: true
 categories: SASS HTML5
 --- 
 ### Previous Posts
-- [Part 1]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1//") 
+- [Part 1]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/") 
 
-In the last [post]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1//") I took a walk through the basic set up of my sass files that I will be using for the update of my site to the new landscape of html5.
+In the last [post]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/") I took a walk through the basic set up of my sass files that I will be using for the update of my site to the new landscape of html5.
 
 Below is the file layout for my sass files:
 {% img /images/site-refresh-part1/sass-structure.png %}
@@ -57,7 +57,7 @@ Before carrying on, below is the rendered HTML from our main application.html.ha
 The next sass partial file that we are importing from the parent screen.sass is the **_typography.sass** file, which currently looks like this:
 {% gist 1218685 %}
 
-This file as the file name suggests is where all the type face instructions will be centrally held.  On line 1 of _typography.sass, we are declaring a css class with a name of heading and then declaring the font-family we want to use and the fall back options.  It is unlikely you will have heard of the Orbitron font-family and that is because we are importing it from the <a href="http://code.google.com/apis/webfonts/" target="_blank">Google Web Fonts API</a>.  I mentioned this in the previous <a href="http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1//" target="_blank">post</a>.  We can import fonts from the google web fonts api by declaring a separate &lt;link&gt; element for each font we want to import. The declaration for importing the Orbitron font is below:
+This file as the file name suggests is where all the type face instructions will be centrally held.  On line 1 of _typography.sass, we are declaring a css class with a name of heading and then declaring the font-family we want to use and the fall back options.  It is unlikely you will have heard of the Orbitron font-family and that is because we are importing it from the <a href="http://code.google.com/apis/webfonts/" target="_blank">Google Web Fonts API</a>.  I mentioned this in the previous <a href="http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/" target="_blank">post</a>.  We can import fonts from the google web fonts api by declaring a separate &lt;link&gt; element for each font we want to import. The declaration for importing the Orbitron font is below:
 {% codeblock %}
 %link{:rel => "stylesheet", :type => "text/css", :href => "http://fonts.googleapis.com/css?family=Orbitron:regular,italic,bold,bolditalic"}
 {% endcodeblock %}
