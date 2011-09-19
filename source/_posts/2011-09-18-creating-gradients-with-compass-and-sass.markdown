@@ -9,11 +9,11 @@ categories: html5 sass compass
 - [Part 1]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/")
 - [Part 2]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-2/")
 
-In the previous two posts, I have started charting the progress of transitioning my yet to born product from old school xhtml, css and javascript into the new world of HTML5 and CSS3.  As the product is not even on the market yet, I am taking the bold step of doing the design myself.  I am a css and design heretic so this is quite a difficult step for me.  On the plus side, I will learn lots on the way no matter what the outcome is. In this article, I want to touch on creating gradients with sass and compass.
+In the previous two posts, I have started to outline the transition of my yet to born product from old school xhtml, css and javascript into the new world of HTML5 and CSS3.  As the product is not even on the market yet, I am taking the bold step of tackling the design myself.  I am a css and design heretic so this is quite a difficult step for me.  On the plus side, I will learn a lot on the way no matter what the outcome is. In this article, I want to touch on creating gradients with sass and compass.
 
 A gradient in the context of css is a gradual transition between two colours.  This transition can be transformed through a vertical axis or a horizontal axis.  Below is how my application looks after I have applied the styles that I will create in this article.  
 {% img /images/post3/gradients.png %}
-I have applied gradients to both the header section and the navigation bar of the html document.  CSS3 comes with a gradient property and most of the modern browsers have their own prefixed slants on this property.  As we are using compass and sass, we can forget about the need to create these vendor specific duplicated linear-gradient properties.  Yet another reason for using compass is that it will do that for us.  The latest version of compass has the excellent <a href="http://compass-style.org/reference/compass/css3/images/" target="_blank">images module</a> and I am going to take advantage of the **background-image** mixin to create the gradient effect.  Below is the rule that will be applied to the new html5 &lt;header&gt; element of our document:
+I have applied gradients to both the header section and the navigation bar of the html document.  CSS3 comes with a gradient property and most of the modern browsers have their own prefixed slants on this property.  As we are using compass and sass, we can forget about the need to create these vendor specific duplicated linear-gradient properties.  Yet another reason for using compass is that compass will output the vendor specific cross browser rules.  The latest version of compass has the excellent <a href="http://compass-style.org/reference/compass/css3/images/" target="_blank">images module</a> and I am going to take advantage of the **background-image** mixin to create the gradient effect.  Below is the rule that will be applied to the new html5 &lt;header&gt; element of our document:
 {% codeblock %}
 body > header
   background-color: $header-bg
@@ -63,11 +63,11 @@ And here is the rendered output of the above haml
     </ul>
 </nav>
 {% endcodeblock %}
-I am also using the new html5 semantic attribute <a href="http://www.w3.org/wiki/PF/XTech/HTML5/RoleAttribute" target="_blank">role attribute</a>. HTML5 has many of these new semantic markers that help devices such as screen readers pick out the relevant sections.
+I am also using the new html5 semantic <a href="http://www.w3.org/wiki/PF/XTech/HTML5/RoleAttribute" target="_blank">role attribute</a>. HTML5 has many of these new semantic markers that help devices such as screen readers pick out the relevant sections.
  
 I want to take this opportunity to show the power of both sass variables and the extremely useful sass functions desaturate, darken and lighten to **DRY** up your css.  Below are  the variable declarations we will be using for the navigation bar:
 {% gist 1225069 %}
-Only on line 1 do we actually specify any hex value for a variable, in the subsequent variable declarations, we pass in relevant percentage values to the lighten and darken functions to keep everything in ratio. We can change the **$nav-bg** variable and the other variables will adjust accordingly.
+Only on line 1 do we actually specify any hex value for a variable, in the subsequent variable declarations, we pass in relevant percentage values to the lighten and darken functions to keep everything in ratio. A change to the **$nav-bg** variable will cause the other variables to adjust accordingly.
 
 A full list of similar sass colour functions can be found <a href="http://sass-lang.com/docs/yardoc/Sass/Script/Functions.html" target-"_blank">here</a>.
 
