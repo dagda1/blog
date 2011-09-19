@@ -9,7 +9,7 @@ categories: html5 sass compass
 - [Part 1]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/")
 - [Part 2]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-2/")
 
-In the previous two posts, I have started to outline the transition of my yet to born product from old school xhtml, css and javascript into the new world of HTML5 and CSS3.  As the product is not even on the market yet, I am taking the bold step of tackling the design myself.  I am a css and design heretic so this is quite a difficult step for me.  On the plus side, I will learn a lot on the way no matter what the outcome is. In this article, I want to touch on creating gradients with sass and compass.
+In the previous two posts, I have started to outline the transition of my yet to be completed product from old school xhtml, css and javascript into the new world of HTML5 and CSS3.  As the product is not even on the market yet, I am taking the bold step of tackling the design myself.  I am a css and design heretic so this is quite a difficult step for me.  On the plus side, I will learn a lot on the way no matter what the outcome is. In this article, I want to touch on creating gradients with sass and compass.
 
 A gradient in the context of css is a gradual transition between two colours.  This transition can be transformed through a vertical axis or a horizontal axis.  Below is how my application looks after I have applied the styles that I will create in this article.  
 {% img /images/post3/gradients.png %}
@@ -19,7 +19,7 @@ body > header
   background-color: $header-bg
   @include background-image(image-url('noise.png'), linear-gradient(darken($header-bg, 20), $header-bg, lighten($header-bg, 11)))
 {% endcodeblock %}
-I am using the **background-image** mixin to generate the linear-gradient as prescribed in the latest <a href="http://compass-style.org/CHANGELOG/" target="_blank">compass docs changelog</a> which states:
+I am using the **background-image** mixin to generate the linear-gradient as recommended in the latest <a href="http://compass-style.org/CHANGELOG/" target="_blank">compass docs changelog</a> which states:
 {% blockquote %}
 The linear-gradient and radial-gradient mixins have been deprecated. Instead use the background-image mixin and pass it a gradient function. The deprecation warning will print out the correct call for you to use.
 {% endblockquote %}
@@ -40,10 +40,11 @@ body > header {
   background-image: url(/assets/noise.png), linear-gradient(#acbbd3, #6a85af, #4f6992);
 }
 {% endcodeblock %}
+I hope you can see the projection of one line of vendor independent compass/sass code to the many lines of browser/vendor specific css code.
 ##Navigation Bar##
 We will use the same technique to apply a gradient to the navigation bar:
 {% img /images/post3/nav.png %}
-We are going to use the new semantic &lt;nav&gt; element of html5 to mark up the navigation and then apply css rules to.  Below is the haml for the new navigation bar:
+We are going to use the new semantic &lt;nav&gt; element of html5 to mark up the navigation and then apply css rules to it.  Below is the haml for the new navigation bar:
 {% gist 1225066 %}
 And here is the rendered output of the above haml
 {% codeblock %}
