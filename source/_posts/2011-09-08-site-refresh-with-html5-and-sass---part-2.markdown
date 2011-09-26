@@ -6,7 +6,7 @@ comments: true
 categories: SASS HTML5
 --- 
 ### Previous Posts
-- [Part 1]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/") 
+- [Part 1](/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/)
 
 In the last [post]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/") I took a walk through the basic set up of my sass files that I will be using for the update of my site to the new landscape of html5.
 

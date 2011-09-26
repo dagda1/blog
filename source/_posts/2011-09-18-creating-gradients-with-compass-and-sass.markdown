@@ -6,8 +6,8 @@ comments: true
 categories: html5 sass compass
 ---
 ### Previous Posts
-- [Part 1]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/")
-- [Part 2]("http://www.thesoftwaresimpleton.com/blog/2011/09/07/site-refresh-with-html5-and-sass---part-2/")
+- [Part 1](/blog/2011/09/07/site-refresh-with-html5-and-sass---part-1/)
+- [Part 2](/blog/2011/09/08/site-refresh-with-html5-and-sass---part-2/)
 
 In the previous two posts, I have started to outline the transition of my yet to be completed product from old school xhtml, css and javascript into the new world of HTML5 and CSS3.  As the product is not even on the market yet, I am taking the bold step of tackling the design myself.  I am a css and design heretic so this is quite a difficult step for me.  On the plus side, I will learn a lot on the way no matter what the outcome is. In this article, I want to touch on creating gradients with sass and compass.
 
