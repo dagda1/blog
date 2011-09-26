@@ -27,7 +27,7 @@ With the markup out of the way, we can now concentrate on some of the new CSS3 b
 
 First of all, I want to concentrate on the login form itself:
 {% img /images/simple-form/login-form.png %}
-Below is the sass that is used to create the sunken effect for the text of the header and label elements that are outlined in the above image that surrounds the inputs.
+Below is the sass that is used to create the sunken effect for the text of the header and label elements that are outlined in the above image.
 {%gist 1242249 %}
 On line 1, is the definition of a mixin that I have used to avoid duplication in the two css selectors that assign styles to the &lt;h2&gt; and &lt;label&gt; elements.  The mixin is used on lines 6 and 12 via the @include directive.  
 On line 3 of the above gist, I am using the new css3 text-shadow property that does what it says on the tin and adds a show effect to a block element to make it stand out more.
@@ -93,7 +93,7 @@ With CSS3 you can now achieve some effects that would have in the past required 
 
 This is impossible to show without a demo and as my site is not on a public facing server yet, I am going to have to point to these <a href="http://24ways.org/2009/going-nuts-with-css-transitions" target="_blank">examples</a>.
 
-In my log in page, I am specifying that I want the input control border and background to change when the cursor is hovered over the input control:
+In my log in page, I am specifying that I want the text input's border and background to change when the cursor is hovered over the input control:
 {%img /images/simple-form/input-hover.png %}
 We can also put a delay on the transition which equates to a tasteful delay of a specified time before the transition occurs.
 
