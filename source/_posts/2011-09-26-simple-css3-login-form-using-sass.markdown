@@ -10,7 +10,7 @@ categories:
 - [Part 2](/blog/2011/09/08/site-refresh-with-html5-and-sass---part-2/)
 - [Part 3: Creating Gradients With Compass](/blog/2011/09/18/creating-gradients-with-compass-and-sass/)
 
-I have been using these posts to cement the knowledge I am gleaning while transforming the markup for a product I am building.  I find trying to transmit the knowledge via blogging is the only way to really learn something or else it is easily forgotten.  In the last three posts I have gone from defining my  project file structure to creating the markup and CSS3 (with the extreme help of sass) for the header element in the image below.  In this post, I want to outline the steps I took to create the following login page:
+I have been using these posts to cement the knowledge I am gleaning while transforming the markup for a product I am building.  I find that trying to transmit the knowledge via blogging is the only way to really learn something or else it is easily forgotten.  In the last three posts I have gone from defining my  project file structure to creating the markup and CSS3 (with the extreme help of sass) for the header element in the image below.  In this post, I want to outline the steps I took to create the following login page:
 
 {% img /images/simple-form/login.png %}
 
