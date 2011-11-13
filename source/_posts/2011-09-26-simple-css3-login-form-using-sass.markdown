@@ -14,7 +14,7 @@ I have been using these posts to cement the knowledge I am gleaning while transf
 
 {% img /images/simple-form/login.png %}
 
-In the past, I hate to admit that I would have used a table to align the inputs with their labels but this time round I want to use css to control the layout.  With that said, below is the haml that will generate the markup for the above login form:
+In the past, I hate to admit that I would have used a table to align the inputs with their labels but this time round I want to use css to control the layout.  With that said, below is the haml that generates the markup for the above login form:
 {% gist 1242152 %}
 The above haml generates the following markup:
 {% gist 1242169 %}
@@ -30,7 +30,7 @@ First of all, I want to concentrate on the login form itself:
 Below is the sass that is used to create the sunken effect for the text of the header and label elements that are outlined in the above image.
 {%gist 1242249 %}
 On line 1, is the definition of a mixin that I have used to avoid duplication in the two css selectors that assign styles to the &lt;h2&gt; and &lt;label&gt; elements.  The mixin is used on lines 6 and 12 via the @include directive.  
-On line 3 of the above gist, I am using the new css3 text-shadow property that does what it says on the tin and adds a show effect to a block element to make it stand out more.
+On line 3 of the above gist, I am using the new css3 text-shadow property that does what it says on the tin and adds a shadow effect to the text of a block element to make it stand out more.
 
 It is worth noting that I keep all my colour variable definitions in a separate sass partial file named **_colors.sass**.  This allows me to change the colour scheme in one file and not have to jump around the project files looking for the definitions.  Below is an excerpt from **colors.sass** that shows the variable declarations used in the above gist:
 {% codeblock %}
@@ -91,7 +91,7 @@ Below is the sass that is used to create the box-shadow, linear-gradient and bor
 ### CSS3 Transitions 
 With CSS3 you can now achieve some effects that would have in the past required javascript to achieve.  One of these techniques is known as a <a href="http://www.w3schools.com/css3/css3_transitions.asp" target="_blank">css3 transition</a>.  This allows the author to specify a css change or transition from one css style to another.  It is also possible to put a time delay on the transition.
 
-This is impossible to show without a demo and as my site is not on a public facing server yet, I am going to have to point to these <a href="http://24ways.org/2009/going-nuts-with-css-transitions" target="_blank">examples</a>.
+This is impossible to show without a demo and as my site is not on a public facing server yet, so I am going to have to point to these <a href="http://24ways.org/2009/going-nuts-with-css-transitions" target="_blank">examples</a>.
 
 In my log in page, I am specifying that I want the text input's border and background to change when the cursor is hovered over the input control:
 {%img /images/simple-form/input-hover.png %}
