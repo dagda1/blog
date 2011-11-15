@@ -66,19 +66,23 @@ I've also found underscore's templating to be much faster than JQuery's templati
 The code will take care of iterating over our collection and attaching the subviews to our parent view.  But if the user pressed back and then chose another selection and transitioned to this view again, we would add further subviews to this parent view.  We need some way of keeping track of and disposing of our subviews.
 
 To get round this problem, we have defined our own base class that uses underscore's extend method to *mixin* in our own functionality with that of the Backbone.Collection class by adding the custom methods onto Backbone.Collections prototype.
-{% gist 1368362%}
-On line 7, we are defining a method named **renderView** which takes an element, a string denoting a function of the JQuery object to call and a backbone view.  On line 8, we use javascript's ability to reference and call a method on an object like accessing a hashtable.  On line 9 we intialise an array to hold the subviews if it has not already been initailised using coffeescript's ruby like **||=** operator.  Finally we push the newly created view onto the array.
+{%gist 1368362 %}
+On line 7, we are defining a method named **renderView** which takes an element, a string denoting a function of the JQuery object to call and a backbone view.  On line 8, we use javascript's ability to reference and call a method on an object like accessing a hashtable. This string will generally be something like 'append' or a means of attaching the subview to the DOM.  On line 9 we intialise an array to hold the subviews if it has not already been initailised using coffeescript's ruby like **||=** operator.  Finally we push the newly created view onto the array.
 
 We call the method like this:
 {% codeblock%}
   @collection.each (item, counter) ->
     self.renderView(self.el, 'append', new ReportBusinessUnitView(model: item, vent: self.vent))
 {%endcodeblock%}
-We pass the view's element, the string **'append'** which will be called on the jquery object in the renderView method like this **$.fn[func].call** and the zuvview we want attached.  This is very neat and I can take absolutely no credit for writing it.  We now have a store of all the views that are added.
+We pass the view's element, the string **'append'** which will be called on the jquery object in the renderView method like this **$.fn[func].call** and the subview we want attached.  This is very neat and I can take absolutely no credit for writing it.  We now have a store of all the views that are added.
 
 All that remains is a means of disposing of these views and here are the two methods that take care of this on our custom BaseView class:
-{%gist 1368467%}
-We can either call **dispose** on line 8   that will remove all subviews and the view itself or **disposeViews** on line 14 that will only remove the subviews.  Dispose takes care of not only unbinding any event handlers but also of removing the element from the DOM.  This has made backbone much more manageable although I cannot claim any credit for the code.
+{%gist 1368467 %}
+We can either call **dispose** on line 8   that will remove all subviews and the view itself or **disposeViews** on line 14 that will only remove the subviews.  Dispose takes care of not only unbinding any event handlers but also of removing the element from the DOM. We can simply call one of these methods in an appropriate place on the view like this:
+{% codeblock%}
+  @disposeViews()
+{%endcodeblock%}
+This has made backbone much more manageable although I cannot claim any credit for any of the code.
 
 That is it for this post and I will be amazed if anyone has made it this far.  Please feel free to leave any comments.  Below is the full listing of the BaseView class:
-{%gist 1367986%}
+{%gist 1367986 %}
