@@ -9,7 +9,7 @@ I have been using <a href="http://documentcloud.github.com/backbone/" target="_b
 
 For those that have been sleeping under a rock recently, <a href="http://documentcloud.github.com/backbone/" target="_blank">Backbone.js</a> is a client side MVC framework that should not really require any introduction.  The client side MVC framework seems to be a bit of a du jour thing at the moment but I think it is important to have some sort of organisational structure around JavaScript or the looseness of the language can quickly turn any javascript code into the now infamous ball of mud.  Backbone.js is one way of achieving such a conformity.
 
-The point of this post is to solidify where I my current thinking is with Backbone.js and to welcome any comments from my readership of 10 or so readers that might point me to a better and brighter land.  I must also warn you that I will be using coffeescript for the code examples instead of pure javascript and if this offends, please read no further.
+The point of this post is to solidify where my current thinking is with Backbone.js and to welcome any comments from my readership of 10 or so readers that might point me to a better and brighter land.  I must also warn you that I will be using coffeescript for the code examples instead of pure javascript and if this offends, please read no further.
 
 ## Scenario
 
@@ -28,7 +28,7 @@ To summarise the above post, instead of holding a reference to the view we want 
 {% gist 1362205 %}
 We are taking advantage of the way Backbone already handles events.  The Backbone **Events** object is a module that can be mixed in with any object, giving the object the ability to bind and trigger custom named events.  On lines 4 and 5, we are making sure that any of the views that want to publish or subscribe to events have a reference to the **vent** object.  With this in place, I can simply raise an event from the BusinessUnitView and pass the newly created collection as an event argument.  Below is the BusinessUnitView refactored to take advantage of the event aggregator:
 {% gist 1362495 %}
-The first addition is on line 3 where the view obtains a reference to our extended Backbone.js **Events** object and on line 20 where the custom **Events** object is used to **trigger** a custom event that is uniquely identified by a string.  We are using the convention of a colon separated string to namespace the events and avoid collisions.  Below is the code listing for the ManagementReportView that subscribes to the event listed above:
+The first addition is on line 3 where the view obtains a reference to our extended Backbone.js **Events** object and on line 20 where the custom **Events** object is used to **trigger** a custom event that is uniquely identified by a string.  We are using the convention of a colon separated string (**reportingbusinessunitview:load**) to namespace the events and avoid collisions.  Below is the code listing for the ManagementReportView that subscribes to the event listed above:
 {%gist 1365243 %}
 On line 3 of the above gist, we are using the **bind** method of the Events object to specify a callback that will be triggered when the event is raised and any optional arguments can be passed to the callback which in this instance is the newly created businessunits backbone collection that we created from the user input in the previous view. On line 7 we define the callback event handler.  The **load** callback on line 7 is declared using the fat arrow **=>** syntax.  Coffeescript will take care of binding methods to *this* if you declare a function using the fat arrow **=>** instead of the skinny one **->**.  This means you don't need to use the underscore **_.bindAll** method as I would in javascript which can be quite tedious and relies on your diligence.  One of the many reasons why you should be using coffeescript.  On line 8 of the load callback we are setting the view's collections reference to the argument raised from the triggered event and line 9 brings us to our next gotcha:
 
@@ -76,13 +76,13 @@ We call the method like this:
 {%endcodeblock%}
 We pass the view's element, the string **'append'** which will be called on the jquery object in the renderView method like this **$.fn[func].call** and the subview we want attached.  This is very neat and I can take absolutely no credit for writing it.  We now have a store of all the views that are added.
 
-All that remains is a means of disposing of these views and here are the two methods that take care of this on our custom BaseView class:
+All that remains is a means of disposing of these views and below are the two methods that take care of this on our custom BaseView class:
 {%gist 1368467 %}
 We can either call **dispose** on line 8   that will remove all subviews and the view itself or **disposeViews** on line 14 that will only remove the subviews.  Dispose takes care of not only unbinding any event handlers but also of removing the element from the DOM. We can simply call one of these methods in an appropriate place on the view like this:
 {% codeblock%}
   @disposeViews()
 {%endcodeblock%}
-This has made backbone much more manageable although I cannot claim any credit for any of the code.
+This has made backbone much more manageable although I cannot claim credit for much of the code.
 
 That is it for this post and I will be amazed if anyone has made it this far.  Please feel free to leave any comments.  Below is the full listing of the BaseView class:
 {%gist 1367986 %}
