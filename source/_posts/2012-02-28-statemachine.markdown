@@ -24,6 +24,7 @@ While looking into Ember I found an interesting Ember addon called the <a href="
 In the ember statechart, these two actions or handlers manifest themselves as the *enterState* handler and the *exitState* handler.
 
 ##Show me some code##
+{% gist 1934749 %}
 
 ##Routing##
 <a href="https://github.com/DominikGuzei/ember-routing-statechart-example" target="_blank">routing example</a>
