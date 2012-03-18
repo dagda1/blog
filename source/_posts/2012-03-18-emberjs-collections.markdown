@@ -25,4 +25,12 @@ Below is how my extended ArrayProxy ended up:
 - On line 3 I am calling the constructor of the superclass ArrayProxy with **@_super()**.  If you do not do this the ArrayProxy will not initialise correctly.  I only found this out after a lot of head scratching as to why my ArrayProxy was not working.
 - On line 5, we are setting the initial array that will be wrapped by the ArrayProxy.  This is done by using the **content** property. The **content** property must be an object that implements either **Ember.Array** or **Ember.MutableArray**.  For the starting position of our view, we want the ArrayProxy bound to an empty array.  **Ember.A()** will return an empty Ember array.
 - On line 7, we create a view that we will attach to the DOM.  The virtual path to the handlebars template is set on line 8 and on line 10 we attach the initial view to the DOM.
+- The **addLead** method on line 12 takes a string of JSON as an argument, creates an Ember model object and uses the **setProperties** method to set multiple properties of the Ember model object with a hash which we create from the passed in string.
+- On Line 15, the newly created object is added to the wrapped array with the **pushObject** method.  This reveals the beauty of the ArrayProxy, when pushObject is called, the bindings will automatically update and render the new lead in the view's output.  The **removeObject** method works the same in reverse.
+
+##Problem 1 - Indexing the results ##
+I will show the code for the handlebars template shortly, but first I want to show the first problem I came across and that was how to index the results of the table.  Below is an image that highlights the numbering of each row that I was after:
+{%img /images/ember/results_index.png%}
+Below is my handlebars template that will render each object added via the pushObject method. This is the template that the Ember view in the previous *gist* pointed to.
+{% gist 2079992 %}
 
