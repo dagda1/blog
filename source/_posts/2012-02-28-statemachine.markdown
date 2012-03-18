@@ -30,19 +30,19 @@ Below is a very simple example of a statechart:
 {% gist 1934749 %}
 Now let me breakdown the code
 
-- On **line 1** a derived statechart class (for want of a better word) is defined by extending *SC.Statechart*.  The fact that the *Statechart* is namespaced with *SC* and not *Ember* gives hints as to when this addon was written.
+- On **line 1** a derived statechart class is defined by extending *SC.Statechart*.  The fact that the *Statechart* is namespaced with *SC* and not *Ember* gives a hint as to when this addon was written.
 - On **line 2** the *monitorIsActive* property can provide you with debug info if enabled.  I have yet to use this facility, so it is currently set to false.
 - On **line 4** the *substatesAreConcurrent* property indicates if the state's immediate substates are to be concurrent (orthogonal) to each other. 
-- On **line 6** is the *rootState* definition, this is the initial state of the statechart.  All the other states I have defined as orthogonal substates of this *rootState*.
-- **Line 7** sets the initialSubstate to *notParsing* for when the instance is instantiated.
+- On **line 6** is the *rootState* definition, all statecharts must have a rootState or an exception is thrown.  All the other states I have defined as orthogonal substates of this *rootState*.
+- **Line 7** sets the initialSubstate to the *notParsing* state (*line 9*) for when the instance is instantiated.
 - **Lines 9 and 17** define the two substates named *notParsing* and *parsing*.  In my application the user enters a url and the application parses any lead details from the site in question.  At some point the user will submit their request and the application will start parsing the results.
-- Below each of these subStates are the *enterState* and *exitState* handlers that in this instance are simply showing and hiding elements or in the case of the *parsing* substate, the execution control is also passed from the statechart to the *parsing_controller*.
+- Below each of these subStates are the *enterState* and *exitState* actions that in this instance are simply showing and hiding elements or in the case of the *parsing* substate, the execution control is also passed from the statechart to the *parsing_controller*.
 - On **line 15** is an additional action on the statechart called *startParsing* that can be called like this:
 {%codeblock%}
 crawl: =>
   Lead.state_chart.sendAction 'startParsing', @url_search
 {%endcodeblock%}
-- You can define these actions with states or substates and invoke them via the *sendAction* method and pass up to two arguments.
+- You can define these actions within states or substates and invoke them via the *sendAction* method and pass up to two arguments.
 - On **line 16** I am calling the *gotoState* method of the statechart that transitions between states and invokes the *exitState* action of the current state and *enterState* of the state that is being transitioned to.
 - On **line 28** I have a **stopParsing** action that when called via the *gotoState* method will transition back to the **notParsing** state and trigger the parsing state's exitState action and the notParsing state's enterState action.  This will reset the page and let the user enter another submission.
 
