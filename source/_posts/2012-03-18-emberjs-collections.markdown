@@ -33,4 +33,14 @@ I will show the code for the handlebars template shortly, but first I want to sh
 {%img /images/ember/results_index.png%}
 Below is my handlebars template that will render each object added via the pushObject method. This is the template that the Ember view in the previous *gist* pointed to.
 {% gist 2079992 %}
+On line 13 of the gist, I am using the each helper which allows you to iterate over a list.  When I first came across the each helper used in conjunction with the ArrayProxy I thought it would re-render the html each time but this is not the case.  A new item is rendered via each for each new object inserted into the array via pushObject.  On line 13 I am binding the each helper to an accessible object instance named **Lead.leads_controller** which is actually an instance of the ArrayProxy defined in the previous gist.
+
+When I first wrote this template, I used the **#collection** view helper instead of the **each** helper.  The **#collection** view helper creates a view for every item in the list.  I was informed again via twitter that the **#collection** view helper would soon be deprecated so I refactored to the each helper and created a  separate view for every item in the list which you can see on line 14.
+{% gist 2096900 %}
+
+{%codeblock%}
+adjustedIndex: function(){
+                 this.getPath('_parentView.contentIndex') + 1;
+               }.property();
+{%endcodeblock%}
 
