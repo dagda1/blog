@@ -57,4 +57,23 @@ adjustedIndex: function(){
 {%endcodeblock%}
 This function defines what is known as an Ember computed property.  Computed properties allow you to treat a function like a property. This is useful because we can treat the computed property like any other propeties, in the above example we are accessing the **contentIndex** property of the **_parentView** object and incrementing it by 1.  The fact that the _parentView object is prefixed with an underscore is usually a convention to tell the user of the code that this a private variable but I don't think we are doing much harm in this instance.
 
-This seems like a lot of work for this example but computed properties are a powerful feature and can have observable behaviour that allows your template to be auto updating which is a powerful feature.
+This seems like a lot of work for this example but computed properties are a powerful feature and can have observable behaviour that allows your template to be auto updating which is a powerful feature.  We can also now reuse this view to get the adjustedIndex property for the child collections of the parent object.
+
+##Problem 2 - Conditionally Display Results with Handlebars
+When it comes to displaying child results, I want to be able to display a message to the user if no results have been found.  For example below is the outcome I wanted when no emails have been found in the context of the parent row during a screen scraping operation:
+{%img /images/ember/noresults.png%}
+Handlebars comes with the **{{#if}}** helper which does what you would expect with one gotcha.  Handlebars does not support conditional statements like** {{#if content.emails.length > 0}}**.  I agree with this, this tricky logic should be wrapped up into a helper to make sure the template stays clean.
+
+Below is the part of the template that renders the child emails rows:
+{{%gist 2127065%}}
+
+- On line 1, we are referring to a property of the Lead class I displayed earlier named **hasEmails** that the handlebars if helper uses to determine the result. 
+- On line 2, we are binding the **#each** helper to emails array of the parent object.
+- On line 3, we are reusing the view we created earlier that uses the adjustedIndex property.
+- On line 10 we use the handlebars {{else}} expansion that can be used with any block helper to represent what the output if the given expression evaluates to a falsey value.
+
+Below is the Lead class I mentioned earlier with two new computed properties named **hasEmails** and **hasContacts** that will be used as boolean expressions by the #if helper.  I am using Ember.computed function to created the computed properties this time but the result is the same and it looks a bit neater.
+{{%gist 2127073%}}
+
+##Conclusion##
+Ember certainly feels like a richer and albeit larger framework than backbone.js.  There are different abstractions to utilise and I think handlebars is the most feature complete of all the templating libraries I have tried so far.  I am going on to experiment with handlebars partials next.
