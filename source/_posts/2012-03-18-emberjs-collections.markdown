@@ -33,7 +33,7 @@ Lead.Lead = Em.Object.extend
 - On Line 15, the newly created object is added to the wrapped array with the **pushObject** method.  This reveals the beauty of the ArrayProxy, when pushObject is called, the bindings will automatically update and render the new lead in the view's output.  The **removeObject** method works the same in reverse.
 
 ##Problem 1 - Numbering the results ##
-I will show the code for the handlebars template shortly, but first I want to show the first problem I came across and that was how to index the results of the table.  Below is an image that highlights the numbering of each row that I was after:
+I will get to the code for the handlebars template shortly, but first I want to show the first problem I came across and that was how to index the results of the table.  Below is an image that highlights the numbering of each row that I was after:
 {%img /images/ember/results_index.png%}
 Below is my handlebars template that will render each object added via the pushObject method. This is the template that the Ember view in the previous *gist* pointed to.
 {% gist 2079992 %}
@@ -45,12 +45,16 @@ When I first wrote this template, I used the **#collection** view helper instead
 {%codeblock%}
 #view Lead.Views.Leads contentBinding="this"
 {%endcodeblock%}
-The contentBinding property is set to **this** which in this context is the current item in the list.  This is a derived view that I have created named Lead.Views.Leads that I will list shortly.
+The contentBinding property is set to **this** which in this context is the current item in the list.  This is a derived view that I have created named Lead.Views.Leads that is listed below.
 {% gist 2096900 %}
+The important bit is the Ember property **adjustedIndex** that is listed on line 4.  
 
+If you are unfamiliar with coffeescript, below is how this would be written in javascript:
 {%codeblock%}
 adjustedIndex: function(){
                  this.getPath('_parentView.contentIndex') + 1;
                }.property();
 {%endcodeblock%}
+This function defines what is known as an Ember computed property.  Computed properties allow you to treat a function like a property. This is useful because we can treat the computed property like any other propeties, in the above example we are accessing the **contentIndex** property of the **_parentView** object and incrementing it by 1.  The fact that the _parentView object is prefixed with an underscore is usually a convention to tell the user of the code that this a private variable but I don't think we are doing much harm in this instance.
 
+This seems like a lot of work for this example but computed properties are a powerful feature and can have observable behaviour that allows your template to be auto updating which is a powerful feature.
