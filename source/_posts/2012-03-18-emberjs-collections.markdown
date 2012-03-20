@@ -5,18 +5,16 @@ date: 2012-03-18 15:40
 comments: true
 categories: JavaScript Ember
 ---
-I've been hacking away on quite a complex results page that uses <a href="http://emberjs.com/">Ember.js</a> and <a href="http://www.handlebarsjs.com">Handlebars</a> templating to render html on the clinet from json objects that are returned from a websocket connection on the server.  This turned out to be much more difficult than I first envisioned and I thought I would blog about it in order to help anybody else who struggles with what I am guessing are some common problems.  I am also hoping that somebody with greater Ember knowledge than mine can point me to a better way or correct any of my misconceptions.
+I've been hacking away on quite a tabular results page that uses <a href="http://emberjs.com/">Ember.js</a> and <a href="http://www.handlebarsjs.com">Handlebars</a> templating to render html on the client from json objects that are returned from a websocket connection on the server.  This turned out to be much more difficult than I first envisioned and I thought I would blog about it in order to help anybody else who struggles with what I am guessing are some common problems.  I am also hoping that somebody with greater Ember knowledge than my own can point me to a better way or correct any of my misconceptions.
 ##Scenario##
 Below is a screen capture of what I finally ended up with.  
 {%img /images/ember/results.png%}
-**Warning:** I have used nested tables to display these results, please leave a comment suggesting a better way if this offends!
-
 Each row in the table displays the company details that are extracted from a website screen scraping search operation.  Each row can be expanded to display any additional child detail.  The child detail can contain any additional email addresses and contact details that have been scraped from a web site search and belong to the parent row.
 
-##Enter the Ember.ArrayProx##
+##Enter the Ember.ArrayProxy##
 One of Ember's strengths is its excellent databinding support and out of the box, it comes with the <a target="_blank" href="http://ember-docs.herokuapp.com/symbols/Ember.ArrayProxy.html">Ember.ArrayProxy</a>.  The ArrayProxy is a construct that wraps a native array and adds additional functionality for the view layer.  In this example, I am going to use the **Ember.ArrayProxy** as a means to publish a collection of objects so that I can easily bind the collection using the handlebars **#each helper** (more on this later). 
 
-It is worth noting that you might also see the **ArrayProxy** in the wild named as the **ArrayController**.  I was informed by somebody on twitter that the ArrayController is just an alias to ArrayProxy.  The ArrayController is a throwback to Ember's sproutcore days and will at some stage be deprecated.  I prefer ArrayProxy because it is not a controller in the MVC sense of the word and **ArrayProxy** is a better description of the object's behaviour.
+It is worth noting that you might also see the **ArrayProxy** in the wild named as the **ArrayController**.  I was informed by somebody on twitter that the ArrayController is just an alias to ArrayProxy.  The ArrayController is a throwback to Ember's sproutcore days and will at some stage be deprecated.  I prefer the nomenclature ArrayProxy because it is not a controller in the MVC sense of the word and **ArrayProxy** is a better description of the object's behaviour.
 
 Below is how my extended ArrayProxy ended up:
 {% gist 2078762 %}
