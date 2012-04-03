@@ -25,7 +25,16 @@ This advice was only half right, more on that later.
 
 So what was this crazy man's talk of a runloop?  To understand what the **runloop** is, it is worth considering one of Ember's strengths or main selling points for me which are **bindings**.  A binding simply connects the properties of two objects in such a way that when one property changes, the value of the other one changes.  With Ember you would not generally change the DOM directly, you would instead make a change to the model and let the relevant bindings reflect this change.  With backbone.js, you generally react to DOM events which is limited because it is easy for the model and view to become unsynchronised and tedious error prone code is needed to keep the two in sync. 
 
+The runloop is mechanism that ensures all bindings propagate data changes.  In the example I outline above, I have the following binding that binds my model to the view:
+{%codeblock%}
+urlSearchBinding: 'controller.url_search'
+{%endcodeblock%}
+Then in my handlebars template, I am binding the value of an in put field to the **search_url** property of the model:
+{%codeblock%}
+urlSearchBinding: 'controller.url_search'
+{%endcodeblock%}
 
+Ember.run.begin(), Ember.run.end()
 
 So of course I blindly added **Ember.run.end()** to my test on line 5 like so:
 {%gist 2293513 %}
