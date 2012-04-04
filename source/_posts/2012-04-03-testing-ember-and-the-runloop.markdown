@@ -48,14 +48,13 @@ It is possible to manually start a runloop at any time which is the answer to my
 {%gist 2303759 %}
 On line 5, I am triggering the runloop via the convenience method **Ember.run** which accepts a function as an argument.  **Ember.run()** will take care of wrapping the passed in function between Ember.run.begin() and Ember.run.end().  I should not need to say that the test now passes.
 
-The runloop is now incorporated into the majority of my tests where I ensure that the part of the application I want to test is running in the context of the runloop.  Below is an example of a test where I test my interaction with an Ember state manager:
+The runloop is now incorporated into the majority of my tests where I ensure that the unit or critical part of the application that I want to test is running in the context of a runloop.  Below is an example of a test where I test my interaction with an Ember state manager:
 {%gist 2304654 %}
 I ensure that the send method of the state manager is wrapped in a run loop.
 ##Conclusion##
-If I had not been writing tests, I am not sure if I would have had to learn about the runloop.  I think the runloop is an amazingly powerful concept and is used in many other frameworks and platforms.  
+If I had not been writing tests, I am not sure if I would have discovered the runloop.  I think the runloop is an amazingly powerful concept and is used in many other frameworks and platforms.  I think one of the IPhone frameworks uses it in a similar fashion.  
 
-
-Before I finish, I want to point out a mistake I initially made before becoming better acquainted with the now infamous runloop.
+Before I finish, I want to point out another trapdoor that I fell down before becoming better acquainted with the now infamous runloop.
 My first attempt at dealing with the runloop is in the gist below where I just blindly added **Ember.run.end()** to my test on line 5 like so:
 {%gist 2293513 %}
 This is bad for a number of reasons.  Namely other tests will rely on Ember.run.end() being called from this test and as we all know, tests should be atomic and not rely on each other.  If I delete the test, the runloop no longer completes, also the runloop is being terminated unexpectedly for other tests.  This was another blind alley I gladly wandered down before deciding to do the research and write about it in this blog.
