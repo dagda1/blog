@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Unit Testing Ember, How I Learned to Stop Worrying and Love the Runloop"
+title: "Unit Testing Ember.js, How I Learned to Stop Worrying and Love the Runloop"
 date: 2012-04-03 07:55
 comments: true
 categories: JavaScript Ember
 ---
-I am currently using <a href="http://emberjs.com/">Ember.js</a> for a side project and I have ran into some interesting and unexpected behaviour while driving the development of the front end code test first.  I am using the excellent javascript bdd library <a href="http://pivotal.github.com/jasmine/" target="_blank">Jasmine</a> as my test runner and I also must issue a warning that the code examples listed below are in coffeescript.  I have also been using the excellent <a href="https://github.com/netzpirat/guard-jasmine">guard-jasmine</a> gem to automatically run my tests when any files are modified which really is a great experience.  
+I am currently using <a href="http://emberjs.com/">Ember.js</a> for a side project and I have ran into some interesting and unexpected behaviour while driving the development of the front end code test first.  I am using the excellent javascript bdd library <a href="http://pivotal.github.com/jasmine/" target="_blank">Jasmine</a> as my test runner and I must also issue a warning that the code examples listed below are in coffeescript.  I have also been using the excellent <a href="https://github.com/netzpirat/guard-jasmine">guard-jasmine</a> gem to automatically run my tests when any files are modified which really is a great experience.  
 
 I had vaguely heard of the Ember <a href="http://blog.sproutcore.com/the-run-loop-part-1/">runloop</a> in a few of the articles that I had read but I had not had to deal with it directly until I started getting more and more unexpected behaviour in my tests.
 
@@ -33,7 +33,7 @@ Then in my handlebars template, I am binding the value of an input field to the 
 {%codeblock%}
 view Ember.TextField size="60" valueBinding="urlSearch.search_url"
 {%endcodeblock%}
-The upshot of this is that when a user enters some text into the input field, the **search_url** property of the model will change to the text that has been entered into the input field.  The reverse is also true, a change to the model will result in the input changing.  We could take this further and have another **bound** object whose property subsequently changes when the **search_url** property changes of our model and so on.  This is could turn into a performance overhead if the Ember runtime was constantly reacting to each binding as and when they change.  
+The upshot of this is that when a user enters some text into the input field, the **search_url** property of the model will change to the text that has been entered into the input field.  The reverse is also true, a change to the model will result in the input changing.  We could take this further and have another **bound** object whose property subsequently changes when the **search_url** property changes of our model and so on.  This is could turn into a performance and synchronisation overhead if the Ember runtime was constantly reacting to each binding as and when they change.  
 
 ##Behold the runloop##
 The runloop is charged with batching up all the binding updates into one final set that can be executed all at once at a designated point in the runloop.  Typically Something triggers the start of the runloop which is more often than not, one of the many supported browser DOM events that Ember has registered itself to listen for, e.g. click, mouseup, etc., etc., etc.  The runloop can also be triggered manually with code or from the expiration of a timer.  If we change a property using the set method of an ember object like below:
