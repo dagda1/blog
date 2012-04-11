@@ -74,13 +74,20 @@ Below is the code for the rabbitmq server in nearly all of its entirety:
 - **Line 22** creates the queue that will listen for request messages from the RabbitMQ server.
 - **Line 33** uses the subscribe method of the AMQP queue object takes a block as an argument that gets passed a message each time a message is published to the queue.  The block takes 2 parameters, the header which is the metadata of the message which in this case contains both the **correlation_id** and the **reply_to** details that were created in the RabbitMQ client layer and give us all the data we need to communicate any results back to the RabbitMQ client layer.
 -  **Line 38** creates the parser object that does the actual crawling and screenscraping.
-- **Line 40** calls the **find_potential_leads** method that takes a block and **yields** any leads found back to the block that allows me to publish any leads via the **reply_to** queue back to the RabbitMQ client layer. 
+- **Line 40** calls the **find_potential_leads** method that takes a block and **yields** any leads found back to the block that allows me to publish any leads via the **reply_to** queue back to the websocket layer. 
+- **Line 42** serialises the result into a JSON string ready to pass back to the websocket layer.
+- **Line 45** publishes the json string back to the RabbitMQ client websocket layer by specifying the **repy_to** and **correlation_id** from the header of the incoming message.
 
-
+And that is job done, I have communication between my websocket layer and my RabbitMQ server layer using this quite simple RPC approach.
 
 I have created the RabbitMQ server process as a <a href="http://railscasts.com/episodes/242-thor" target="_blank">Thor</a> task.  I like the name spacing capabilities of Thor that lets me execute namespace tasks with respect to their environment like:
 {%codeblock%}
 thor worker:dev:start_consumer
 {%endcodeblock%}
+I also like that Thor tasks can be defined in plain Ruby classes and each class is a plain old Ruby method.
 
+##Conclusion##
+I struggled for quite a long time to find something that fitted my needs.  My next steps are to refactor the client code to use <a href="https://github.com/sockjs/sockjs-client" target="_blank">SockJS</a> for better cross browser support.
+
+If you disagree with any of the above or can point out a better way then I would love to hear from you, please leave a comment below.
 
