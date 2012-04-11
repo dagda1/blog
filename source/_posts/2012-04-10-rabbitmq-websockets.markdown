@@ -28,7 +28,7 @@ In the context of my application, the **RPC pattern** manifests itself like this
 
 The user will submit a url to perform the search that will be sent to the websocket layer via the following clientside coffeescript code:
 {%gist 2358173 %}
-The above code contains an <a href="http://emberjs.com/">Ember.js</a> controller with a **start_parsing** method/action on **line 2**.  When the user enters a url, this method is called and am Ember **url_search** model object is created containing the url of the site to be scraped.  
+The above code contains an <a href="http://emberjs.com/">Ember.js</a> controller with a **start_parsing** method/action on **line 2**.  When the user enters a url, this method is called and an Ember **url_search** model object is created containing the url of the site to be scraped.  
 
 - On **line 3**, a new websocket connection is attempted.
 - The **onopen** event fires when a successful connection has been negotiated.  **Line 7** provides an event handler for the onopen event that transforms the **url_search** object into a JSON string and sends it to the websocket server.
@@ -48,7 +48,7 @@ So far, we have initiated a new websocket connection with the server and sent a 
 
 I stated earlier that the RabbitMQ RPC pattern will allow the backend queue handler to communicate with the websocket layer.  The webscocket layer can be thought of as the **RabbitMQ client** and the backend queue handler can be thought of as the **RabbitMQ server**.  The websocket layer outlined above is our RabbitMQ client layer that will send a request message containing the JSON string sent from the front end Ember controller code outlined in the first gist.  
 
-In order for the RabbitMQ client to receive esponses from the RabbitMQ server, we will need to specify a **callback** queue that the RabbitMQ server can send messages to.  In the context of my application, the RabbitMQ server will send data scraped from the specified web site back to the front end code that will render a new row in a table for each result found.
+In order for the RabbitMQ client to receive responses from the RabbitMQ server, we will need to specify a **callback** queue that the RabbitMQ server can send messages to.  In the context of my application, the RabbitMQ server will send data scraped from the specified web site back to the front end code that will render a new row in a table for each result found.
 
 In order to put this into the context of my application, below is the code that both creates a callback queue for the RabbitMQ server to communicate with **and** publishes the request message to the RabbitMQ server.
 {%gist 2358396 %}
@@ -62,19 +62,19 @@ socket.onmessage = (evt) ->
   Lead.get('leads_controller').addLead evt.data
 {%endcodeblock%}
 - On **Line 14** the **append_callback** method is invoked which takes a **block** of code as one of its arguments.  The **block** will be executed when the **declare** event of the queue creation is triggered.  It is important to wait until this event has been fired because we want to ensure that the anonymous queue has been created and the name of the anonymous queue is available to send to the RabbitMQ server.
-- **Line 15** publishes the message to the RabbitMQ server.  It is important to note the **:reply_to** and **:correlation_id** arguments that help tie the RPC calls together.  The RabbitMQ server will now know the details of the anonymous queue to send any responses to.  It is worth repeating that the **reply_to** argument specifies the name of the anonymous queue that the RabbitMQ server layer can send its responses to.
+- **Line 15** publishes the message to the RabbitMQ server.  It is important to note the **:reply_to** and **:correlation_id** arguments that help tie the RPC calls together.  The RabbitMQ server will now know the details of the anonymous queue to send any responses to.  
 
 ##The RabbitMQ RPC Server##
 So far, we have sent a message from the front end code containing any arguments required in a JSON string, we have also set up a callback queue that we can send any parsing results to and finally we have published the request message and specified the name of the anonymous response queue that we can send any results of the screen scraping to.
 
 Below is the code for the rabbitmq server in nearly all of its entirety:
 {%gist 2358775 %}
-- **Line 17** defines the Thor task that contains the RabbitMQ server code.
-- **Line 19** calls the AMQP start method that opens a connection to the RabbitMQ server.
-- **Line 22** creates the queue that will listen for request messages from the RabbitMQ server.
-- **Line 33** uses the subscribe method of the AMQP queue object takes a block as an argument that gets passed a message each time a message is published to the queue.  The block takes 2 parameters, the header which is the metadata of the message which in this case contains both the **correlation_id** and the **reply_to** details that were created in the RabbitMQ client layer and give us all the data we need to communicate any results back to the RabbitMQ client layer.
+- **Line 17** defines the Thor task that contains the RabbitMQ server code.  What I like about Thor is that a Thor task is just a plain old Ruby method defined in a ruby class that inherits from the Thor superclass.
+- **Line 19** calls the AMQP **start** method that opens a connection to the RabbitMQ server.
+- **Line 22** creates the queue that will listen for request messages from the RabbitMQ Client or websocket layer.
+- **Line 33** uses the **subscribe** method of the AMQP queue object that takes a block as an argument which gets passed a message each time a message is published to the queue.  The block takes 2 parameters, the header which is the metadata of the message and the body of the message which will be the JSON passed from the client.  The metadata header is especially important in this case because it will contain both the **correlation_id** and the **reply_to** details that were created in the RabbitMQ client layer and give us all the data we need to communicate any results back to the RabbitMQ client layer.
 -  **Line 38** creates the parser object that does the actual crawling and screenscraping.
-- **Line 40** calls the **find_potential_leads** method that takes a block and **yields** any leads found back to the block that allows me to publish any leads via the **reply_to** queue back to the websocket layer. 
+- **Line 40** calls the **find_potential_leads** method of the parser object that takes a block and **yields** any leads found back to the block that will allow me to publish any leads via the **reply_to** queue back to the websocket layer. 
 - **Line 42** serialises the result into a JSON string ready to pass back to the websocket layer.
 - **Line 45** publishes the json string back to the RabbitMQ client websocket layer by specifying the **repy_to** and **correlation_id** from the header of the incoming message.
 
@@ -84,7 +84,7 @@ I have created the RabbitMQ server process as a <a href="http://railscasts.com/e
 {%codeblock%}
 thor worker:dev:start_consumer
 {%endcodeblock%}
-I also like that Thor tasks can be defined in plain Ruby classes and each class is a plain old Ruby method.
+I also like that Thor tasks can easily accept parameters which is in stark contrast to how Rake handles parameters.
 
 ##Conclusion##
 I struggled for quite a long time to find something that fitted my needs.  My next steps are to refactor the client code to use <a href="https://github.com/sockjs/sockjs-client" target="_blank">SockJS</a> for better cross browser support.
