@@ -27,12 +27,37 @@ After a bit of digging about, I came across a messaging pattern that was a good 
 In the context of my application, this **RPC pattern** manifests itself like this:
 
 The user will submit a url to perform the search that will be sent to the websocket layer:
-{%gist 2358173%}
-The websocket layer or messaging client will send a request message to our rabbitmq messaging server that will handle the message.  
+{%gist 2358173 %}
+The above code contains and <a href="http://emberjs.com/">Ember.js</a> controller with a **start_parsing** method/action.  When the user enters a url, this method is called and am Ember **url_search** model object is created containing the url of the site to be scraped.  
 
+- On **line 3**, a new websocket connection is attempted.
+- The **onopen** event fires when a successful connection has been negotiated.  **Line 7** provides an event handler for the onopen event that transforms the **url_search** object into JSON and sends it to the websocket server.
+- On **line 12**, an **onmessage** handler is provided that the websocket layer can use to transmit any results that are found while screenscraping the site.
 
+Below is the **EM-WebSocket** server that the Ember controller listed above will communicate with:
+{%gist 2358241 %}
+- On **line 2**, we start the **EventMachine** event loop by calling the **run** method.  The event loop can be thought of an endless loop that can be stopped and started by designated events or the expiration of a timer.  Everything from line 2 onwards is the block that is passed to the run method and is executed during the lifetime of the event loop.
+- On **line 3**, the connection details for the rabbitmq server are specified (more on this later).
+- On **line 11** the WebSocket server is started via the start method.
+- **Line 14** provides an event handler for the server side **onopen** event.
+- **Line 19** is the server side onmessage event handler which will be triggered when the Ember controller of the previous gist, sends a message containing the JSON of the url search request.
+- **Line 22** calls the yet to be exposed **publish** method that will send a message request to our rabbitmq server instance.
 
+##The RabbitMQ RPC Client##
+So far, we have initiated a new websocket connection with the server and we are ready to send the message request to the rabbitmq server.
+
+I stated earlier that the RabbitMQ RPC pattern will allow the backend queue handler to communicate with the websocket layer.  The webscocket layer can be thought of as the **RabbitMQ client** and the backend queue handler can be thought of as the **RabbitMQ server**.  This layer will send a request message, which in this case is the JSON sent from the front end Ember controller that contains the **url_search** object.  In order to receive a response or responses from the server, we will need to specify a **callback** queue that the server can send messages to.  In the context of my application, the server will send data scraped from the specified web site back to the front end code that will render a new row in a table for each result found.
+
+In order to put this into context of our application, below is the code that creates a callback queue for the server to communicate with and publishes the request message to the RabbitMQ server.
+{%gist 2358396 %}
+- On **line 2**, I am creating what is well known in messaging circles as a **correlation id**.  We will use **correlation id** or unique identifier to correlate (obviously) or associate the RPC responses with the request.
+- On **line 4**, a RabbitMQ connection is made to the from the configuration hash specified in the pervious gist.
+- On **line 6**, I am creating the callback queue that the RabbitMQ server will send responses to.  The important thing to note here is that I am specifying an empty string as the first argument for the queue creation.  If you do not specify a name then an anonymous queue is created, the server will assign the queue a random name which we can use later to let the RabbitMQ server queue handler know which queue to send the RPC messages to.
+-  **Line 8** sets up the callback queue to receive messages from the RabbitMQ server.
+-  **Lines 9** to **11** contains the code that handles any message sent from the server.  **Line 11**  sends any results back the UI code which will trigger the specified **onmessage** handler.
+- On **Line 14** the **append_callback** method is called and a callback is specified in the **do** block which is defined on **line 15**.  The callback will be called when the **declare** event is fired.  We want to wait until this event has been fired because we want to ensure that the anonymous queue has been created and we have the name of the anonymous name to pass to the server.
+**Line 15** publishes the message to the RabbitMQ server.  It is important to note the **:reply_to** and **:correlation_id** arguments that help tie the RPC calls together.  The RabbitMQ server will now know the details of the anonymous queue to send any responses to.
+
+##The RabbitMQ RPC Server##
 <a href="" target="_blank"></a>
-<a href="" target="_blank"></a>
-
-
+<a href="" target="_blank"></a
