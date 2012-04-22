@@ -19,3 +19,4 @@ When a StateManger is composed of instances of ViewStates, the StateManager will
 
 My first attempts at Backbone were littered with a lot of repetitive code like the following:
 {% gist 2466780 %}
+I never feel right about criticising oss code as I know from personal experience what a huge sacrifice it is to work on an oss project but having worked with backbone for a number of months now, I do feel that there is too much boilerplate code required to glue everything together.  I have started using <a href="https://twitter.com/#!/derickbailey" target="_blank">Derick Bailey's</a> excellent <a href="https://github.com/derickbailey/backbone.marionette" target="_blank">backbone.marionette</a> recently with Backbone and you really need to use this if you are using Backbone regularly. 
