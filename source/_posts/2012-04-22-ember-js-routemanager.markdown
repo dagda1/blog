@@ -47,8 +47,9 @@ Below is how the **main** state's view and the **home** state's view look when t
 You can get quite inventive and compose reusable partial views as and when you need them. I am using the **rootView** which means I can just layer views onto the body element of the html document. 
 
 ##Routing##
-This brings us nicely to routing, as I mentioned earlier, I am using the excellent <a href="https://github.com/ghempton/ember-routemanager" target="_blank">ember-routemanager</a> addon that ties the StateManager to a routing implementation.  This addon allows to create **RouteManager** instances that derive from the now infamous Ember StateManager.  Below is a reminder of how I am extending the RouteManager:
-{% gist 2466587 %}
+This brings us nicely to routing, as I mentioned earlier, I am using the excellent <a href="https://github.com/ghempton/ember-routemanager" target="_blank">ember-routemanager</a> addon that ties the StateManager to a routing implementation.  This addon allows you to create **RouteManager** instances that derive from the now infamous Ember StateManager.  Below is a reminder of how I am extending the RouteManager:
+
+{%gist 2466587 %}
 It is worth noting that I am not creating an instance of the RouteManager but merely extending it which will allow me to create an instance on start up or create instances in my jasmine specs.
 
 What you should note from the above gist is that I am defining a **route** property on each child state object (lines 7, 12, 16 and 21).  This allows me to use a combination of the route property and the nesting of the child states to define client routes that will transition to the required states and attach and remove the views from the DOM.
@@ -71,17 +72,17 @@ All what you would expect from a routing frameworks seems covered, below is an e
 {% codeblock %}
 route: 'vault/:exerciseid'
 {% endcodeblock %}
-Setting the browser location to **#vault/5** would map to the routeparameters exercise state with an exerciseid of 5.  Wildcards and regular expressions are also covered:
+Setting the browser location to **#vault/5** would map to the vault state with an exerciseid of 5.  Wildcards and regular expressions are also covered:
 {% codeblock %}
 route: /(\d{4})-(\d{2})-(\d{2})/
 {% endcodeblock %}
 
 ##Conclusion##
-I got quite excited as I explored this approach.  This is a real productivity boom that could be further enhanced by having the route defined by convention over configuration by dynamically creating the route with respect to the state's nesting.  I see a real productivity boon with the StateManager especially with respect to my backbone.js frustrations.
+I got quite excited as I explored this approach.  This is a real productivity boom that could be further enhanced by having the **route** inferred using convention over configuration by dynamically creating the route with respect to the state's nesting.  I see a real productivity boon with the StateManager especially after my backbone.js frustrations.
 
 ##Testing the RouteManager##
 I ran into a few problems when testing the RouteManager.  Below are some initial specs that now all pass:
-{% gitst 2473697 %}
+{% gist 2473697 %}
 One of the problems I had was clearing the **rootView** property and disposing of the **RouteManager**  after each spec.  This is  solved in the **afterEach** method on lines 10 to 16 of the above gist where I am removing each view from the DOM and destroying the StateManger.
 
 Please feel free to add any comments below.
