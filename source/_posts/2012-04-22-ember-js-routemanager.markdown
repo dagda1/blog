@@ -51,4 +51,37 @@ This brings us nicely to routing, as I mentioned earlier, I am using the excelle
 {% gist 2466587 %}
 It is worth noting that I am not creating an instance of the RouteManager but merely extending it which will allow me to create an instance on start up or create instances in my jasmine specs.
 
-What you should note from the above gist is that I am defining a **route** property On each child state object (lines 7, 12, 16 and 21).  This allows me to use a combination of the route property and the nesting of the child states to define client routes that will transition to the required states and attach and remove the views from the DOM.
+What you should note from the above gist is that I am defining a **route** property on each child state object (lines 7, 12, 16 and 21).  This allows me to use a combination of the route property and the nesting of the child states to define client routes that will transition to the required states and attach and remove the views from the DOM.
+
+Below is how I create an instance of my derived **RouteManager**:
+{% codeblock %}
+@routeManager = WZ.ContentRouteManager.create()
+@routeManager.start()
+{% endcodeblock %}
+The **start** method will start the RouteManger listening for location changes.  This allows me to define routes either as the now familiar hash links:
+{% codeblock %}
+<!--Transition to the vault.new state -->
+<li><a href="#vault/new">New</a></li>
+{% endcodeblock %}
+Or I can programatically set the **location** property which is useful for testing:
+{% codeblock %}
+@routeManager.set 'location', 'vault/index'
+{% endcodeblock %}
+All what you would expect from a routing frameworks seems covered, below is an example of a route with a dynamic parameter:
+{% codeblock %}
+route: 'vault/:exerciseid'
+{% endcodeblock %}
+Setting the browser location to **#vault/5** would map to the routeparameters exercise state with an exerciseid of 5.  Wildcards and regular expressions are also covered:
+{% codeblock %}
+route: /(\d{4})-(\d{2})-(\d{2})/
+{% endcodeblock %}
+
+##Conclusion##
+I got quite excited as I explored this approach.  This is a real productivity boom that could be further enhanced by having the route defined by convention over configuration by dynamically creating the route with respect to the state's nesting.  I see a real productivity boon with the StateManager especially with respect to my backbone.js frustrations.
+
+##Testing the RouteManager##
+I ran into a few problems when testing the RouteManager.  Below are some initial specs that now all pass:
+{% gitst 2473697 %}
+One of the problems I had was clearing the **rootView** property and disposing of the **RouteManager**  after each spec.  This is  solved in the **afterEach** method on lines 10 to 16 of the above gist where I am removing each view from the DOM and destroying the StateManger.
+
+Please feel free to add any comments below.
