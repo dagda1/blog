@@ -37,10 +37,18 @@ My first attempts at Backbone were littered with a lot of repetitive code like t
 {% gist 2466780 %}
 I never feel right about criticising oss code that someone has spent a lot of time developing but having worked with backbone for a number of months now, I do feel that there is too much boilerplate code required to glue everything together.  I have started using <a href="https://twitter.com/#!/derickbailey" target="_blank">Derick Bailey's</a> excellent <a href="https://github.com/derickbailey/backbone.marionette" target="_blank">backbone.marionette</a> recently with Backbone and you really need to use this if you are using Backbone regularly. 
 
-##Nested Views##
+##Nested ViewStates##
 When ViewState objects are nested like in the example below:
 {% gist 2472193 %}
-Each state will draw into the StateManager's **rootView** property (line 2) the rootElement property if you prefer that.  In the above example, the handlebars template in the **main** state's child view object will be compiled and attached to the DOM and the handlebars template defined in the **home** state's child view object will be compiled and attached to the DOM.
+Both the StateManager's **currentState** and any child state's of the **currentState** will draw into the StateManager's **rootView** property (line 2).  In the above example, the handlebars template in the **main** state's child view object will be compiled and attached to the DOM and the handlebars template defined in the **home** state's child view object will be compiled and attached to the DOM.
 
-Below is how the **main** state's view and the **home** state's view look when they are rendered on the browser:
+Below is how the **main** state's view and the **home** state's view look when they are rendered onto the browser:
 {%img /images/ember/mainview.png%}
+You can get quite inventive and compose reusable partial views as and when you need them. I am using the **rootView** which means I can just layer views onto the body element of the html document. 
+
+##Routing##
+This brings us nicely to routing, as I mentioned earlier, I am using the excellent <a href="https://github.com/ghempton/ember-routemanager" target="_blank">ember-routemanager</a> addon that ties the StateManager to a routing implementation.  This addon allows to create **RouteManager** instances that derive from the now infamous Ember StateManager.  Below is a reminder of how I am extending the RouteManager:
+{% gist 2466587 %}
+It is worth noting that I am not creating an instance of the RouteManager but merely extending it which will allow me to create an instance on start up or create instances in my jasmine specs.
+
+What you should note from the above gist is that I am defining a **route** property On each child state object (lines 7, 12, 16 and 21).  This allows me to use a combination of the route property and the nesting of the child states to define client routes that will transition to the required states and attach and remove the views from the DOM.
