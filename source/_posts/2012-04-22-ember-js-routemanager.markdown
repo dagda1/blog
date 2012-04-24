@@ -18,7 +18,7 @@ Let us flesh this out with some code.  Below is a StateManager that I am current
 
 An **Ember.ViewState** object extends **Ember.State** and as the name suggests, **Ember.View** objects are associated with the **Ember.ViewState** .  All child state objects in the above example are **ViewState** state objects and each **view** has a **templateName** property that is a relative path to a <a href="http://www.handlebarsjs.com" target="_blank">handlebars</a> template.  
 
-Anybody from a .NET background will wince at the name ViewState but I can assure you, there is no connnection whatsoever. 
+Anybody from a .NET background will wince at the name ViewState but I can assure you, there is no connection whatsoever. 
 
 When a StateManger is composed of instances of **ViewState** objects, the StateManager will interact with Ember's view system and manage which views are added and removed from the DOM based on the StateManager's current state.  One way of transitioning between states is to invoke the **goToState** method:
 {% codeblock %}
@@ -31,7 +31,7 @@ The above example will transition to the **index** state which is a child of the
 
 The StateManager can also receive and route **action** messages to its states via the **send** message, which you can read about in the <a href="http://docs.emberjs.com/#doc=Ember.StateManager&src=false" target="_blank">Ember docs</a>.
 
-I find the StateManager a very elegant solution that is bereft of tedious boilerplate code.  This is in stark contrast to Backbone.js where the user is left with both the architectural decision and the execution of how this should take place.  I mentioned one such solution in my <a href="http://www.thesoftwaresimpleton.com/blog/2011/11/13/backbone-js---lessons-learned/" target="_blank">Backbone.js - Lessons learned</a> post.
+I find the StateManager to be a very elegant solution that is bereft of tedious boilerplate code.  This is in stark contrast to Backbone.js where the user is left with both the architectural decision and the execution of how this should take place.  I mentioned one such solution in my <a href="http://www.thesoftwaresimpleton.com/blog/2011/11/13/backbone-js---lessons-learned/" target="_blank">Backbone.js - Lessons learned</a> post.
 
 My first attempts at Backbone were littered with a lot of repetitive code like the following:
 {% gist 2466780 %}
