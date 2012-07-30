@@ -1,7 +1,46 @@
 ---
 layout: post
-title: ""Spa1""
+title: "Backbone and Ember in the non-Todo world - Part 1 -Legacy Applications"
 date: 2012-07-16 05:54
 comments: true
-categories: 
+categories: JavaScript Ember Backbone.js
 ---
+I've been working pretty much non stop with <a href="http://documentcloud.github.com/backbone/" target="_blank">Backbone.js</a> and <a target="_blank" href="http://emberjs.com/">Ember.js</a> for about a year now and I thought it might be useful to write down some notes about my experiences.
+
+Another motivating factor for writing this post is that at this time of
+writing, a lot of the information on the web about backbone and ember deals with bog standard and
+simple todo applications.  There is even a <a target="_blank" href="http://addyosmani.github.com/todomvc/">web site</a> that has a todo application implementation
+for most of the js mv* frameworks out there.  I do not want to knock these
+  posts or the people who sacrificed their spare time creating them but I want to
+  inject some real world pragmatism about what can and does go wrong when
+  applying these techniques to large datasets that are often retrieved from
+  disparate and curious places.  Add in some real time and memory management problems into the
+  mix and you are going to be left lying sleepless in bed with it all washing
+  over your brain.  At least, I was.
+
+##Gotcha 1 - I never, ever, ever, ever, ever, ever work on new applications##
+I am a freelancer and it must be at least 5 years since I got paid for working
+on a green field project.  In fact I don't think I ever start work on something that is going
+well. You rarely need a hired gun when there are no bandits in town.
+
+Even the Ember websites I have worked on are existing applications.  
+###Your single page application does not have to be a single page application###
+There is nothing in the SPA (Single Page Application) rule book that says you
+have to go 100%.  In one application I have worked on recently, I refactored
+from a more traditional website to replacing certain pages with separate
+backbone applications.  I did not use any backbone routing whatsoever and the
+application still posted back to the server for page navigation.
+
+It is worth noting that I have not taken this approach with ember.js.  I am still sure it is possible but I think backbone.js is a better fit
+for refactoring pages or parts of a page to js mv*.
+
+I want to take part of this refactoring as a point in case to illustrate how I was able to add backbone to part of an existing page.
+In this example, I did not even rewrite the entire page, I was able to add backbone to a new tab on a new page.  Thankfully the existing applicaiton
+ was an ajax/jquery aware page.  Below is the new tab that was added to the application.
+
+
+
+
+
+
+
