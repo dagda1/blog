@@ -1,0 +1,62 @@
+---
+layout: post
+title: "Backbone and Ember in the non-Todo world - Part 2 - Backbone Marionette"
+date: 2012-07-31 05:44
+comments: true
+categories: JavaScript Ember Backbone.js
+---
+Like many, my first foray into the javascript mv* world was with <a href="http://documentcloud.github.com/backbone/" target="_blank">Backbone.js</a>
+ and also like many, I got it completely wrong the first time round.  My mindset was
+still very much stuck in the mode of holding state in the DOM with data
+attributes and the like.  My views were tightly coupled and the resulting code
+was merely a thin veneer over JQuery.  On the other side however, I was
+instantly enamoured with the organisational patterns and logical
+abstractions of models, collections and views that backbone brought to the table.
+
+Shortly after that, I discovered coffeescript and javascript suddenly took on a
+degree of order that I was unused to.  On I plodded until I had my first
+realisation and that was that I was writing even more code than previously when
+I maniupulating the DOM directly.  I was writing a lot of repetitive code like
+this:
+{% codeblock%}
+render: =>
+  childViews = []
+  @collection.each (model) =>
+    childView = new ReportItemView({model: model})
+    childViews.push(childView.render().el)
+
+  $(@el).append(childViews)
+  @
+{%endcodeblock%}
+All the above code is doing is iterating over this particular backbone view's collection and
+creating new child views that are attached to the parent view's DOM element.
+This quickly gets tedious in the extreme but what is also not entirely evident
+or at least it was not to me is that everytime we execute this render method,
+we are keep adding views into memory.  Backbone does not or at least it does
+not at this time of writing have a dispose method on its views.  I did come up
+with a workaround which I mentioned in an earlier <a target="_blank" href="http://www.thesoftwaresimpleton.com/blog/2011/11/13/backbone-js---lessons-learned/">post</a>.
+
+What became obvious after a while was that backbone was leaving far too many
+choices up to the developer.  It felt more like a framework base than an actual
+framework.  At this point I discovered ember and quickly fell in love but I had
+too much backbone code in the wild to refactor to ember but I then discovered <a href="https://twitter.com/#!/derickbailey" target="_blank">Derick Bailey's</a> excellent <a href="https://github.com/derickbailey/backbone.marionette" target="_blank">backbone.marionette</a>.
+
+I'd been a keen reader of Derick's <a href="http://lostechies.com/derickbailey/">blog</a> for some time so choosing marionette was a no brainer.
+
+I will now list in no particular order how backbone.marionette fills in the missing
+gap:
+
+##Template Cache##
+If you are using Backbone out of the box then you are either need to roll your own
+tempate manager or you are going to have to incur the compiling penalty every time you use the template.
+  If you are not managing your backbone templates and recompiling client side
+  everytime then please stop now.  There is a significant overhead in doing this and
+  it is a very quick win.  
+
+  Below is the code from backbone.marionette that ensures that the template is only
+  loaded once:
+{% gist 3224350 %}
+##The end of tedious boilerplate code##
+
+
+
