@@ -56,7 +56,49 @@ tempate manager or you are going to have to incur the compiling penalty every ti
   Below is the code from backbone.marionette that ensures that the template is only
   loaded once:
 {% gist 3224350 %}
-##The end of tedious boilerplate code##
+The above code uses a familiar javascript caching strategy.  I believer there are
+some initiatives to compile client side templates on the server.
+##Composite Application Architecture##
+The problem with backbone is that everything is a view containing a view, containing a
+view.  It is hard for the mind to grasp this generic abstraction when things get
+more detailed.  
 
-
-
+This is best illustrated with an example of what I have been working on recently.
+Below is a screenshot of a windows explorer like application that segrates the page into the folder structure
+on the left and the individual file detail of the parent folder on the right.
+{%img /images/spa/bbox.png%}
+The first useful abstraction is the layout.  Anybody familiar with MVC frameworks
+will be familiar with layouts.  Layouts are the whole picture or everything.  Child
+views or regions are subsections of the layout.  In this example, the layout
+encompasses both the folder structure on the left and the individual files for that
+folder structure on the right.  Below is the code for the above layout:
+{% gist 3233594 %}
+- On **line 1** of the above gist, a new backbone.marionette module is created that adds a
+bit of encapsulation and behaves pretty much like the revealing module pattern.
+- On **line 2**, a private **Layout** variable is created that acts as a pointer to
+  the Backbone Marionette **Layout** definition.  You should note that extend is
+  used here instead of create.  We have not created the layout instance yet, we have
+  only created the definition.
+- On lines **5 to 8**, 2 backbone.marionette regions are specified.  A
+  Backbone.marionette region is used to define visual regions of your application.
+  Each region is defined with a JQuery selector and in the above example, a treeview
+  region is created for the left pain and a documents region is created for the
+  right pain.
+- On **line 10** the events has is created for the 2 buttons on the page that deal
+  with creating a new folder or adding a new file.
+- On **line 24** an **addInitializer** callback is added.  These initializers get
+  fired by the backbone.marionette runtime when the backbone.marionette application
+  gets created and is bound to the application object.
+- **Line 25** creates an instance of the layout that was defined on **line 2**.
+- **Line 27** defines a handler for the backbone.marionette **show** event that is
+  fired after a view is rendered.  A backbone.marionette layout, extends a
+  marionette view.
+- On **LIne 28** we fire an event named **layout:rendered** that other subscribers
+  can subscribe.  An example of such a subscriber is below where I initialise the
+  treeview.  I need to wait until the layout has been added to the DOM in order for
+  this to act correctly:
+  {% codeblock %}
+DocumentManager.vent.on("layout:rendered", function(){
+  $('#explorer').treeview({collapsed: false});
+});
+  {% endcodeblock %}
