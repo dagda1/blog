@@ -7,7 +7,7 @@ categories: JavaScript Ember Backbone.js
 ---
 Like many, my first foray into the javascript mv* world was with <a href="http://documentcloud.github.com/backbone/" target="_blank">Backbone.js</a>
  and also like many, I got it completely wrong the first time round.  My mindset was
-still very much stuck in the mode of holding state in the DOM with data
+still very much stuck in the mode of holding state in the DOM with the use of data
 attributes and the like.  My views were tightly coupled and the resulting code
 was merely a thin veneer over JQuery.  On the other side however, I was
 instantly enamoured with the organisational patterns and logical
@@ -15,33 +15,41 @@ abstractions of models, collections and views that backbone brought to the table
 
 Shortly after that, I discovered coffeescript and javascript suddenly took on a
 degree of order that I was unused to.  On I plodded until I had my first
-realisation and that was that I was writing even more code than previously when
-I maniupulating the DOM directly.  I was writing a lot of repetitive code like
+realisation and that was that I was writing even more code than I had previously when
+I was maniupulating the DOM directly with jQuery.  I was writing a lot of repetitive code like
 this:
 {% codeblock%}
-render: =>
-  childViews = []
-  @collection.each (model) =>
-    childView = new ReportItemView({model: model})
-    childViews.push(childView.render().el)
+ParentView = Backbone.View.extend
+  @template = _.template($('#template_id').html())
+  render: =>
+    childViews = []
+    @collection.each (model) =>
+      childView = new ReportItemView({model: model})
+      childViews.push(childView.render().el)
 
-  $(@el).append(childViews)
-  @
+    $(@el).append(childViews)
+    @
 {%endcodeblock%}
 All the above code is doing is iterating over this particular backbone view's collection and
-creating new child views that are attached to the parent view's DOM element.
-This quickly gets tedious in the extreme but what is also not entirely evident
-or at least it was not to me is that everytime we execute this render method,
-we are keep adding views into memory.  Backbone does not or at least it does
-not at this time of writing have a dispose method on its views.  I did come up
-with a workaround which I mentioned in an earlier <a target="_blank" href="http://www.thesoftwaresimpleton.com/blog/2011/11/13/backbone-js---lessons-learned/">post</a>.
+creating new child views that are attached to the parent view's DOM element. The
+above code is displaying a whole world of wrong. If
+your backbone code is littered with lots of the above code then I think it is safe
+to say that you are doing it wrong or you are somebody who likes writing lots of
+repetitive code.
 
 What became obvious after a while was that backbone was leaving far too many
 choices up to the developer.  It felt more like a framework base than an actual
 framework.  At this point I discovered ember and quickly fell in love but I had
-too much backbone code in the wild to refactor to ember but I then discovered <a href="https://twitter.com/#!/derickbailey" target="_blank">Derick Bailey's</a> excellent <a href="https://github.com/derickbailey/backbone.marionette" target="_blank">backbone.marionette</a>.
+too much backbone code in the wild to refactor to ember.
 
-I'd been a keen reader of Derick's <a href="http://lostechies.com/derickbailey/">blog</a> for some time so choosing marionette was a no brainer.
+I'd been a keen reader of Derick Bailey's <a href="http://lostechies.com/derickbailey/">blog</a> for some 
+time and it turned out that he had his own framework built on top of backbone called 
+ <a href="https://github.com/derickbailey/backbone.marionette" target="_blank">backbone.marionette</a>.
+
+Backbone.Marionette grandly calls itself a composite application architecture which
+means it is a serious of smaller building blocks that you can pick and choose from
+to help you solve the problem at hand.  What backbone marionette gave me was the
+missing bits of backbone that I did not have to write myself.
 
 I will now list in no particular order how backbone.marionette fills in the missing
 gap:
@@ -51,14 +59,14 @@ If you are using Backbone out of the box then you are either need to roll your o
 tempate manager or you are going to have to incur the compiling penalty every time you use the template.
   If you are not managing your backbone templates and recompiling client side
   everytime then please stop now.  There is a significant overhead in doing this and
-  it is a very quick win.  
+  this is a very quick win.  
 
   Below is the code from backbone.marionette that ensures that the template is only
   loaded once:
 {% gist 3224350 %}
-The above code uses a familiar javascript caching strategy.  I believer there are
-some initiatives to compile client side templates on the server.
-##Composite Application Architecture##
+The above code uses a familiar javascript caching strategy of using javascript's
+hashtable like ability to check if the template is already in memory. 
+##Better View Abstractions##
 The problem with backbone is that everything is a view containing a view, containing a
 view.  It is hard for the mind to grasp this generic abstraction when things get
 more detailed.  
@@ -68,10 +76,11 @@ Below is a screenshot of a windows explorer like application that segrates the p
 on the left and the individual file detail of the parent folder on the right.
 {%img /images/spa/bbox.png%}
 The first useful abstraction is the layout.  Anybody familiar with MVC frameworks
-will be familiar with layouts.  Layouts are the whole picture or everything.  Child
+will  instantly know what a layout is or you may have known them as master pages in .NET.  
+Layouts are the whole picture or everything.  Child
 views or regions are subsections of the layout.  In this example, the layout
-encompasses both the folder structure on the left and the individual files for that
-folder structure on the right.  Below is the code for the above layout:
+encompasses both the folder structure on the left and the individual files for the
+selected folder structure on the right.  Below is the code for the above layout:
 {% gist 3233594 %}
 - On **line 1** of the above gist, a new backbone.marionette module is created that adds a
 bit of encapsulation and behaves pretty much like the revealing module pattern.
@@ -102,3 +111,11 @@ DocumentManager.vent.on("layout:rendered", function(){
   $('#explorer').treeview({collapsed: false});
 });
   {% endcodeblock %}
+##CompositeView and ItemView##
+Backbone.Marionette contains a cure for the horrible tightly coupled looping code I
+showed at the start of this post.  Backbone marionette comes with a mechanisim for
+defining
+##Event Aggregator##
+An event aggregator is an application level pub/sub mechanism that allows various
+pieces of an otherwise segmented and disconnected system to communicate with each
+other.
