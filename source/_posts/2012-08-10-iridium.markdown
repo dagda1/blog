@@ -1,0 +1,30 @@
+---
+layout: post
+title: "Iridium - a toolchain for javascript development'"
+date: 2012-08-10 10:31
+comments: true
+categories: JavaScript Ember
+---
+I want to give a shout out to a very new and very interesting project called
+<a target="_blank" href="https://github.com/radiumsoftware/iridium/">iridium</a> from 
+<a target="_blank" href="https://twitter.com/adman65">Adam Hawkins</a> who blogs at
+ <a target="_blank" href="http://www.broadcastingadam.com/">BroadcastingAdam</a>.
+
+With more and more of the application finding its way onto the client in the form of
+javascript or coffeescript, there is
+now a clear separation between between this frontend end code and the backend server code that
+now concerns itself with serving up JSON through a solid API.  Gone are the days when
+client side code and server side code live side by side in your monolithic project
+structure.  It makes more and more practical sense to segregate the two distinct layers
+into two orthogonal projects evolve at
+their own pace.  Projects like <a href="sinonjs.org" target="_blank">sinon.js</a>
+allows us to stub out API calls that are not available or write resource free specs.
+
+<a target="_blank" href="https://github.com/radiumsoftware/iridium/">Iridium</a> aims
+to add some much needed tooling to the front end project space and sets out with the
+following goals:
+- CLI driven interactions
+- Expose as little Ruby as possible
+- Focus on JS/CSS/HTML
+- Make JS testable
+
