@@ -10,21 +10,39 @@ I want to give a shout out to a very new and very interesting project called
 <a target="_blank" href="https://twitter.com/adman65">Adam Hawkins</a> who blogs at
  <a target="_blank" href="http://www.broadcastingadam.com/">BroadcastingAdam</a>.
 
-With more and more of the application finding its way onto the client in the form of
+With more and more of the application finding its way into the client in the form of
 javascript or coffeescript, there is
-now a clear separation between between this frontend end code and the backend server code that
+now a clear separation between between the   frontend end code and the backend server code that
 now concerns itself with serving up JSON through a solid API.  Gone are the days when
 client side code and server side code live side by side in your monolithic project
 structure.  It makes more and more practical sense to segregate the two distinct layers
-into two orthogonal projects evolve at
+into two orthogonal projects that evolve at
 their own pace.  Projects like <a href="sinonjs.org" target="_blank">sinon.js</a>
-allows us to stub out API calls that are not available or write resource free specs.
+provides a means to stub out the API calls that are not available or write resource some free specs.
 
 <a target="_blank" href="https://github.com/radiumsoftware/iridium/">Iridium</a> aims
 to add some much needed tooling to the front end project space and sets out with the
-following goals:
+following goals:-
+
 - CLI driven interactions
 - Expose as little Ruby as possible
 - Focus on JS/CSS/HTML
 - Make JS testable
 
+Anybody from a rails background is comfortable with running particular flavours of
+test suites (unit/integration/functional) via rake's friendly command line interface so being
+able to do the same with iridium is a big win.
+
+##First Steps##
+The first thing to do to get up and running is to add the following entries to an existing project's Gemfile or create a new Gemfile in the root of a new project:
+{% gist 3313904 %}
+A quick **bundle install** will install the specified gems and then you can start using iridium.
+
+The first thing to do is to generate the project structure which is achieved with the following command:
+{% codeblock %}
+bundle exec iridium app .
+{% endcodeblock %}
+This command will create the following output:
+{% blockquote %}
+
+{% endblockquote %}
