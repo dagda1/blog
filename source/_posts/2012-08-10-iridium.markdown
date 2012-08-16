@@ -10,16 +10,18 @@ I want to give a shout out to a very new and very interesting project called
 <a target="_blank" href="https://twitter.com/adman65">Adam Hawkins</a> who blogs at
  <a target="_blank" href="http://www.broadcastingadam.com/">BroadcastingAdam</a>.
 
+##Problen 1##
 With more and more of the application finding its way into the client in the form of
 javascript or coffeescript, there is
-now a clear separation between between the   frontend end code and the backend server code that
-now concerns itself with serving up JSON through a solid API.  Gone are the days when
-client side code and server side code live side by side in your monolithic project
-structure.  It makes more and more practical sense to segregate the two distinct layers
-into two orthogonal projects that evolve at
-their own pace.  Projects like <a href="sinonjs.org" target="_blank">sinon.js</a>
-provides a means to stub out the API calls that are not available or write resource some free specs.
+now a need to make a clear separation between between the frontend end client code and the backend server code.  With Gems like the <a href="https://github.com/spastorino/rails-api" target="_blank">rails-api</a> gem negating the need for any UI being served from the backend server, there is a need for a new type of project.
 
+Gone are the days when client side code and server side code lived side by side in a one size fits all monolithic project
+structure.  Good practice dictates that you should segregate these two distinct layers
+into two orthogonal projects that can evolve at their own pace.
+
+Rails brought conformity to the mvc pattern by creating a guaranteed project structure for every rails project.  Wouldn't it be nice if we could bring some order to the new breed of client side only project?
+
+##The Solution##
 <a target="_blank" href="https://github.com/radiumsoftware/iridium/">Iridium</a> aims
 to add some much needed tooling to the front end project space and sets out with the
 following goals:-
@@ -29,12 +31,10 @@ following goals:-
 - Focus on JS/CSS/HTML
 - Make JS testable
 
-Anybody from a rails background is comfortable with running particular flavours of
-test suites (unit/integration/functional) via rake's friendly command line interface so being
-able to do the same with iridium is a big win.
+###First Steps###
+The first thing to do is to ensure that you have <a href="http://casperjs.org/" target="_blank">casperjs</a> installed.  Casperjs is what iridium uses as its integration test framework.  Full details can be found <a href="http://casperjs.org/installation.html" target="_blank">here</a>.  I personally used homebrew to install casperjs.
 
-##First Steps##
-The first thing to do to get up and running is to add the following entries to an existing project's Gemfile or create a new Gemfile in the root of a new project:
+Next, you need to add the following entries to an existing project's Gemfile or create a new Gemfile in the root of a new project:
 {% gist 3313904 %}
 A quick **bundle install** will install the specified gems and then you can start using iridium.
 
@@ -44,5 +44,46 @@ bundle exec iridium app .
 {% endcodeblock %}
 This command will create the following output:
 {% blockquote %}
-
+  create  app
+  create  app/images
+  create  app/javascripts/app.coffee
+  create  app/javascripts/boot.coffee
+  create  app/javascripts/controllers
+  create  app/javascripts/models
+  create  app/javascripts/templates
+  create  app/javascripts/views
+  create  app/public
+  create  app/stylesheets/app.scss
+  create  app/vendor/javascripts
+  create  app/vendor/stylesheets
+  create  site
+  create  test
+  create  test/controllers
+  create  test/helper.coffee
+  create  test/integration/navigation_test.coffee
+  create  test/models
+  create  test/support/qunit.js
+  create  test/support/sinon.js
+  create  test/templates
+  create  test/unit/truth_test.coffee
+  create  test/views
+  create  application.rb
+  create  readme.md
 {% endblockquote %}
+
+Not only can we now guarantee where everything in our client project lives but iridium has also provided some smart defaults for us:
+
+- We will be using <a href="http://sass-lang.com/" target="_blank">SASS</a> as our css framework and an app.scss file is created in app/stylesheets/app.scss.
+- We will be testing and we will be writing unit and integration tests.  This is why the folders have been created and we must use them.
+- We will be using <a href="" target="_blank">QUnit</a> for unit tests.
+- We will be using <a href="" target="_blank">Casperjs</a> for integration tests.
+  
+##Problem 2##
+The rise of the client side MV* framework and the proliferation of code on the client has made the call test 
+
+Anybody from a rails background will be comfortable with running particular flavours of
+test suites (unit/integration/functional) via rake's uniform command line interface.
+  Iridium gives you the same capabilities and makes the clear distinction between unit tests and integration tests.
+  
+Projects like <a href="sinonjs.org" target="_blank">sinon.js</a> or <a href="https://github.com/appendto/jquery-mockjax/" target="_blank">jquery-mockajax</a>
+  provide a means to stub out or mock the server side the API calls that are either not yet available or not applicable for writing resource free unit tests.
