@@ -8,19 +8,16 @@ categories: JavaScript Ember
 I want to give a shout out to a very new and very interesting project called
 <a target="_blank" href="https://github.com/radiumsoftware/iridium/">iridium</a> from 
 <a target="_blank" href="https://twitter.com/adman65">Adam Hawkins</a> who blogs at
- <a target="_blank" href="http://www.broadcastingadam.com/">BroadcastingAdam</a>.
+ <a target="_blank" href="http://www.broadcastingadam.com/">BroadcastingAdam</a>.  Iridium aims to provide some much needed tooling to the new front end javascript/coffeescript project type that is popularised by the javascript mv* space.
 
-##Problen 1##
-With more and more of the application finding its way into the client in the form of
-javascript or coffeescript, there is
-now a need to make a clear separation between between the frontend end client code and the backend server code.  With Gems like the <a href="https://github.com/spastorino/rails-api" target="_blank">rails-api</a> gem negating the need for any UI being served from the backend server, there is a need for a new type of project.
+##Problem 1 - Lack of Front End Project Structure##
+With more and more of the application code finding its way onto the client in the form of
+javascript or coffeescript, there is now a need to make a clear separation between between the front end client code and the backend server code.  With Gems like the <a href="https://github.com/spastorino/rails-api" target="_blank">rails-api</a> gem stripping away the cruft that is associated with serving html from a rails application, wouldn't it be nice if you could spin up a new javascript/coffeescript project in just a few keystrokes?
 
-Gone are the days when client side code and server side code lived side by side in a one size fits all monolithic project
-structure.  Good practice dictates that you should segregate these two distinct layers
+Gone are the days (I wish) when client side code and server side code lived side by side in a one size fits all monolithic project structure.  Good practice dictates that you should segregate these two distinct layers
 into two orthogonal projects that can evolve at their own pace.
 
 Rails brought conformity to the mvc pattern by creating a guaranteed project structure for every rails project.  Wouldn't it be nice if we could bring some order to the new breed of client side only project?
-
 ##The Solution##
 <a target="_blank" href="https://github.com/radiumsoftware/iridium/">Iridium</a> aims
 to add some much needed tooling to the front end project space and sets out with the
@@ -38,37 +35,40 @@ Next, you need to add the following entries to an existing project's Gemfile or 
 {% gist 3313904 %}
 A quick **bundle install** will install the specified gems and then you can start using iridium.
 
-The first thing to do is to generate the project structure which is achieved with the following command:
+Iridium solves the first problem by allowing me to spin up a new client side project with a lot of the initial decision making made for me.
+
+I can be up and running by simply entering the following command while in the project directory.
 {% codeblock %}
 bundle exec iridium app .
 {% endcodeblock %}
-This command will create the following output:
+The above command will create the following output:
 {% blockquote %}
-  create  app
-  create  app/images
-  create  app/javascripts/app.coffee
-  create  app/javascripts/boot.coffee
-  create  app/javascripts/controllers
-  create  app/javascripts/models
-  create  app/javascripts/templates
-  create  app/javascripts/views
-  create  app/public
-  create  app/stylesheets/app.scss
-  create  app/vendor/javascripts
-  create  app/vendor/stylesheets
-  create  site
-  create  test
-  create  test/controllers
-  create  test/helper.coffee
-  create  test/integration/navigation_test.coffee
-  create  test/models
-  create  test/support/qunit.js
-  create  test/support/sinon.js
-  create  test/templates
-  create  test/unit/truth_test.coffee
-  create  test/views
-  create  application.rb
-  create  readme.md
+create  app
+      create  app/images
+      create  app/javascripts/app.coffee
+      create  app/javascripts/boot.coffee
+      create  app/javascripts/controllers
+      create  app/javascripts/models
+      create  app/javascripts/templates
+      create  app/javascripts/views
+      create  app/public
+      create  app/stylesheets/app.scss
+      create  app/vendor/javascripts
+      create  app/vendor/stylesheets
+      create  site
+      create  test
+      create  test/controllers
+      create  test/helper.coffee
+      create  test/integration/navigation_test.coffee
+      create  test/models
+      create  test/support/qunit.js
+      create  test/support/sinon.js
+      create  test/templates
+      create  test/unit/truth_test.coffee
+      create  test/views
+      create  application.rb
+      create  readme.md
+      create  .gitignore
 {% endblockquote %}
 
 Not only can we now guarantee where everything in our client project lives but iridium has also provided some smart defaults for us:
@@ -77,7 +77,12 @@ Not only can we now guarantee where everything in our client project lives but i
 - We will be testing and we will be writing unit and integration tests.  This is why the folders have been created and we must use them.
 - We will be using <a href="" target="_blank">QUnit</a> for unit tests.
 - We will be using <a href="" target="_blank">Casperjs</a> for integration tests.
-  
+- The <a href="http://rubydoc.info/github/livingsocial/rake-pipeline/master/file/README.yard" target="_blank">Rake-pipeline</a> is used for javascript loading and for packaging assets for deployment.
+
+###The Case for Rake-Pipeline###
+
+The rake-pipeline is a better fit for single page applications than an asynchronous module loader like <a herf="http://requirejs.org/" target="_blank">requirejs</a> because it bundles all your dependencies and individual files into a single script.  Rails does all this concatenation and minification transparently behind the scenes without you having to do anything at all.  Using the rails asset pipeline eases rolling deployment for you because in development scripts are all served as individual files without minification and in production scripts are served as minified and concatenated.
+
 ##Problem 2##
 The rise of the client side MV* framework and the proliferation of code on the client has made the call test 
 
