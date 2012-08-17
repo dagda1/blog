@@ -10,12 +10,11 @@ I want to give a shout out to a very new and very interesting project called
 <a target="_blank" href="https://twitter.com/adman65">Adam Hawkins</a> who blogs at
  <a target="_blank" href="http://www.broadcastingadam.com/">BroadcastingAdam</a>.  Iridium aims to provide some much needed tooling to the new front end javascript/coffeescript project type that is popularised by the javascript mv* space.
 
-##Problem 1 - Lack of Front End Project Structure##
 With more and more of the application code finding its way onto the client in the form of
-javascript or coffeescript, there is now a need to make a clear separation between between the front end client code and the backend server code.  With Gems like the <a href="https://github.com/spastorino/rails-api" target="_blank">rails-api</a> gem stripping away the cruft that is associated with serving html from a rails application, wouldn't it be nice if you could spin up a new javascript/coffeescript project in just a few keystrokes?
-
+javascript or coffeescript, there is a necessity to make a clear separation between between the front end client code and the backend server code.  With Gems like the <a href="https://github.com/spastorino/rails-api" target="_blank">rails-api</a> gem stripping away all the cruft that is associated with serving html from a rails application, wouldn't it be nice if you could spin up a new javascript/coffeescript project with just a few keystrokes?
+##Problem 1 - Lack of Front End Project Guidance##
 Gone are the days (I wish) when client side code and server side code lived side by side in a one size fits all monolithic project structure.  Good practice dictates that you should segregate these two distinct layers
-into two orthogonal projects that can evolve at their own pace.
+into two (or more) orthogonal projects that can evolve at their own pace.
 
 Rails brought conformity to the mvc pattern by creating a guaranteed project structure for every rails project.  Wouldn't it be nice if we could bring some order to the new breed of client side only project?
 ##The Solution##
@@ -29,13 +28,13 @@ following goals:-
 - Make JS testable
 
 ###First Steps###
-The first thing to do is to ensure that you have <a href="http://casperjs.org/" target="_blank">casperjs</a> installed.  Casperjs is what iridium uses as its integration test framework.  Full details can be found <a href="http://casperjs.org/installation.html" target="_blank">here</a>.  I personally used homebrew to install casperjs.
+The first thing to do is to ensure that you have <a href="http://casperjs.org/" target="_blank">casperjs</a> installed.  Casperjs is what iridium uses as its integration test framework.  Full installation details can be found <a href="http://casperjs.org/installation.html" target="_blank">here</a>.  I personally used homebrew to install casperjs.
 
 Next, you need to add the following entries to an existing project's Gemfile or create a new Gemfile in the root of a new project:
 {% gist 3313904 %}
 A quick **bundle install** will install the specified gems and then you can start using iridium.
 
-Iridium solves the first problem by allowing me to spin up a new client side project with a lot of the initial decision making made for me.
+Iridium solves the first problem by allowing me to spin up a new client side project with most of the initial decision making made for me.
 
 I can be up and running by simply entering the following command while in the project directory.
 {% codeblock %}
@@ -73,18 +72,19 @@ create  app
 
 Not only can we now guarantee where everything in our client project lives but iridium has also provided some smart defaults for us:
 
-- We will be using <a href="http://sass-lang.com/" target="_blank">SASS</a> as our css framework and an app.scss file is created in app/stylesheets/app.scss.
+- We will be using <a href="http://sass-lang.com/" target="_blank">SASS</a> as the css framework of choice and an **app.scss** file is created in **app/stylesheets/app.scss**.
 - We will be testing and we will be writing unit and integration tests.  This is why the folders have been created and we must use them.
-- We will be using <a href="" target="_blank">QUnit</a> for unit tests.
-- We will be using <a href="" target="_blank">Casperjs</a> for integration tests.
+- We will be using <a href="http://qunitjs.com/" target="_blank">QUnit</a> for unit tests.
+- We will be using <a href="http://casperjs.org/" target="_blank">Casperjs</a> for integration tests.  Integration tests are often overlooked in the front end world.
+- I will be using sinon.js to mock or stub out any async. calls when unit testing.
 - The <a href="http://rubydoc.info/github/livingsocial/rake-pipeline/master/file/README.yard" target="_blank">Rake-pipeline</a> is used for javascript loading and for packaging assets for deployment.
 
 ###The Case for Rake-Pipeline###
 
-The rake-pipeline is a better fit for single page applications than an asynchronous module loader like <a herf="http://requirejs.org/" target="_blank">requirejs</a> because it bundles all your dependencies and individual files into a single script.  Rails does all this concatenation and minification transparently behind the scenes without you having to do anything at all.  Using the rails asset pipeline eases rolling deployment for you because in development scripts are all served as individual files without minification and in production scripts are served as minified and concatenated.
+The rake-pipeline is a better fit for single page applications than an asynchronous module loader like <a herf="http://requirejs.org/" target="_blank">requirejs</a> because it bundles all your dependencies and individual files into a single script.  Rails does all this concatenation and minification transparently behind the scenes without you having to do anything at all.  Using the rails asset pipeline eases rolling deployment for you because while in development scripts are served as individual files without minification and in production scripts are served as minified and concatenated.
 
-##Problem 2##
-The rise of the client side MV* framework and the proliferation of code on the client has made the call test 
+##Problem 2 - Testing the client code##
+The rise of the client side MV* framework and the proliferation of code on the client has made the call test, a more important one than ever.  The tide does appear to be turning on testing client code with the rise of important testing frameworks like <a href="http://pivotal.github.com/jasmine/" target="_blank">Jasmine</a> and <a href="http://qunitjs.com/" target="_blank">QUnit</a> but adoption of this practice could be better.  Part of the difficulty is getting set up.  Why should I have to concern myself with wiring everything together, every time I start a new project.  Anybody who initially wrestled with Jasmine and the rails asset pipeline will know exactly what I mean when by **wrestling**.
 
 Anybody from a rails background will be comfortable with running particular flavours of
 test suites (unit/integration/functional) via rake's uniform command line interface.
