@@ -127,8 +127,20 @@ require 'application/app'
 Application.initialize()
 {%endcodeblock%}
 ###Index.html###
-**index.html** is an annoying part of web development. You cannot start or serve your application without an HTML page to load your JS. Iridium has a built in index.html which loads your assets and dependencies. This will work for most simple applications. You can override this by providing your own index.html in public. You can create the file yourself or use a generator. The generator creates a file that does the same thing as the bundled index.html.
+**index.html** is an annoying part of web development. You cannot start or serve your application without an HTML page to load your JS. Iridium has a built in index.html which loads your assets and dependencies. This will work for most simple applications. You can override this by providing your own index.html in public. 
 
+Once you have generated your application, you can run the built in development server like so:
+{%codeblock%}
+bundle exec iridium server
+{%endcodeblock%}
+Which will give you the following output:
+{%blockquote%}
+$ cd application
+$ iridium server
+>> Thin web server (v1.4.1 codename Chromeo)
+>> Maximum connections set to 1024
+>> Listening on 0.0.0.0:9292, CTRL+C to stop
+{%endblockquote%}
 ##Problem 2 - Testing the client code##
 The rise of the client side MV* framework and the proliferation of code on the client has made the call test, a more important one than ever.  The tide does appear to be turning on testing client code with the rise of important testing frameworks like <a href="http://pivotal.github.com/jasmine/" target="_blank">Jasmine</a> and <a href="http://qunitjs.com/" target="_blank">QUnit</a> but adoption of this practice could be better.  Part of the difficulty is getting set up.  Why should I have to concern myself with wiring everything together, every time I start a new project.  Anybody who initially wrestled with Jasmine and the rails asset pipeline will know exactly what I mean when by **wrestling**.
 
