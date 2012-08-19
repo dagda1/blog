@@ -114,7 +114,7 @@ When you create an iridium project, iridum is already hooked up and minispade.js
 
 The above is valid coffeescript and I can simply point to one file with all my requires. 
 ##app.coffeee and boot.coffee##
-A nice conventions is created for you when you create a new iridium project that really helps when it comes to testing.  A file named **app.coffee** is created for you where you can put all your **minispade require** statements as was outlined above.  Then, when it comes to testing, this file is hooked up for you in the test environment.  No initialisation code goes into this file, just the minispade require statements.  A separate file named **boot.coffee** is created to house any application start up code.  The **boot.coffee** is not referenced by the test environment, paving the way for you to unit test separate bits of the application rather than having to **boot** the whole thing.
+A nice conventions is created for you when you create a new iridium project that really helps when it comes to testing.  A file named **app.coffee** is created for you where you can put all your **minispade require** statements as was outlined above.  This file is hooked up for you in **both** the web application itself and the test environment.  No initialisation code goes into this file, just the minispade require statements.  A separate file named **boot.coffee** is created to house any application start up code.  The **boot.coffee** file is not referenced by the test environment, paving the way for you to unit test separate bits of the application rather than having to **boot** the whole thing.
 
 An example of the **app.coffee** file that is referenced by both the testing environment and the actual website itself could look like this:
 {% codeblock %}
@@ -146,13 +146,13 @@ $ iridium server
 The rise of the client side MV* framework and the proliferation of code on the client has made the call to test, a more important one than ever.  The tide does appear to be turning on testing client code with the rise of important testing frameworks like <a href="http://pivotal.github.com/jasmine/" target="_blank">Jasmine</a> and <a href="http://qunitjs.com/" target="_blank">QUnit</a> but adoption of this practice could be better.  Part of the difficulty is getting set up.  Why should I have to concern myself with wiring everything together every time I start a new project.  Anybody who initially wrestled with Jasmine and the rails asset pipeline will know exactly what I mean when by **wrestling**.
 
 Anybody from a rails background will be comfortable with running particular flavours of
-test suites (unit/integration/functional) via rake's uniform command line interface.
-  Iridium gives you the same capabilities and makes the clear distinction between unit tests and integration tests.
+test suites (unit/integration/functional etc.) via rake's uniform command line interface.
+  Iridium gives you the same capabilities and makes the clear distinction between unit tests and integration tests which is not always the case in the javascript world.
   
 ##The Solution - The Iridium Test Runner##
 When you create a new project with iridium, your project is ready to test from both the unit test side and the integration test side.  No set up code is required.  There is a **test/unit** folder and a **test/integration** folder which should need no explanation as to their presence.
 
-<a href="http://qunitjs.com/" target="_blank">QUnit</a> is the default test suite for writing unit tests and <a href="http://casperjs.org/" target="_blank">casperjs</a>.
+<a href="http://qunitjs.com/" target="_blank">QUnit</a> is the default test suite for writing unit tests and <a href="http://casperjs.org/" target="_blank">casperjs</a> the framework of choice for integration tests.
 
 What is very nice and is the ability to run both the unit tests and the integration tests a single unified test suite.
 
