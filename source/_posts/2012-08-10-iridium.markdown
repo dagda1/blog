@@ -176,3 +176,6 @@ bundle exec iridium test test/unit/truth_test.coffee  --debug
 <a href="Sinonjs.org" target="_blank">sinon.js</a> gets included for you in **test/support** as a nice opinionated default to assist with mocking out any asyn ajax calls.
 
 ##Conclusion##
+The front end project space has been crying out for a project like this.  Rails provides uniformity and opinionated guidance every time you create a project.  We need the same in the front end project space.
+
+Go check the project out on <a href="https://github.com/radiumsoftware/iridium">github</a> and spread the word.  There are many features I have not mentioned in this post and many that will be added in the future.
