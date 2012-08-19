@@ -150,9 +150,29 @@ test suites (unit/integration/functional) via rake's uniform command line interf
   Iridium gives you the same capabilities and makes the clear distinction between unit tests and integration tests.
   
 ##The Solution - The Iridium Test Runner##
-When you create a new project with iridium, your project is ready to test from both the unit test side and the integration test side.  No set up code is required.  There is a **test/unit** folder and a **test/integration** folder which should need no explanation for their presence.
+When you create a new project with iridium, your project is ready to test from both the unit test side and the integration test side.  No set up code is required.  There is a **test/unit** folder and a **test/integration** folder which should need no explanation as to their presence.
 
+<a href="http://qunitjs.com/" target="_blank">QUnit</a> is the default test suite for writing unit tests and <a href="http://casperjs.org/" target="_blank">casperjs</a>.
 
+What is very nice and is the ability to run both the unit tests and the integration tests a single unified test suite.
+
+When the following command is entered:
+{%codeblock%}
+bundle exec iridium test
+{%endcodeblock%}
+The above will run both the unit tests and the integrations tests and present the results as a unified test suite.  
+
+It is also possible to be more granular and run, for example only unit tests:
+{%codeblock%}
+bundle exec iridium test test/unit/* --debug 
+{%endcodeblock%}
+**Note** that I am passing in the --debug switch to enable console messages to be printed to standard out.
+
+I can also run tests against individual files.
+{%codeblock%}
+bundle exec iridium test test/unit/truth_test.coffee  --debug
+{%endcodeblock%}
   
-Projects like <a href="sinonjs.org" target="_blank">sinon.js</a> or <a href="https://github.com/appendto/jquery-mockjax/" target="_blank">jquery-mockajax</a>
-  provide a means to stub out or mock the server side the API calls that are either not yet available or not applicable for writing resource free unit tests.
+<a href="Sinonjs.org" target="_blank">sinon.js</a> gets included for you in **test/support** as a nice opinionated default to assist with mocking out any asyn ajax calls.
+
+##Conclusion##
