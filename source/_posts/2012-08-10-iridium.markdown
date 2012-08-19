@@ -16,7 +16,7 @@ javascript or coffeescript, there is a necessity to make a clear separation betw
 Gone are the days (I wish) when client side code and server side code lived side by side in a one size fits all monolithic project structure.  Good practice dictates that you should segregate these two distinct layers
 into two (or more) orthogonal projects that can evolve at their own pace. 
 
-On the server side, I can quickly create a rails project by issuing a command like 
+On the server side, I can quickly create a new rails project by issuing a command like 
 {%codeblock%}
 rails new project_name
 {%endcodeblock%}
@@ -44,7 +44,7 @@ Iridium solves the first problem by allowing me to spin up a new client side pro
 
 I can now create a new front end project named **sample** by simply entering the following command while in the project directory.
 {% codeblock %}
-bundle exec iridium app **sample**
+bundle exec iridium app sample
 {% endcodeblock %}
 Note that I am using **bundle exec**, do not pass go if you are not running iridium in the context of the bundle specified in the Gemfile.
 
@@ -173,9 +173,9 @@ I can also run tests against individual files.
 bundle exec iridium test test/unit/truth_test.coffee  --debug
 {%endcodeblock%}
   
-<a href="Sinonjs.org" target="_blank">sinon.js</a> gets included for you in **test/support** as a nice opinionated default to assist with mocking out any asyn ajax calls.
+<a href="Sinonjs.org" target="_blank">Sinon.js</a> gets included in **test/support** as a nice opinionated default to assist with mocking out any async ajax calls.
 
 ##Conclusion##
-The front end project space has been crying out for a project like this.  Rails provides uniformity and opinionated guidance every time you create a project.  We need the same in the front end project space.
+The front end project space has been crying out for a project like <a href="https://github.com/radiumsoftware/iridium">iridium</a>.  Rails provides uniformity and opinionated guidance every time you create a project.  We need the same in the front end project space.
 
 Go check the project out on <a href="https://github.com/radiumsoftware/iridium">github</a> and spread the word.  There are many features I have not mentioned in this post and many that will be added in the future.
