@@ -14,7 +14,9 @@ With more and more of the application code finding its way onto the client in th
 javascript or coffeescript, there is a necessity to make a clear separation between between the front end client code and the backend server code.  With Gems like the <a href="https://github.com/spastorino/rails-api" target="_blank">rails-api</a> gem stripping away all the cruft that is associated with serving html from a rails application, wouldn't it be nice if you could spin up a new javascript/coffeescript project with just a few keystrokes?
 ##Problem 1 - Lack of Front End Project Guidance##
 Gone are the days (I wish) when client side code and server side code lived side by side in a one size fits all monolithic project structure.  Good practice dictates that you should segregate these two distinct layers
-into two (or more) orthogonal projects that can evolve at their own pace. I can quickly create a rails project by issuing a command like 
+into two (or more) orthogonal projects that can evolve at their own pace. 
+
+On the server side, I can quickly create a rails project by issuing a command like 
 {%codeblock%}
 rails new project_name
 {%endcodeblock%}
@@ -40,16 +42,15 @@ A quick **bundle install** will install the specified gems and then you can star
 
 Iridium solves the first problem by allowing me to spin up a new client side project with most of the initial decision making made for me.
 
-I can be up and running by simply entering the following command while in the project directory.
+I can now create a new front end project named **sample** by simply entering the following command while in the project directory.
 {% codeblock %}
-bundle exec iridium app test
+bundle exec iridium app **sample**
 {% endcodeblock %}
-Not that I am using **bundle exec**, do not pass go if you are running under the current Gemfile context.
+Note that I am using **bundle exec**, do not pass go if you are not running iridium in the context of the bundle specified in the Gemfile.
 
 The above command will create the following output:
 {% blockquote %}
-create  app
- create  app
+ create  sample
        create  app/images
        create  app/javascripts/app.coffee
        create  app/javascripts/boot.coffee
@@ -82,7 +83,7 @@ create  app
 
 This will create the following project structure:
 {%img /images/iridium/structure.png%}
-Not only can we now guarantee where everything in our client project lives but iridium has also provided some smart defaults for us:
+We now have a guaranteed folder structure for every client project we create.  Iridium also provides some smart defaults for us:
 
 - We will be using <a href="http://sass-lang.com/" target="_blank">SASS</a> as the css framework of choice and an **app.scss** file is created in **app/stylesheets/app.scss**.
 - There is a clear separation between unit and integration tests.
@@ -92,14 +93,14 @@ Not only can we now guarantee where everything in our client project lives but i
 - The <a href="http://rubydoc.info/github/livingsocial/rake-pipeline/master/file/README.yard" target="_blank">Rake-pipeline</a> is used for javascript loading and for packaging assets for deployment.
 
 ###The Case for the Rake-Pipeline###
-The rake-pipeline is a better fit for single page applications than an asynchronous module loader like <a herf="http://requirejs.org/" target="_blank">requirejs</a> because it bundles all your dependencies and individual files into a single script.  Rails does all this concatenation and minification transparently behind the scenes without you having to do anything at all.  Using the rails asset pipeline eases rolling deployment for you because while in development scripts are served as individual files without minification and in production scripts are served as minified and concatenated.
+The rake-pipeline is a better fit for single page applications than an asynchronous module loader like <a herf="http://requirejs.org/" target="_blank">requirejs</a> because it bundles all your dependencies and individual files into a single script.  Rails does all this concatenation and minification transparently behind the scenes without you having to do anything at all.  Using the rails asset pipeline eases rolling deployment for you because while in development scripts are served as individual files without minification and in production scripts are served minified and concatenated.
 
 I prefer the rake-pipeline over <a herf="http://requirejs.org/" target="_blank">requirejs</a> because requirejs is great in development and satisfies the requirement of being able to break the functionality up into smaller files **but** and I must stress the word but, it is at this time of writing, a major pain in the rear to compile requirejs out for a production build.  You are going to have to use something like the <a href="https://github.com/jrburke/r.js/" target="_blank">r.js compiler</a> to bundle all your dependencies into a single script.
 
 With a combination of the <a href="http://rubydoc.info/github/livingsocial/rake-pipeline/master/file/README.yard" target="_blank">Rake-pipeline</a>, <a href="https://twitter.com/wycats" target="_blank">@wycat's</a> <a href="https://github.com/wycats/rake-pipeline-web-filters" target="_blank">rake-pipeline-web-filters</a> and <a href="https://github.com/wycats/minispade" target="_blank">minispade</a> we can achieve the following goals:
  
 - *Break it up*: While it’s common to write smaller libraries as one big file, I like the mental separation provided by dividing the source into multiple files.
-- *Inline dependency management*: I’d rather define each file’s dependencies right in the code than define the concatenation order in some sort of makefile.
+- *Inline dependency management*: I’d rather define each file’s dependencies right in the code, rather than define the concatenation order in some sort of makefile.
 - *Keep files separate while debugging*: When we’re setting breakpoints and stepping through code in the debugger we want to see our individual source files, not have to wade through one big file.
 - *A transparent solution*: We need the production library to be free from dependency management code.
 
@@ -111,9 +112,9 @@ require 'app/views/application'
 {% endcodeblock %}
 When you create an iridium project, iridum is already hooked up and minispade.js can be found in **app/vendor/minispade.js**.
 
-The above is valid coffeescript and I can simply point to one file in development with all my requires. 
+The above is valid coffeescript and I can simply point to one file with all my requires. 
 ##app.coffeee and boot.coffee##
-A nice conventions is created for you when you create a new iridium project that really helps when it comes to testing.  A file named **app.coffee** is created for you where you can put all your minispade require statements as was outlined above.  Then, when it comes to testing, this file is hooked up for you in the test environment.  No initialisation code goes into this file, just the minispade require statements.  A separate file named **boot.coffee** is created to house any application start up code.  The **boot.coffee** is not referenced by the test environment, paving the way for you to unit test separate bits of the application rather than having to **boot** the whole thing.
+A nice conventions is created for you when you create a new iridium project that really helps when it comes to testing.  A file named **app.coffee** is created for you where you can put all your **minispade require** statements as was outlined above.  Then, when it comes to testing, this file is hooked up for you in the test environment.  No initialisation code goes into this file, just the minispade require statements.  A separate file named **boot.coffee** is created to house any application start up code.  The **boot.coffee** is not referenced by the test environment, paving the way for you to unit test separate bits of the application rather than having to **boot** the whole thing.
 
 An example of the **app.coffee** file that is referenced by both the testing environment and the actual website itself could look like this:
 {% codeblock %}
@@ -121,7 +122,7 @@ require 'app/router'
 require 'app/controllers/application
 require 'app/views/application'
 {% endcodeblock %}
-And an example of **boot.coffee** could look like this, with the code initialising an <a href="http://emberjs.com/">emberjs</a> applicaiton:"
+And an example of **boot.coffee** could look like this, with the code below initialising an <a href="http://emberjs.com/">emberjs</a> applicaiton:
 {%codeblock%}
 require 'application/app'
 Application.initialize()
@@ -135,18 +136,23 @@ bundle exec iridium server
 {%endcodeblock%}
 Which will give you the following output:
 {%blockquote%}
-$ cd application
+$ cd sample
 $ iridium server
 >> Thin web server (v1.4.1 codename Chromeo)
 >> Maximum connections set to 1024
 >> Listening on 0.0.0.0:9292, CTRL+C to stop
 {%endblockquote%}
 ##Problem 2 - Testing the client code##
-The rise of the client side MV* framework and the proliferation of code on the client has made the call test, a more important one than ever.  The tide does appear to be turning on testing client code with the rise of important testing frameworks like <a href="http://pivotal.github.com/jasmine/" target="_blank">Jasmine</a> and <a href="http://qunitjs.com/" target="_blank">QUnit</a> but adoption of this practice could be better.  Part of the difficulty is getting set up.  Why should I have to concern myself with wiring everything together, every time I start a new project.  Anybody who initially wrestled with Jasmine and the rails asset pipeline will know exactly what I mean when by **wrestling**.
+The rise of the client side MV* framework and the proliferation of code on the client has made the call to test, a more important one than ever.  The tide does appear to be turning on testing client code with the rise of important testing frameworks like <a href="http://pivotal.github.com/jasmine/" target="_blank">Jasmine</a> and <a href="http://qunitjs.com/" target="_blank">QUnit</a> but adoption of this practice could be better.  Part of the difficulty is getting set up.  Why should I have to concern myself with wiring everything together every time I start a new project.  Anybody who initially wrestled with Jasmine and the rails asset pipeline will know exactly what I mean when by **wrestling**.
 
 Anybody from a rails background will be comfortable with running particular flavours of
 test suites (unit/integration/functional) via rake's uniform command line interface.
   Iridium gives you the same capabilities and makes the clear distinction between unit tests and integration tests.
+  
+##The Solution - The Iridium Test Runner##
+When you create a new project with iridium, your project is ready to test from both the unit test side and the integration test side.  No set up code is required.  There is a **test/unit** folder and a **test/integration** folder which should need no explanation for their presence.
+
+
   
 Projects like <a href="sinonjs.org" target="_blank">sinon.js</a> or <a href="https://github.com/appendto/jquery-mockjax/" target="_blank">jquery-mockajax</a>
   provide a means to stub out or mock the server side the API calls that are either not yet available or not applicable for writing resource free unit tests.
