@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Iridium - a toolchain for javascript development'"
+title: "Iridium - a toolchain for javascript development"
 date: 2012-08-10 10:31
 comments: true
 categories: JavaScript Ember
@@ -8,10 +8,10 @@ categories: JavaScript Ember
 I want to give a shout out to a very new and very interesting project called
 <a target="_blank" href="https://github.com/radiumsoftware/iridium/">iridium</a> from 
 <a target="_blank" href="https://twitter.com/adman65">Adam Hawkins</a> who blogs at
- <a target="_blank" href="http://www.broadcastingadam.com/">BroadcastingAdam</a>.  Iridium aims to provide some much needed tooling to the new front end javascript/coffeescript project type that is popularised by the javascript mv* space.
+ <a target="_blank" href="http://www.broadcastingadam.com/">BroadcastingAdam</a>.  Iridium aims to provide some much needed tooling to the new front end **javascript/coffeescript** project type that is popularised by the javascript mv* space.
 
 With more and more of the application code finding its way onto the client in the form of
-javascript or coffeescript, there is a necessity to make a clear separation between between the front end client code and the backend server code.  With Gems like the <a href="https://github.com/spastorino/rails-api" target="_blank">rails-api</a> gem stripping away all the cruft that is associated with serving html from a rails application, wouldn't it be nice if you could spin up a new javascript/coffeescript project with just a few keystrokes?
+javascript or coffeescript, there is a necessity to make a clear separation between between the front end client code and the backend server code.  With Gems like the <a href="https://github.com/spastorino/rails-api" target="_blank">rails-api</a> gem stripping away all the unnecessary cruft that is not needed when serving only  json from a rails application, wouldn't it be nice if you could spin up a new **javascript/coffeescript** project with just a few keystrokes?
 ##Problem 1 - Lack of Front End Project Guidance##
 Gone are the days (I wish) when client side code and server side code lived side by side in a one size fits all monolithic project structure.  Good practice dictates that you should segregate these two distinct layers
 into two (or more) orthogonal projects that can evolve at their own pace. 
@@ -83,7 +83,7 @@ The above command will create the following output:
 
 This will create the following project structure:
 {%img /images/iridium/structure.png%}
-We now have a guaranteed folder structure for every client project we create.  Iridium also provides some smart defaults for us:
+We now have a guaranteed folder structure for every client project we create.  Iridium also provides some smart defaults that will provide some much needed guidance for anybody new to this space:
 
 - We will be using <a href="http://sass-lang.com/" target="_blank">SASS</a> as the css framework of choice and an **app.scss** file is created in **app/stylesheets/app.scss**.
 - There is a clear separation between unit and integration tests.
@@ -93,9 +93,9 @@ We now have a guaranteed folder structure for every client project we create.  I
 - The <a href="http://rubydoc.info/github/livingsocial/rake-pipeline/master/file/README.yard" target="_blank">Rake-pipeline</a> is used for javascript loading and for packaging assets for deployment.
 
 ###The Case for the Rake-Pipeline###
-The rake-pipeline is a better fit for single page applications than an asynchronous module loader like <a herf="http://requirejs.org/" target="_blank">requirejs</a> because it bundles all your dependencies and individual files into a single script.  Rails does all this concatenation and minification transparently behind the scenes without you having to do anything at all.  Using the rails asset pipeline eases rolling deployment for you because while in development scripts are served as individual files without minification and in production scripts are served minified and concatenated.
+The rake-pipeline is a better fit for single page applications than an asynchronous module loader like <a herf="http://requirejs.org/" target="_blank">requirejs</a> because it bundles all your dependencies and individual files into a single script.  The rake-pipeline does all this concatenation and minification transparently behind the scenes without you having to do anything at all.  Using the rails asset pipeline eases rolling deployment for you because you still get your scripts served as individual files when in development mode but in production mode, scripts are served minified and concatenated.
 
-I prefer the rake-pipeline over <a herf="http://requirejs.org/" target="_blank">requirejs</a> because requirejs is great in development and satisfies the requirement of being able to break the functionality up into smaller files **but** and I must stress the word but, it is at this time of writing, a major pain in the rear to compile requirejs out for a production build.  You are going to have to use something like the <a href="https://github.com/jrburke/r.js/" target="_blank">r.js compiler</a> to bundle all your dependencies into a single script.
+I prefer the rake-pipeline over <a herf="http://requirejs.org/" target="_blank">requirejs</a> because requirejs is great in development and satisfies the requirement of being able to break the functionality up into smaller files **but** and I must stress the word **but**, it is at this time of writing, a major pain in the rear to compile requirejs out for a production build.  You are going to have to use something like the <a href="https://github.com/jrburke/r.js/" target="_blank">r.js compiler</a> to bundle all your dependencies into a single script.
 
 With a combination of the <a href="http://rubydoc.info/github/livingsocial/rake-pipeline/master/file/README.yard" target="_blank">Rake-pipeline</a>, <a href="https://twitter.com/wycats" target="_blank">@wycat's</a> <a href="https://github.com/wycats/rake-pipeline-web-filters" target="_blank">rake-pipeline-web-filters</a> and <a href="https://github.com/wycats/minispade" target="_blank">minispade</a> we can achieve the following goals:
  
@@ -110,7 +110,7 @@ require 'app/router'
 require 'app/controllers/application'
 require 'app/views/application'
 {% endcodeblock %}
-When you create an iridium project, iridum is already hooked up and minispade.js can be found in **app/vendor/minispade.js**.
+When you create an iridium project, the rake-pipeline is already hooked up and a copy of the latest minispade.js can be found in **app/vendor/minispade.js**.
 
 The above is valid coffeescript and I can simply point to one file with all my requires. 
 ##app.coffeee and boot.coffee##
@@ -137,13 +137,13 @@ bundle exec iridium server
 Which will give you the following output:
 {%blockquote%}
 $ cd sample
-$ iridium server
+$ bundle exec iridium server
 >> Thin web server (v1.4.1 codename Chromeo)
 >> Maximum connections set to 1024
 >> Listening on 0.0.0.0:9292, CTRL+C to stop
 {%endblockquote%}
 ##Problem 2 - Testing the client code##
-The rise of the client side MV* framework and the proliferation of code on the client has made the call to test, a more important one than ever.  The tide does appear to be turning on testing client code with the rise of important testing frameworks like <a href="http://pivotal.github.com/jasmine/" target="_blank">Jasmine</a> and <a href="http://qunitjs.com/" target="_blank">QUnit</a> but adoption of this practice could be better.  Part of the difficulty is getting set up.  Why should I have to concern myself with wiring everything together every time I start a new project.  Anybody who initially wrestled with Jasmine and the rails asset pipeline will know exactly what I mean when by **wrestling**.
+The rise of the client side MV* framework and the proliferation of code on the client has made the call to test, a more important one than ever.  The tide does appear to be turning on testing client code with the rise of important testing frameworks like <a href="http://pivotal.github.com/jasmine/" target="_blank">Jasmine</a> and <a href="http://qunitjs.com/" target="_blank">QUnit</a> but adoption of this practice could be better.  Part of the difficulty is getting set up.  Why should I have to concern myself with wiring everything together every time I start a new project?  Anybody who initially wrestled with Jasmine and the rails asset pipeline will know exactly what I mean when by **wrestling**.
 
 Anybody from a rails background will be comfortable with running particular flavours of
 test suites (unit/integration/functional etc.) via rake's uniform command line interface.
