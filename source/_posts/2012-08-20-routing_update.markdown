@@ -34,7 +34,21 @@ When an Ember application loads, Ember will parse the URL and attempt to find an
 
 Loading the page at the url **#/home** would detect the route property of **root.home** and transition the router to the route or state named **root** and then to transition to the substate or route named **home** which has route property of **'/home'**.
 
-Below are two tests that verify that my routes are routing to the correct substates or routes.
+Below is a test that verifies a root url of '/' will transition to the **home** route:
+{%gist 3428957 %}
+- On **line 7** we are using the **route** method of the router and passing in a url fragment for the router to try and match on.
+-  On **line 8** we are verifying that we have transitioned to the **home** route which is a direct descendant of the **root** route or state.  We verify this by checking the **currentState.path** of the router which uses the dot syntax to signify where we are in the router child route hierarchy.
+
+##Nested Routes##
+As you would expect, nested routes correspond to fragments of the url.  Below is a direct descendant of the **root** route named **vault**:
+{%gist 3429110 %}
+In the above example, the **vault** route has a route of **/vault**, as well as a child state of **new** which in turn has a child state named **step1**.  During routing, these three routes will be composed and a route of **/vault/new/step1** will match the **step1** state.
+
+Below is a test that verifies this:
+{%gist 3429205 %}
+
+##View Changes##
+As each url change transitions the router or statemachine from state to state or route to route, so you would expect what is rendered onto the screen to change also.  
 <!-- 
 <a href="" target="_blank"></a>
 <a href="" target="_blank"></a>
