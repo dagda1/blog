@@ -57,11 +57,14 @@ And below is a screen grab that outlines which parts of the page are rendered by
 If the url changes to **#/vault/new/step2** then only the last third of the page will be change when the **step2** route is transitioned to.
 
 ##Outlets##
-So how is this beautiful tapestry of nested views achieved?  How do router transitions marry themselves to view changes?  Well, the observant amongst you will have noticed a method named **connectOutlets** that appears in all of the leaf routes (non-root route) of the router.
+So how is this beautiful tapestry of nested views stitched together?  How do router transitions marry themselves to view changes?  Well, the observant amongst you will have noticed a method named **connectOutlets** that appears in all of the leaf routes (non-root route) of the router.
 
 In order to illustrate how this works, I am going to first refresh our memory of what the router itself looks like and it first child routes that match the home route of '/', which is the url when the application first loads
 {%gist 3412899 %}
+
+{%img /images/ember/step.png%}
 And this is what the page looks like in the browser
+{%img /images/ember/home.png%}
 <!-- 
 <a href="" target="_blank"></a>
 <a href="" target="_blank"></a>
