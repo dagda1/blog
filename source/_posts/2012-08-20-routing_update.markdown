@@ -104,7 +104,7 @@ What this translates to, is that if we call **connectOutlet** like this
 {%codeblock%}
 router.get('applicationController').connectOutlet 'nav', 'navbar'
 {%endcodeblock%}
-We are telling ember to connect the outlet that is named **nav** which is the first object above and that we want to create a new instance of a view called NavbarView (second argument) and wire it up with a controller named **NavbarController**.
+We are telling ember to connect the outlet that is named **nav** which is the first argument above and that we want to create a new instance of a view called **NavbarView** (second argument) and wire it up with a controller named **NavbarController** (also second argument).
 The following line from the above gist calls the controller's connectOutlet method and only passes in one argument:
 {%codeblock%}
 router.get('applicationController').connectOutlet 'home'
