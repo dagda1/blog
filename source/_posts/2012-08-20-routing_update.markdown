@@ -72,13 +72,13 @@ When you create and initialize a new Ember application object (more on this late
 Below is my **ApplicationController** from this sample app:
 {%codeblock%}
 WZ.ApplicationController = Em.Controller.extend()
-{%endcodeblock}
+{%endcodeblock%}
 
 And below is my **ApplicationView** from this sample app:
 {%codeblock%}
 WZ.ApplicationView = Em.View.extend
   templateName: 'app/templates/application'
-{%endcodeblock}
+{%endcodeblock%}
 With these in place, Ember will render the template that is specified at the **templateName** property in the view above.  Below is the template:
 {%gist 3438544 %}
 Pretty sparse huh?  All that the above template contains are two **outlets**, one outlet named **nav** and one default outlet.  **Outlets** can be thought of as place holders that you can inject content into.  The connectOutlets method on each child route is the place to connect up these **outlets** with corresponding Ember and controller pairs.
@@ -88,39 +88,46 @@ Below is a refresh of the **connectOutlets** method for the '/' route:
 The first outlet we connect is the named **nav** outlet (line 4 of the above gist).  The first thing to note on line 4 is that we are accessing the controller via the router with the following syntax:
 {%codeblock%}
 router.get('applicationController').connectOutlet 'nav', 'navbar'
-{%endcodeblock}
+{%endcodeblock%}
 Ember has made the wise choice to move away accessing objects with the path syntax that was popularised in earlier ember applications where you might have accessed the application controller like this:
 {%codeblock%}
 WZ.controllers.applicationController
-{%endcodeblock}
+{%endcodeblock%}
 And instead objects ending in **Controller** are detected and are assigned as properties of the router when an Ember application is initialized like below:
 {%codeblock%}
 window.WZ = Ember.Application.create()
 WZ.initialize()
-{%endcodeblock}
+{%endcodeblock%}
 This means we can pull the controller instances from the router and call the controller's **connectOutlet** method to inject content into the **outlet** placeholders that are specified in the handlebars template.  **connectOutlet** creates a new instance of the provided view class, wires it up with its associated controller, and assigns a new view to a property on the current controller.  
 
 What this translates to, is that if we call **connectOutlet** like this
 {%codeblock%}
 router.get('applicationController').connectOutlet 'nav', 'navbar'
-{%endcodeblock}
+{%endcodeblock%}
 We are telling ember to connect the outlet that is named **nav** which is the first object above and that we want to create a new instance of a view called NavbarView (second argument) and wire it up with a controller named **NavbarController**.
 The following line from the above gist calls the controller's connectOutlet method and only passes in one argument:
 {%codeblock%}
 router.get('applicationController').connectOutlet 'home'
-{%endcodeblock}
+{%endcodeblock%}
 This tells ember to connect the default oultet **{{outlet}}** with a view called HomeView and wire it up with a view called HomeController.
+
+HomeView itself has a **templateName** property which in turn has an outlet and we can hook that outlet up with the following line:
+{%codeblock%}
+router.get('homeController').connectOutlet 'bottombar', 'bottombar'
+{%endcodeblock%}
+The above line accesses the homeController that is created and assigned as a property of the router in application initialisation and then calls **connectOutlet** which will connect an outlet name **bottombar** with a controller/view pair named BottombarView and BottombarController. 
 
 And this is what the page looks like in the browser
 {%img /images/ember/home.png%}
-<!-- 
-<a href="" target="_blank"></a>
-<a href="" target="_blank"></a>
-<a href="" target="_blank"></a>
-<a href="" target="_blank"></a>
-<a href="" target="_blank"></a>
-<a href="" target="_blank"></a>
-<a href="" target="_blank"></a>
-<a href="" target="_blank"></a>
-<a href="" target="_blank"></a>
- -->
+I hope you can see that this is a very elegant solution to weaving a rich and maintainable UI from your handlebars templates.
+
+One last thing to mention is that you can supply a **content** for the controller by supplying a final argument for the **connectOutlet** method like this:
+{%gist 3441500 %}
+On line 4 of the above gist, we are retrieving an array of objects from the remote store and passing that into the connectOutlet method as the last argument.  The content will be assigned to the controller.
+
+**Conclusion**
+I am blown away by the elegance of this routing solution and it is the best out there bar none in the javascript mv* space.
+
+I besiege you to get the latest <a href="https://github.com/emberjs/ember.js/" target="_blank">ember</a> from github and take the plunge, you will not regret it.
+
+Please feel free to add any comments below.
