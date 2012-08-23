@@ -22,17 +22,17 @@ This is the third time I have blogged about ember/sproutcore statecharts/statema
 The basic premise is that you describe your application as a hierarchical tree of objects - one object per conceptual state (**Ember.Route** extends **Ember.State**) like below: 
 {%gist 3412899 %}
 
-- On **line 1** we provide a subclass of the **Ember.Router** as the **Router** property of the application which in this instance is named **WZ**.  Naming the router subclass **Router** is a convention that you need to adhere to and I'll explain why later when I explain how an ember application gets initialised under the new regime.
+- On **line 1** we provide a subclass of the **Ember.Router** as the **Router** property of the Ember application object which in the example used in this post is named **WZ**.  Naming the router subclass **Router** is a convention that you need to adhere to and I'll explain why later when I explain how an ember application gets initialised under the new regime.
 - **Line 2** tells the Ember.Router to log state transitions to the console.
 - **Line 3** sets the location property of the **Router** to **hash** which means we will be using url fragment identifiers like **#/post/1** for routing.  You can also specify a value of history which will use the browser's <a href="http://badassjs.com/post/840846392/location-hash-is-dead-long-live-html5-pushstate" target="_blank">pushstate</a> api if one exists.
 - On **line 4** a **root** state is provided. As the name **root** suggests, all other routes (or states as I still think of them) will either be direct children of the **root** route or grandchildren of the **root** route.  In true composite fashion, there can only one **root** route.  The **root** route acts as the container for the set of routable states **but** is not routable itself.
 - On **line 5** and **line 8** are two such child routes or states of the **root** route named **index** and **home** respectively.  
 - Every child route of the **root** route can have a **route** property describing the URL pattern you would like to detect.  On **line 6**, the **index** route has a route property with a value of <strong>'/'</strong> which will correspond to the home page of the application and on **line 9**, the home route has a route property of **/home**.
-- On **line 10** is the **connectOutlets** method that you can override in each child route that provide a mechanism for changing what view hierarchy is rendered onto the page as the application state and url changes.  More on this later.
+- On **line 10** is the **connectOutlets** method that you can override in each child route and provide a mechanism for rendering content onto the page as the url changes.  More on this later.
 
-When an Ember application loads, Ember will parse the URL and attempt to find and Ember.Route within the Router's child route hierarchy that matches the url.   Loading the page at '/' will first of all transition transition the **router** to the first route name **root** and then then to the subsate or child route where it can find a match on the url.  In this case it will find a match on the route property of the **index** route and will transition to that route.  The **index** route simply redirects to the **home** route via the **redirectsTo** directive on **line 7** of the above gist.
+When an Ember application loads, Ember will parse the URL and attempt to find an Ember.Route within the Router's child route hierarchy that matches the url.   Loading the page at '/' which is what the url is when the application is first initialised, will first of all transition the **router** to the first route named **root** and then then to the subsate or child route where it can find a match on the url.  In this case it will find a match on the route property of the **index** route and will transition to that route.  The **index** route simply redirects to the **home** route via the **redirectsTo** directive on **line 7** of the above gist.
 
-Loading the page at the url **#/home** would detect the route property of **root.home** and transition the router to the route or state named **root** and then to transition to the substate or route named **home** which has route property of **'/home'**.
+Loading the page at the url **#/home** would detect a router path of **root.home** and transition the router to the route or state named **root** and then transition to the substate or child route named **home** which has a route property of **'/home'**.
 
 Below is a test that verifies a root url of '/' will transition to the **home** route:
 {%gist 3428957 %}
@@ -56,7 +56,12 @@ And below is a screen grab that outlines which parts of the page are rendered by
 {%img /images/ember/step.png%}
 If the url changes to **#/vault/new/step2** then only the last third of the page will be change when the **step2** route is transitioned to.
 
- 
+##Outlets##
+So how is this beautiful tapestry of nested views achieved?  How do router transitions marry themselves to view changes?  Well, the observant amongst you will have noticed a method named **connectOutlets** that appears in all of the leaf routes (non-root route) of the router.
+
+In order to illustrate how this works, I am going to first refresh our memory of what the router itself looks like and it first child routes that match the home route of '/', which is the url when the application first loads
+{%gist 3412899 %}
+And this is what the page looks like in the browser
 <!-- 
 <a href="" target="_blank"></a>
 <a href="" target="_blank"></a>
