@@ -47,8 +47,16 @@ In the above example, the **vault** route has a route of **/vault**, as well as 
 Below is a test that verifies this:
 {%gist 3429205 %}
 
-##View Changes##
-As each url change transitions the router or statemachine from state to state or route to route, so you would expect what is rendered onto the screen to change also.  
+##State transitions and View Changes##
+As each url change transitions the router or statemachine from state to state or route to route, so you would expect what is rendered onto the screen to change also.  Each nested route can take responsibility for what is rendered onto the screen:
+
+Below is the vault route and its child states
+{%gist 3429309 %}
+And below is a screen grab that outlines which parts of the page are rendered by which route whenever a page is rendered at the following url **#/vault/new/step1**
+{%img /images/ember/step.png%}
+If the url changes to **#/vault/new/step2** then only the last third of the page will be change when the **step2** route is transitioned to.
+
+ 
 <!-- 
 <a href="" target="_blank"></a>
 <a href="" target="_blank"></a>
