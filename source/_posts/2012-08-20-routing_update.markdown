@@ -59,8 +59,18 @@ If the url changes to **#/vault/new/step2** then only the last third of the page
 ##Outlets##
 So how is this beautiful tapestry of nested views stitched together?  How do router transitions marry themselves to view changes?  Well, the observant amongst you will have noticed a method named **connectOutlets** that appears in all of the leaf routes (non-root route) of the router.
 
-In order to illustrate how this works, I am going to first refresh our memory of what the router itself looks like and it first child routes that match the home route of '/', which is the url when the application first loads
+In order to illustrate how this works, I am going to first refresh our memory of what the router itself looks like and it first child routes that match the home route of '/', which is the url when the application first loads:
 {%gist 3412899 %}
+As explained earlier, the router will parse the url and try and find a match on the route property of one of the router's child routes or states.  In this case a route will be found on the **index** route which redirects to the home **route**.
+
+On **line 10** of the above, we come to the now infamous **connectOutlets** method (lines 10 - 13 of the above gist ).  Ember provides some nice conventions that are tied to routing.  The **connectOutlets** method will be called when a state or route has been entered and is where you hook up your controllers and views to reflect the change in application state as the url changes. 
+
+The new Ember routing has introduced a number of interesting conventions.  The first one of interest here is that the default handlebars template for the application will be called.....application.handlebars.  The following gist is how the application.handlebars looks for this sample app:
+{%gist 3438544 %}
+Pretty sparse huh?  All that the above template contains are two **outlets**, one outlet named **nav** and one default outlet.  **Outlets** can be thought of as place holders that you can inject content into.  The connectOutlets method on each child route is the obvious place to connect up these **outlets** with corresponding Ember and controller pairs.
+
+If I can remind everyone of the connectOutlets method:
+
 
 {%img /images/ember/step.png%}
 And this is what the page looks like in the browser
