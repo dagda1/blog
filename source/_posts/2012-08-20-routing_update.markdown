@@ -65,14 +65,52 @@ As explained earlier, the router will parse the url and try and find a match on 
 
 On **line 10** of the above, we come to the now infamous **connectOutlets** method (lines 10 - 13 of the above gist ).  Ember provides some nice conventions that are tied to routing.  The **connectOutlets** method will be called when a state or route has been entered and is where you hook up your controllers and views to reflect the change in application state as the url changes. 
 
-The new Ember routing has introduced a number of interesting conventions.  The first one of interest here is that the default handlebars template for the application will be called.....application.handlebars.  The following gist is how the application.handlebars looks for this sample app:
+**connectOutlets** works by assigning Ember controller/view pairs, e.g. App.xxxxController and App.xxxxView and assigning them to named placeholders called **outlets** and are found in handlebars templates.
+
+When you create and initialize a new Ember application object (more on this later), you need to have a controller name **ApplicationController** and a view named **ApplicationView** or Ember will throw an exception.  These two objects will form our first controller/view pair, that conforms to the App.xxxxController and App.xxxxView convention.
+
+Below is my **ApplicationController** from this sample app:
+{%codeblock%}
+WZ.ApplicationController = Em.Controller.extend()
+{%endcodeblock}
+
+And below is my **ApplicationView** from this sample app:
+{%codeblock%}
+WZ.ApplicationView = Em.View.extend
+  templateName: 'app/templates/application'
+{%endcodeblock}
+With these in place, Ember will render the template that is specified at the **templateName** property in the view above.  Below is the template:
 {%gist 3438544 %}
-Pretty sparse huh?  All that the above template contains are two **outlets**, one outlet named **nav** and one default outlet.  **Outlets** can be thought of as place holders that you can inject content into.  The connectOutlets method on each child route is the obvious place to connect up these **outlets** with corresponding Ember and controller pairs.
+Pretty sparse huh?  All that the above template contains are two **outlets**, one outlet named **nav** and one default outlet.  **Outlets** can be thought of as place holders that you can inject content into.  The connectOutlets method on each child route is the place to connect up these **outlets** with corresponding Ember and controller pairs.
 
-If I can remind everyone of the connectOutlets method:
+Below is a refresh of the **connectOutlets** method for the '/' route:
+{%gist 3438631 %}
+The first outlet we connect is the named **nav** outlet (line 4 of the above gist).  The first thing to note on line 4 is that we are accessing the controller via the router with the following syntax:
+{%codeblock%}
+router.get('applicationController').connectOutlet 'nav', 'navbar'
+{%endcodeblock}
+Ember has made the wise choice to move away accessing objects with the path syntax that was popularised in earlier ember applications where you might have accessed the application controller like this:
+{%codeblock%}
+WZ.controllers.applicationController
+{%endcodeblock}
+And instead objects ending in **Controller** are detected and are assigned as properties of the router when an Ember application is initialized like below:
+{%codeblock%}
+window.WZ = Ember.Application.create()
+WZ.initialize()
+{%endcodeblock}
+This means we can pull the controller instances from the router and call the controller's **connectOutlet** method to inject content into the **outlet** placeholders that are specified in the handlebars template.  **connectOutlet** creates a new instance of the provided view class, wires it up with its associated controller, and assigns a new view to a property on the current controller.  
 
+What this translates to, is that if we call **connectOutlet** like this
+{%codeblock%}
+router.get('applicationController').connectOutlet 'nav', 'navbar'
+{%endcodeblock}
+We are telling ember to connect the outlet that is named **nav** which is the first object above and that we want to create a new instance of a view called NavbarView (second argument) and wire it up with a controller named **NavbarController**.
+The following line from the above gist calls the controller's connectOutlet method and only passes in one argument:
+{%codeblock%}
+router.get('applicationController').connectOutlet 'home'
+{%endcodeblock}
+This tells ember to connect the default oultet **{{outlet}}** with a view called HomeView and wire it up with a view called HomeController.
 
-{%img /images/ember/step.png%}
 And this is what the page looks like in the browser
 {%img /images/ember/home.png%}
 <!-- 
