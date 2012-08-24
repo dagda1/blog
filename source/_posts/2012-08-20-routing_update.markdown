@@ -120,7 +120,7 @@ router.get('homeController').connectOutlet 'bottombar', 'bottombar'
 {%endcodeblock%}
 The above line accesses the homeController via the router, and then call **connectOutlet** which will connect an outlet named **bottombar** with a controller/view pair named BottombarView and BottombarController.  And so we could go on into finer more maintainable detail
 
-And this is what the page looks like in the browser
+And this is what the page looks like in the browser and what section belongs to which outlet.
 {%img /images/ember/home.png%}
 I hope you can see that this is a very elegant solution to weaving a rich and maintainable UI from your handlebars templates.
 
@@ -128,7 +128,7 @@ One last thing to mention is that you can supply a **content** for the controlle
 {%gist 3441500 %}
 On line 4 of the above gist, we are retrieving an array of objects from the remote store and passing that into the connectOutlet method as the last argument.  The content will be assigned to the controller.
 
-**Conclusion**
+##Conclusion##
 I am blown away by the elegance of this routing solution and it is the best out there bar none in the javascript mv* space.
 
 I besiege you to get the latest <a href="https://github.com/emberjs/ember.js/" target="_blank">ember</a> from github and take the plunge, you will not regret it.
