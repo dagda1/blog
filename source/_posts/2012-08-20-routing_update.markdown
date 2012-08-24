@@ -118,7 +118,7 @@ The HomeView view that was instanciated from the connectOutlet above method poin
 {%codeblock%}
 router.get('homeController').connectOutlet 'bottombar', 'bottombar'
 {%endcodeblock%}
-The above line accesses the homeController via the router, and then calls **connectOutlet** which will connect an outlet named **bottombar** with a controller/view pair named BottombarView and BottombarController.  And so we could go on into finer more maintainable detail
+The above line accesses the homeController via the router, and then call **connectOutlet** which will connect an outlet named **bottombar** with a controller/view pair named BottombarView and BottombarController.  And so we could go on into finer more maintainable detail
 
 And this is what the page looks like in the browser
 {%img /images/ember/home.png%}
