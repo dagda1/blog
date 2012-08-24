@@ -7,44 +7,44 @@ categories: JavaScript Ember
 ---
 I've had a number of requests to update <a href="http://www.thesoftwaresimpleton.com/blog/2012/04/22/ember-js-routemanager/" target="_blank">this</a> post which discussed a solution to the lack of routing at that time of writing in <a href="http://emberjs.com/">ember</a>.  This solution used an addon called the <a href="https://github.com/ghempton/ember-routemanager" target="_blank">ember-routemanager</a> from <a href="https://twitter.com/ghempton" target="_blank">Gordon Hempton</a>.    
 
-A lot in Ember has changed since that post and Ember now has its own full blown <a href="http://emberjs.com/guides/outlets/#toc_the-router" target="_blank">routing solution</a> that is not a million miles away from the route manager I blogged about.  I believe <a href="https://twitter.com/ghempton" target="_blank">Gordon Hempton</a> who created the origin ember-routemanager is now an ember core member which might explain the start similarities.  
+A lot in Ember has changed since that post and Ember now has its own full blown <a href="http://emberjs.com/guides/outlets/#toc_the-router" target="_blank">routing solution</a> that is not a million miles away from the route manager I blogged about.  I believe <a href="https://twitter.com/ghempton" target="_blank">Gordon Hempton</a> who created the origin ember-routemanager is now an ember core member which might explain the stark similarities.  
 
 ##Enough of the old and on with the New##
-The ember router has been on the <a href="" target="_blank">master</a> branch for a while now and it is an emerging pattern that is prone to change and indeed has changed quite a bit in its short existence.  The ember routing solution is one of the main reasons I am drawn to ember and it differs greatly from anything else out there in the **javascript mv*** space.
+The new ember router has been on the <a href="" target="_blank">master</a> branch for a while now and it is an emerging pattern that is prone to change and indeed has changed quite a bit in its short existence.  The ember routing solution is one of the main reasons I am drawn to ember and it differs greatly from anything else out there in the **javascript mv*** space.
 
 The Ember router extends the very elegant ember statemanager:
 {%codeblock%}
 Ember.Router = Ember.StateManager.extend({
 });
 {%endcodeblock%}
-This is the third time I have blogged about ember/sproutcore statecharts/statemanagers/routers etc. (<a href="http://www.thesoftwaresimpleton.com/blog/2012/02/28/statemachine/" target="_blank">here</a> and <a href="http://www.thesoftwaresimpleton.com/blog/2012/04/22/ember-js-routemanager/" target="_blank">here</a>) and I really got excited the first time I came across this new pattern.  The statemachine pattern is a beautiful fit for routing and it is surprising nobody else has come up with it as a solution until now.  
-
-The basic premise is that you describe your application as a hierarchical tree of objects - one object per conceptual state (**Ember.Route** extends **Ember.State**) like below: 
+The basic premise of the ember routing solution is that you describe your application as a hierarchical tree of objects - one object per conceptual state (**Ember.Route** extends **Ember.State**): 
 {%gist 3412899 %}
 
-- On **line 1** we provide a subclass of the **Ember.Router** as the **Router** property of the Ember application object which in the example used in this post is named **WZ**.  Naming the router subclass **Router** is a convention that you need to adhere to and I'll explain why later when I explain how an ember application gets initialised under the new regime.
+- On **line 1** we create a subclass of the Ember.Router and assign the reference to a property named **Router** of the Ember application object which in this example is named WZ.  Naming the property **Router** is a convention you must adhere to. 
 - **Line 2** tells the Ember.Router to log state transitions to the console.
-- **Line 3** sets the location property of the **Router** to **hash** which means we will be using url fragment identifiers like **#/post/1** for routing.  You can also specify a value of history which will use the browser's <a href="http://badassjs.com/post/840846392/location-hash-is-dead-long-live-html5-pushstate" target="_blank">pushstate</a> api if one exists.
-- On **line 4** a **root** state is provided. As the name **root** suggests, all other routes (or states as I still think of them) will either be direct children of the **root** route or grandchildren of the **root** route.  In true composite fashion, there can only one **root** route.  The **root** route acts as the container for the set of routable states **but** is not routable itself.
+- **Line 3** sets the location property of the **Router** to **hash** which means that url fragment identifiers like **#/post/1** will be parsed for matches in the routing hierarchy.  You can also specify a value of **history** which will use the browser's <a href="http://badassjs.com/post/840846392/location-hash-is-dead-long-live-html5-pushstate" target="_blank">pushstate</a> api if one exists.
+- On **line 4**, a **root** route is created. As the name **root** suggests, all other routes (or states as I still think of them) will either be direct children of the **root** route or grandchildren of the **root** route. The **root** route acts as the container for the set of routable states but is not routable itself.
 - On **line 5** and **line 8** are two such child routes or states of the **root** route named **index** and **home** respectively.  
-- Every child route of the **root** route can have a **route** property describing the URL pattern you would like to detect.  On **line 6**, the **index** route has a route property with a value of <strong>'/'</strong> which will correspond to the home page of the application and on **line 9**, the home route has a route property of **/home**.
+- Leaf routes in the routing hierarchy can have a **route** property describing the URL pattern you would like to detect.  
+- On **line 6**, the **index** route has a route property with a value of <b>'/'</b> which is what the url will be when the application first loads.
+- On **line 9**, the home route has a route property of **/home**.
 - On **line 10** is the **connectOutlets** method that you can override in each child route and provide a mechanism for rendering content onto the page as the url changes.  More on this later.
 
-When an Ember application loads, Ember will parse the URL and attempt to find an Ember.Route within the Router's child route hierarchy that matches the url.   Loading the page at '/' which is what the url is when the application is first initialised, will first of all transition the **router** to the first route named **root** and then then to the subsate or child route where it can find a match on the url.  In this case it will find a match on the route property of the **index** route and will transition to that route.  The **index** route simply redirects to the **home** route via the **redirectsTo** directive on **line 7** of the above gist.
+When an Ember application loads, Ember will parse the URL and attempt to find an Ember.Route within the Router's child route hierarchy that matches the url.   Loading the page at '/' which is what the url is when the application is first initialised, will first of all transition the **router** to the first route named **root** and then then to the subsate or child route where the router can find a match on the url.  In this case, the router will find a match on the route property of the **index** route and will transition to that route.  The **index** route in the above example simply redirects to the **home** route via the **redirectsTo** directive on **line 7** of the above gist.
 
-Loading the page at the url **#/home** would detect a router path of **root.home** and transition the router to the route or state named **root** and then transition to the substate or child route named **home** which has a route property of **'/home'**.
+Loading the page at the url **#/home** will transition the router to a substate or route at a path or place in the hierarchy of **root.home**.  This path syntax is useful for testing and what it translates to is that we are currently at the home route which is a child of the root route.  
 
 Below is a test that verifies a root url of '/' will transition to the **home** route:
 {%gist 3428957 %}
-- On **line 7** we are using the **route** method of the router and passing in a url fragment for the router to try and match on.
--  On **line 8** we are verifying that we have transitioned to the **home** route which is a direct descendant of the **root** route or state.  We verify this by checking the **currentState.path** of the router which uses the dot syntax to signify where we are in the router child route hierarchy.
+- On **line 7**, the **route** method of the router is called and a url fragment is passed as an argument for the router to try and match on.
+-  **Line 8** asserts that we have transitioned to the expected **home** route which is a direct descendant of the **root** route or state.  We verify this by checking the **currentState.path** of the router which uses the dot syntax to signify where we are in the router hierarchy.
 
 ##Nested Routes##
-As you would expect, nested routes correspond to fragments of the url.  Below is a direct descendant of the **root** route named **vault**:
+As you would expect, nested routes correspond to fragments of the url.  Below is a direct descendant of the **root** route named **vault** which has a path of **root.vault**:
 {%gist 3429110 %}
-In the above example, the **vault** route has a route of **/vault**, as well as a child state of **new** which in turn has a child state named **step1**.  During routing, these three routes will be composed and a route of **/vault/new/step1** will match the **step1** state.
+In the above example, the **vault** route has a route of **/vault**, as well as a child state of **new** which in turn has a child state named **step1**.  If a url of **/vault/new/step1** is requested, all three of these routes will be composed together and all 3 states or routes will be executed in sequence.  Each **connectOutlets** method on each state or route will be executed, giving us a chance to change what is displayed on the page, that will reflect the change in application state as the url changes.
 
-Below is a test that verifies this:
+Below is a test that verifies a url of **/vault/new/step1** transitions to the correct state:
 {%gist 3429205 %}
 
 ##State transitions and View Changes##
@@ -54,20 +54,22 @@ Below is the vault route and its child states
 {%gist 3429309 %}
 And below is a screen grab that outlines which parts of the page are rendered by which route whenever a page is rendered at the following url **#/vault/new/step1**
 {%img /images/ember/step.png%}
-If the url changes to **#/vault/new/step2** then only the last third of the page will be change when the **step2** route is transitioned to.
+If the url changes to **#/vault/new/step2** then only the bottom segment of the page will be change when the **step2** route is transitioned to.
 
 ##Outlets##
 So how is this beautiful tapestry of nested views stitched together?  How do router transitions marry themselves to view changes?  Well, the observant amongst you will have noticed a method named **connectOutlets** that appears in all of the leaf routes (non-root route) of the router.
 
-In order to illustrate how this works, I am going to first refresh our memory of what the router itself looks like and it first child routes that match the home route of '/', which is the url when the application first loads:
+In order to illustrate how this works, I am going to first refresh our memory of what the router itself looks like:
 {%gist 3412899 %}
-As explained earlier, the router will parse the url and try and find a match on the route property of one of the router's child routes or states.  In this case a route will be found on the **index** route which redirects to the home **route**.
+As explained earlier, the router will parse the url and try and find a match on the route property of one of the router's child routes or states.  When the application first loads or a url of '/' is requested, a route will be found on the **index** route which redirects to the home **route**.
 
-On **line 10** of the above, we come to the now infamous **connectOutlets** method (lines 10 - 13 of the above gist ).  Ember provides some nice conventions that are tied to routing.  The **connectOutlets** method will be called when a state or route has been entered and is where you hook up your controllers and views to reflect the change in application state as the url changes. 
+On **line 10** of the above, we come to the now infamous **connectOutlets** method (lines 10 - 13 of the above gist).
 
-**connectOutlets** works by assigning Ember controller/view pairs, e.g. App.xxxxController and App.xxxxView and assigning them to named placeholders called **outlets** and are found in handlebars templates.
+Ember provides some nice conventions that are tied to routing.  The **connectOutlets** method will be called when a state or route has been entered and gives the developer an opportunity to reflect the change in application state by what is presented on the screen to the end user.  
 
-When you create and initialize a new Ember application object (more on this later), you need to have a controller name **ApplicationController** and a view named **ApplicationView** or Ember will throw an exception.  These two objects will form our first controller/view pair, that conforms to the App.xxxxController and App.xxxxView convention.
+**connectOutlets** works by assigning Ember controller/view pairs, that follow the convention **xxxxController** and **xxxxView** and assigning them to named placeholders called **outlets** that are found in handlebars templates.
+
+When you create and initialize a new Ember application object (more on this later), you must have a controller named **ApplicationController** and a view named **ApplicationView** or Ember will throw an exception.  These two objects will form our first controller/view pair that conforms to the xxxxController and xxxxView convention.  What is rendered from the xxxxView will be placed in the **outlet** or handlebars placeholder. 
 
 Below is my **ApplicationController** from this sample app:
 {%codeblock%}
@@ -79,11 +81,11 @@ And below is my **ApplicationView** from this sample app:
 WZ.ApplicationView = Em.View.extend
   templateName: 'app/templates/application'
 {%endcodeblock%}
-With these in place, Ember will render the template that is specified at the **templateName** property in the view above.  Below is the template:
+With these in place, Ember will render the template that is specified at the **templateName** property in the view above.  Below is the template that can be found at the path of the **templateName** property above:
 {%gist 3438544 %}
-Pretty sparse huh?  All that the above template contains are two **outlets**, one outlet named **nav** and one default outlet.  **Outlets** can be thought of as place holders that you can inject content into.  The connectOutlets method on each child route is the place to connect up these **outlets** with corresponding Ember and controller pairs.
+Pretty sparse huh?  All that the above template contains are two **outlets**, one outlet named **nav** and one default outlet.  **Outlets** can be thought of as place holders that you can inject content into.  The connectOutlets method on each child route is the place to connect up these **outlets** with corresponding Ember view and controller pairs.
 
-Below is a refresh of the **connectOutlets** method for the '/' route:
+Below is a refresh of the **connectOutlets** method for the **/home** route:
 {%gist 3438631 %}
 The first outlet we connect is the named **nav** outlet (line 4 of the above gist).  The first thing to note on line 4 is that we are accessing the controller via the router with the following syntax:
 {%codeblock%}
@@ -98,24 +100,25 @@ And instead objects ending in **Controller** are detected and are assigned as pr
 window.WZ = Ember.Application.create()
 WZ.initialize()
 {%endcodeblock%}
-This means we can pull the controller instances from the router and call the controller's **connectOutlet** method to inject content into the **outlet** placeholders that are specified in the handlebars template.  **connectOutlet** creates a new instance of the provided view class, wires it up with its associated controller, and assigns a new view to a property on the current controller.  
+This means we can pull the controller instances from the router and call the controller's **connectOutlet** method to inject content into the **outlet** placeholders that are specified in the handlebars template.  **connectOutlet** creates a new instance of the provided view class, wires it up with its associated controller, and assigns the new view instance to a property on the current controller.  
 
 What this translates to, is that if we call **connectOutlet** like this
 {%codeblock%}
 router.get('applicationController').connectOutlet 'nav', 'navbar'
 {%endcodeblock%}
-We are telling ember to connect the outlet that is named **nav** which is the first argument above and that we want to create a new instance of a view called **NavbarView** (second argument) and wire it up with a controller named **NavbarController** (also second argument).
+We are telling ember to connect the outlet that is named **nav** and that we want to create a new instance of a view called **NavbarView** and wire it up with a controller named **NavbarController**.
+
 The following line from the above gist calls the controller's connectOutlet method and only passes in one argument:
 {%codeblock%}
 router.get('applicationController').connectOutlet 'home'
 {%endcodeblock%}
-This tells ember to connect the default oultet **{{outlet}}** with a view called HomeView and wire it up with a view called HomeController.
+This tells ember to connect the outlet with no name with a view called HomeView and wire it up with a controller called HomeController.
 
-HomeView itself has a **templateName** property which in turn has an outlet and we can hook that outlet up with the following line:
+The HomeView view that was instanciated from the connectOutlet above method points to a handlebars template that contains  a named outlet that we can hook up with the following line:
 {%codeblock%}
 router.get('homeController').connectOutlet 'bottombar', 'bottombar'
 {%endcodeblock%}
-The above line accesses the homeController that is created and assigned as a property of the router in application initialisation and then calls **connectOutlet** which will connect an outlet name **bottombar** with a controller/view pair named BottombarView and BottombarController. 
+The above line accesses the homeController via the router, and then calls **connectOutlet** which will connect an outlet named **bottombar** with a controller/view pair named BottombarView and BottombarController.  And so we could go on into finer more maintainable detail
 
 And this is what the page looks like in the browser
 {%img /images/ember/home.png%}
