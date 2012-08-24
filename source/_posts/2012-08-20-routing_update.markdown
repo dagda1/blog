@@ -7,7 +7,7 @@ categories: JavaScript Ember
 ---
 I've had a number of requests to update <a href="http://www.thesoftwaresimpleton.com/blog/2012/04/22/ember-js-routemanager/" target="_blank">this</a> post which discussed a solution to the lack of routing at that time of writing in <a href="http://emberjs.com/">ember</a>.  This solution used an addon called the <a href="https://github.com/ghempton/ember-routemanager" target="_blank">ember-routemanager</a> from <a href="https://twitter.com/ghempton" target="_blank">Gordon Hempton</a>.    
 
-A lot in Ember has changed since that post and Ember now has its own full blown <a href="http://emberjs.com/guides/outlets/#toc_the-router" target="_blank">routing solution</a> that is not a million miles away from the route manager I blogged about.  I believe <a href="https://twitter.com/ghempton" target="_blank">Gordon Hempton</a> who created the origin ember-routemanager is now an ember core member which might explain the stark similarities.  
+A lot in Ember has changed since that post and Ember now has its own full blown <a href="http://emberjs.com/guides/outlets/#toc_the-router" target="_blank">routing solution</a> that is not a million miles away from the route manager I blogged about.  I believe <a href="https://twitter.com/ghempton" target="_blank">Gordon Hempton</a> who created the original ember-routemanager is now an ember core member which might explain the stark similarities.  
 
 ##Enough of the old and on with the New##
 The new ember router has been on the <a href="" target="_blank">master</a> branch for a while now and it is an emerging pattern that is prone to change and indeed has changed quite a bit in its short existence.  The ember routing solution is one of the main reasons I am drawn to ember and it differs greatly from anything else out there in the **javascript mv*** space.
@@ -120,7 +120,7 @@ router.get('homeController').connectOutlet 'bottombar', 'bottombar'
 {%endcodeblock%}
 The above line accesses the homeController via the router, and then call **connectOutlet** which will connect an outlet named **bottombar** with a controller/view pair named BottombarView and BottombarController.  And so we could go on into finer more maintainable detail
 
-And this is what the page looks like in the browser and what section belongs to which outlet.
+And this is what the page looks like in the browser and which section belongs to which outlet.
 {%img /images/ember/home.png%}
 I hope you can see that this is a very elegant solution to weaving a rich and maintainable UI from your handlebars templates.
 
