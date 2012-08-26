@@ -30,7 +30,7 @@ The basic premise of the ember routing solution is that you describe your applic
 - On **line 9**, the home route has a route property of **/home**.
 - On **line 10** is the **connectOutlets** method that you can override in each child route and provide a mechanism for rendering content onto the page as the url changes.  More on this later.
 
-When an Ember application loads, Ember will parse the URL and attempt to find an Ember.Route within the Router's child route hierarchy that matches the url.   Loading the page at '/' which is what the url is when the application is first initialised, will first of all transition the **router** to the first route named **root** and then then to the subsate or child route where the router can find a match on the url.  In this case, the router will find a match on the route property of the **index** route and will transition to that route.  The **index** route in the above example simply redirects to the **home** route via the **redirectsTo** directive on **line 7** of the above gist.
+When an Ember application loads, Ember will parse the URL and attempt to find an Ember.Route within the Router's child route hierarchy that matches the url.   Loading the page at '/' which is what the url is when the application is first initialised, will first of all transition the **router** to the first route named **root** and then to the subsate or child route where the router can find a match on the url.  In this case, the router will find a match on the route property of the **index** route and will transition to that route.  The **index** route in the above example simply redirects to the **home** route via the **redirectsTo** directive on **line 7** of the above gist.
 
 Loading the page at the url **#/home** will transition the router to a substate or route at a path or place in the hierarchy of **root.home**.  This path syntax is useful for testing and what it translates to is that we are currently at the home route which is a child of the root route.  
 
@@ -54,7 +54,7 @@ Below is the vault route and its child states
 {%gist 3429309 %}
 And below is a screen grab that outlines which parts of the page are rendered by which route whenever a page is rendered at the following url **#/vault/new/step1**
 {%img /images/ember/step.png%}
-If the url changes to **#/vault/new/step2** then only the bottom segment of the page will be change when the **step2** route is transitioned to.
+If the url changes to **#/vault/new/step2** then only the bottom segment of the page will be changed when the **step2** route is transitioned to.
 
 ##Outlets##
 So how is this beautiful tapestry of nested views stitched together?  How do router transitions marry themselves to view changes?  Well, the observant amongst you will have noticed a method named **connectOutlets** that appears in all of the leaf routes (non-root route) of the router.
@@ -91,7 +91,7 @@ The first outlet we connect is the named **nav** outlet (line 4 of the above gis
 {%codeblock%}
 router.get('applicationController').connectOutlet 'nav', 'navbar'
 {%endcodeblock%}
-Ember has made the wise choice to move away accessing objects with the path syntax that was popularised in earlier ember applications where you might have accessed the application controller like this:
+Ember has made the wise choice to move away from accessing objects with the path syntax that was popularised in earlier ember applications when you might have accessed the application controller like this:
 {%codeblock%}
 WZ.controllers.applicationController
 {%endcodeblock%}
