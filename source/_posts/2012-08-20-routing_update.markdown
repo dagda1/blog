@@ -133,4 +133,6 @@ I am blown away by the elegance of this routing solution and it is the best out 
 
 I besiege you to get the latest <a href="https://github.com/emberjs/ember.js/" target="_blank">ember</a> from github and take the plunge, you will not regret it.
 
+All the code that is used in these blog posts can be found at this <a href="https://github.com/dagda1/workoutzenith" target="_blank">github repo</a>.
+
 Please feel free to add any comments below.
