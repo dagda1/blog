@@ -5,7 +5,7 @@ date: 2012-04-22 20:43
 comments: true
 categories: JavaScript Ember
 ---
-**WARN:** This article is now out of date.  Check this <a href="/blog/2012/08/20/routing_update/">post</a> for a more up to date article on ember routing. 
+**WARN:** This article is now out of date.  Check this <a href="2013/03/03/final-route/">post</a> for a more up to date article on ember routing. 
 
 When I first started investigating <a target="_blank" href="http://emberjs.com/">Ember.js</a> I wrote a <a target="_blank" href="http://www.thesoftwaresimpleton.com/blog/2012/02/28/statemachine/">post</a> about an Ember addon called the <a href="http://docs.sproutcore.com/symbols/SC.State.html" target="_blank">SC.StateChart</a> that is really part of the old Sproutcore framework.  In that post, I wrote that I liked the *enterState* and *exitState* handlers of the *StateChart* and how they would be ideal for switching between views.  As of *Ember 0.9.6*, the **SC** namespace is no longer supported and I decided to refactor/remove anything that was Sproutcore related.  It was during this refactoring that I found a very similar object called the <a href="http://docs.emberjs.com/#doc=Ember.StateManager&src=false" target="_blank">Ember.StateManager</a> that already exists in the Ember core code. It turns out that the Ember StateManager is a very elegant solution to transitioning between views and attaching and removing views from the DOM.
 
