@@ -10,7 +10,7 @@ This is my third post about the now infamous <a href="https://github.com/emberjs
 ##Model##
 I have a simple application that I have been using for my posts that simly allows a user to create a bank of gym exercises that somebody would use while exercising in the gym.  The end goal is to create exercise programs from this bank.  
 
-Every exercise can be categorised into obvious grouping of abdominal, arms, back, chest and leg exercises and below is the group model:
+Every exercise can be categorised into an obvious grouping of abdominal, arms, back, chest and leg exercises and below is the group model:
 {%gist 5109743 %}
 Anybody familiar with an object relational mapper (ORM) will instantly recognise the **DS.hasMany** declaration on line 3 which states that a group can have many exercises associated with it. 
 
@@ -18,8 +18,18 @@ If we look at the Exercise model:
 {%gist 5109764 %}
 We can see that on **line 5** the other side of the association is declared with the **DS.belongsTo** syntax.
 ##What about routing?##
-I am going to refrain from contrasting the new router with the old because this version seems final for now but as before the router of an ember application is really the focal point of the app.  The router orchestrates state changes in the application via url changes from user interaction.  The router and the various associated states are tasked with displaying templates, loading data, and otherwise setting up application state.  Ember handles this by matching urls or url segments to routes and in order to make this happen, the router has a map function where you can configure this.
+I am going to refrain from contrasting the new router with the old because this version seems final for now but as before the router of an ember application is really the focal point of the app.  The router orchestrates state changes in the application via url changes from user interaction.  The router and the various associated states are tasked with displaying templates, loading data, and otherwise setting up application state.  Ember handles this by matching urls or url segments to routes and in order to make this happen, the router has a map function where you can **map** url segments to routes.
 
 Below are the map of relevant urls in this sample app:
-{%gist 5109764 %}
-As stated previously, we are mapping urls to routes and there a number of ember conventions that dramatically cut down the amount of code required to piece this all togther.  On line 2 of the above gist, we are stating in no uncertain terms that the root or default url **/** will be handled by a route named home.  The last sentence is not entirely true as the **home** string argument that is passed to the route method on line 2 actually does much more than just specifying a route, it also exposes us to the first of the many ember conventions that exist.  The home argument actually specifies that this url should be handled by an ember route named **HomeRoute** and **HomeRoute** will hook up a controller/view/template combination named HomeController, HomeView and a handlebars template named **home.hbs** unless we specity otherwise.
+{%gist 5120047 %}
+As stated previously, we are mapping urls to routes and there a number of ember conventions that dramatically cut down the amount of code required to piece this all togther.  On line 2 of the above gist, we are stating in no uncertain terms that the root or default url **/** will be handled by a route named home.  The last sentence is not entirely true as the **home** string argument that is passed to the route method on line 2 actually does much more than just specifying a route, it also exposes us to the first of the many ember conventions that exist.  The home argument actually specifies that this url should be handled by an ember route named **HomeRoute** and **HomeRoute** will hook up a controller/view/template combination named HomeController, HomeView and a handlebars template named **home.hbs** unless we specity otherwise.  So what how does this this mean, how do these objects collaborate to manufacture a rendered view?
+
+##Anatomy of an Ember Url Change##
+A user will enter an ember site at a specific url or they will interact with a view which will raise an event and cause the url to change.  Entering via a url or the application changing the url will invoke the router which will try and translate the change in url by matching the url with one of the route handlers that you specify.  We have specified in our router that the root url will be handled by a route named home:
+{%codeblock%}
+WZ.Router.map  ->
+  @route 'home', path: "/"
+{%endcodeblock%}
+Ember routes are also charged with hooking up the correct model, the correct controller and the correcct view which will point to a handlebars template.  These will all follow the convention of prefixing the particular object with the string argument that is passed to the route method which in this case is **home**.  The ember runtime will look for a **HomeController**, a **HomeView** or if it cannot find a view, it will look for a **home.hbs** file.  Now we come to the confusing point, you don't actually have to create any of these objects.
+
+{%img /images/ember/step.png%}
