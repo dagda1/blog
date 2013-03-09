@@ -42,7 +42,7 @@ The **ApplicaitonRoute** is the correct place for this as the nav will appear on
 
 On line 5 of the above gist we are using the render method to specify:
 
-- Which template we want to render, which in this case is **'nav/nav'**
+- Which template we want to render, which in this case is located in our directories folder at **'nav/nav'**
 - Which parent template the new content will be injected into which in this case is the **application** template.  This is specified by the **into** property of the options hash.
 - Which named outlet of the parent template we want to render the content into which in this case is specified by the outlet property of the options hash and we set that property to **nav**.
 
