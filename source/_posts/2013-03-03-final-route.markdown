@@ -5,10 +5,9 @@ date: 2013-03-03 22:11
 comments: true
 categories: JavaScript Ember
 ---
-###WARNING: May cause confusion!###
 This is my third post about the now infamous <a href="https://github.com/emberjs/ember.js/" target="_blank">ember.js</a> router.  My initial reaction to the new router was mixed as I quite liked the old router but over time, I have grown to like it.  One thing that is undeniable about the new router is that it is much easier on the wrist and fingers as it requires writing considerably less code.  That said, the new router is heavily convention based and there were initial periods of bewiderment as I looked at an errorless console and a white screen as my routes were not found.  These periods have receded over the passage of time but there are some traps and pitfalls that catch the unaware.  These things generally only shake out during real world use.  First of all let me set the scene with the model of the sample app that I will use to illustrate the concepts.  
 ##Model##
-I have a simple application that I have been using for my posts that simply allows a user to create a bank of gym exercises that somebody would use while exercising in the gym.  The end goal is to create exercise programs from this bank.  There is an exercise model which describes the individual exercise and a group model that is used to categorise the exercise by abs, arms, back, legs etc..  Both models are listed below for completeness:
+I have a simple application that I have been using for my posts that simply allows a user to create a bank of gym exercises that somebody would use while exercising in the gym.  The end goal is to create exercise programs from this bank.  There is an exercise model which describes the individual exercise and a group model that is used to categorise the exercise by abs, arms, back, legs etc.  Both models are listed below for completeness:
 {%gist 5109764 %}
 ##Behold The Router##
 I am going to refrain from contrasting the new router with the old because this version seems final and as before the router of an ember application is really the focal point of the app.  The router orchestrates state changes in the application via url changes from user interaction.  The router and the various associated states are tasked with displaying templates, loading data, and otherwise setting up application state.  Ember handles this by matching urls or url segments to routes and in order to make this happen, the router has a map function where you can **map** url segments to routes.
@@ -22,7 +21,7 @@ WZ.Router.map  ->
 {%endcodeblock%}
 Ember routes are also charged with hooking up the correct model, the correct controller and the correct view which will point to a handlebars template.  These will all follow the convention of prefixing the particular object with the string argument that is passed to the route method which in this case is **home**.  The ember runtime will look for a **HomeController**, a **HomeView** or if it cannot find a view, it will look for a **home.hbs** file.  
 
-Now we come to the confusing point, you don't actually have to create any of these objects and in this example, I have not specified a **HomeRoute**, **HomeController** or **HomeRoute**.  When you navigate to the **'/'** root route, Ember will look for a **HomeRoute** and if it does not find it, it will automatically generate a **HomeRoute**.  The same can be said for **HomeController** and **HomeView**.  We can verify this by adding the following expressions to our handlebars template:
+Now we come to the confusing point, you don't actually have to create any of these objects and in this example, I have not specified a **HomeRoute**, **HomeController** or **HomeView**.  When you navigate to the **'/'** root route, Ember will look for a **HomeRoute** and if it does not find it, it will automatically generate a **HomeRoute**.  The same can be said for **HomeController** and **HomeView**.  We can verify this by adding the following expressions to our handlebars template:
 {%gist 5122863 %}
 Now if we refresh the page, we can actually see what controller and view are backing this route. 
 {%img /images/ember/debug.png%}
