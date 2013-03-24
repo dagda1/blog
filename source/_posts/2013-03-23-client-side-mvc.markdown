@@ -14,7 +14,7 @@ I'm writing this in the week ending 23 March 2013.  A week that future generatio
 Ember has a multitude of new concepts to take on board and trying to grasp them all at once can be very overwhelming.
 
 ###Client Side MVC is completely different than Server Side MVC###
-I thought I would repeat the title for good measure.  I have ended up being a mainly front end only developer by circumstance and partially because I enjoy coding on the client more.  It was not a choice I made.  I just worked on progressively more javascript heavy apps. 
+I thought I would repeat the title for good measure.  I am a front end only developer by circumstance and partially because I enjoy coding on the client more.  It was not a choice I made.  I just worked on progressively more javascript heavy apps. 
 
 I have worked with a number of server side mvc frameworks, and as it turns out, these server side incarnations are not actually true mvc in the same sense that the classic smalltalk mvc was.  These server side MVC frameworks are better classified as a <a href="http://en.wikipedia.org/wiki/Model2" target="_blank">model2</a> architecture.  Let us look at the server first.
 
@@ -25,7 +25,7 @@ A typical http request/response of a server side mvc framework is this:
 - The controller will then retrieve the appropriate model before handing the model or some wrapped viewmodel to the view to do the rendering.
 - Bottom line is, each GET request usually results in a big blob of something being returned to the browser.  That something could be html, json, xml, text or whatever.
 
-On the server, the objects the collaborating objects only exist for the length the http request.  Http is a stateless protocol and this constrains the real mvc pattern that was popularised by smalltalk.  The views on the server can only receive a request, and dump out some data.
+On the server, the collaborating MVC objects only exist for the length the http request.  Http is a stateless protocol and this constrains the real mvc pattern that was popularised by smalltalk.  The views on the server can only receive a request, and dump out some data.
 
 On the client side, there are no such constraints as the objects can live as long as the browser session.  What finally triggered off all the right mental associations about client mvc for me is the following statement:
 {%blockquote%}
@@ -69,7 +69,28 @@ In short we are wiring together the value of the **firstName** property of the *
 It is worth noting that the Ember Handlebars templates are binding aware and they pick up these changes automagically without any additional code.  Once I learned about bindings, I knew ember was something I should take notice of.
 
 ###Computed Properties###
-If we wanted to display my full name which is a combination or a combination of the **firstName** and **surname** properties of our Person object we could update the handlebars to look like this.
+If we wanted to display my full name or a combination of the **firstName** and **surname** properties of our Person object then we could update the handlebars to look like this.
 {% gist 5232287 %}
-I could do that but then there would be no point in writing this section.  Ember has a special mechanism called <a href="http://emberjs.com/guides/object-model/computed-properties/" target="_blank">computed properties</a>
+I could do that but then there would be no point in writing this section.  Ember has a special mechanism called <a href="http://emberjs.com/guides/object-model/computed-properties/" target="_blank">computed properties</a> that allow you to create functions that behave like normal properties.  Before going any further, let us update the code to create a computed property that is a combination of the **firstName** and **surname** properties of the Person object.  Below is the updated code:
+{% gist 5232333 %}
+We are doing things a wee bit differently here than before:
+	
+- On **line 3** we are using **Object.extend** rather than **Object.create**.  This is the preferred route.  You can think of the objects you create with **Object.extend** as the classes from which you create instances of these classes from.  
+- On **line 11** we are creating an *instance* of the **Person** class and assigning it to an **App.person** variable which we will reference in our handlebars.
+- **Lines 7 -9** define the computed property.  the computed property simply concatenates the **firstName **and  **surname** properties into a single output.
+- The property expression on **line 9** that is tagged onto the end of the function definition struck me as very odd the first time I came across it.  The property definition on **line 9** takes a comma delimited list of string arguments that equate to ember paths.  These paths can be thought of pointers to ember object properties.  
+-  When we add this property syntax onto the end of a function and supply a list of string arguments, we are telling the ember runtime to observe changes in the properties these paths point to.  In this instance we are stating that whenever anything changes in the **firstName** property or the **surname** property then this computed property needs to recalculate and output its result.  
+
+We need to update our handlebars template to use the computed property:
+{%gist 5232372 %}
+On **line 1** of the above gist, we are pointing to the **fullName** function that we created on the **App.Person** class.  You can see that we can refer to this function as a normal object property like we did with the firstName and surname properties because the function was extended with the property definition.
+
+Changing either of the text in the inputs causes the computed property **fullName** to recalculate.  
+
+You can verify this below or at this <a href="http://jsfiddle.net/dagda1/Jr4CB/3/" target="_blank">jsfiddle</a>.
+<iframe width="100%" height="300" src="http://jsfiddle.net/dagda1/Jr4CB/3/embedded/result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+###Conclusion###
+Ember is brimming with a multitude of abstractions that might be different than anything you have come across in the past.  I believe it is better to try and take these concepts in one at a time rather than dive in and get blown away by the routing, controllers, itemControllers and the rest.  I believe it is important to grasp these core concepts first before progressing.  You will use them more than anything else.
+
+
 
