@@ -1,0 +1,6 @@
+Lead.Views.Leads = Ember.View.extend Ember.Metamorph, 
+  content: null
+  tagName: 'tbody'
+  adjustedIndex:  ( ->
+                      @getPath('_parentView.contentIndex') + 1
+                  ).property()

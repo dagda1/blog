@@ -1,0 +1,11 @@
+input, textarea
+  padding: 9px
+  border: 1px solid $text-box-border
+  width: 200px
+  background: $text-box-bg
+
+input
+  @include border-radius(5px)
+
+input, text    
+  @include background-image(image-url('noise.png'), linear-gradient($text-box-from-gradient, $text-box-to-gradient))

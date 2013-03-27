@@ -1,0 +1,5 @@
+  render: =>        
+    @$el.html(@template())
+    @collection.each (item, counter) =>      
+      @renderView($('tbody:first', @$el), 'append', new ReportBusinessUnitView(model: item, vent: @vent))
+    @

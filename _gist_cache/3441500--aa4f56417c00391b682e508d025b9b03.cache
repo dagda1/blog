@@ -1,0 +1,5 @@
+index: Ember.Route.extend
+  route: '/'
+  connectOutlets: (router, event) ->
+    exercises = WZ.store.find(WZ.Exercise)
+    router.get('exercisesController').connectOutlet 'main', 'exercisesHome', exercises

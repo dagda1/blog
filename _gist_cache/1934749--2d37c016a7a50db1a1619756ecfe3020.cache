@@ -1,0 +1,27 @@
+Lead.Statechart = SC.Statechart.extend
+  monitorIsActive: false
+
+  subStatesAreConcurrent: YES
+
+  rootState: SC.State.extend
+    initialSubstate: 'notParsing'
+
+    notParsing: SC.State.extend
+      enterState: ->
+        $('#searchPanel').show()
+
+      exitState: ->
+        $('#searchPanel').hide()
+
+      startParsing: (url_search)->
+        @gotoState('parsing', url_search)
+
+    parsing: SC.State.extend
+      enterState: (url_search) ->
+        $('#resultsPanel').show()
+        Lead.parsing_controller.start_parsing url_search
+
+      exitState: ->
+        $('#resultsPanel').hide()
+        Lead.parsing_controller.stop_parsing()
+

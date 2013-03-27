@@ -19,5 +19,6 @@ As it turns out, the above statement is not entirely true or at least, I purpose
 {%blockquote %}
 In Ember.js, controllers allow you to decorate your models with display logic. In general, your models will have properties that are saved to the server, while controllers will have properties that your app does not need to save to the server.
 {%endblockquote%}
+As always the best way to illustrate this is with some code
 
 

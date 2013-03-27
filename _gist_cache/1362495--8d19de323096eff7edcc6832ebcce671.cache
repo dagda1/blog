@@ -1,0 +1,20 @@
+class BusinessUnitsView extends MIBaseView
+  initialize: (options) ->
+    @vent = options.vent
+    options.vent.bind('showBusinessUnits', @showBusinessUnits)
+
+  events:
+    'click #generate': "generate"
+
+  generate: (e) =>    
+    e.preventDefault()
+
+    identifiers = _.map( $('input:checked'), (check) -> 
+                    {Uid: $(check).val(), Title: $(check).parents("tr:eq(0)").find("label").html()}
+                  )
+
+    if identifiers.length == 0
+      showErrorMessage('You have not selected any businss units.')
+      return    
+
+    @vent.trigger('reportbusinessunitview:load', new BusinessUnits(identifiers))

@@ -1,0 +1,8 @@
+describe 'router', ->
+  describe 'transitions', ->
+    beforeEach ->
+      WZ.initialize()
+
+    it 'should transition to home from root', ->
+      WZ.router.route '/'
+      expect(WZ.router.get('currentState.path')).toEqual 'root.home'

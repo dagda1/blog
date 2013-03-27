@@ -1,0 +1,19 @@
+    unbindFromAll: ->
+      _.each(@bindings, (binding) ->
+        binding.model.unbind(binding.ev, binding.callback)
+      )
+
+      @bindings = []    
+
+    dispose: () ->
+      @disposeViews()
+      @unbindFromAll()
+      @unbind()
+      @remove()
+
+    disposeViews: ->     
+      if @views
+        _(@views).each (view) ->
+          view.dispose()
+      @views = []
+  })

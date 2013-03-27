@@ -1,0 +1,13 @@
+WZ.ContentRouteManager = Em.RouteManager.extend
+  rootView: WZ.layout.get 'contentArea'
+  initialState: 'main.home'
+  enableLogging: false
+
+  main: Ember.ViewState.create
+    route: 'home'
+    view: Ember.View.create
+      templateName: 'app/templates/home/main'
+
+    home: Ember.ViewState.create
+      view: Ember.View.create
+        templateName: 'app/templates/home/home'

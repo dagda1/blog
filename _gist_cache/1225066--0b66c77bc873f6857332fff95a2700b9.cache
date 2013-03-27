@@ -1,0 +1,9 @@
+  %nav{:role => "navigation"}
+    %ul{:role => "user"}
+      %li
+        =link_to "log Out", logout_path
+    %ul{:role => "main-navigation"}
+      %li 
+        =link_to "Capture", {:action => "Index", :controller => "Home"}, :method => :get
+      %li
+        =link_to "Archives", {:action => "Index", :controller => "Archive"}, :method => :get

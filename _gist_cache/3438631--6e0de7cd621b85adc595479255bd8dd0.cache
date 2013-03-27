@@ -1,0 +1,6 @@
+home: Em.Route.extend
+  route: '/home'
+  connectOutlets: (router, event) ->
+    router.get('applicationController').connectOutlet 'nav', 'navbar'
+    router.get('applicationController').connectOutlet 'home'
+    router.get('homeController').connectOutlet 'bottombar', 'bottombar'

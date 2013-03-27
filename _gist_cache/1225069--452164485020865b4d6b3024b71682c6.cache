@@ -1,0 +1,8 @@
+$nav-bg: desaturate(lighten(#9CC889, 18),5)
+$nav-border: darken($nav-bg, 10)
+$nav-border-top: lighten($nav-bg, 15)
+$nav-border-bottom: darken($nav-bg, 25)
+$nav-border-left: darken($nav-bg, 11)
+$nav-border-right: lighten($nav-bg, 7)
+$nav-color: darken($nav-bg, 38)
+$nav-color-hover: darken($nav-color, 25)

@@ -1,0 +1,21 @@
+    def publish(urlSearch, routing_key, ws = nil)
+      EM.run do
+        corr_id = rand(10_000_000).to_s
+      
+        connection = AMQP.connect(@conf)
+        
+        callback_queue = AMQP::Channel.new(connection).queue("", :exclusive => false)
+        
+        callback_queue.subscribe(:ack => true) do |header, body|
+          header.ack
+
+          ws.send body if ws
+        end
+        
+        callback_queue.append_callback(:declare) do
+          AMQP::Exchange.default.publish(urlSearch, :routing_key => routing_key, :reply_to => callback_queue.name, :correlation_id => corr_id)
+        end
+      
+        puts "initial message sent"
+      end
+    end 

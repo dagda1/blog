@@ -1,0 +1,10 @@
+class BaseView
+  constructor: (options) ->
+    Backbone.View.apply(@, [options])
+
+  _.extend(BaseView.prototype, Backbone.View.prototype, {
+
+    renderView: (el, func, view) ->
+      $.fn[func].call(el, view.render().el)
+      @views ||= []
+      @views.push view

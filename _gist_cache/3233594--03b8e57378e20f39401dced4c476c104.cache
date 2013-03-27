@@ -1,0 +1,35 @@
+DocumentManager.module("Layout", function(Layout, DocumentManager, Backbone, Marionette, $, _){
+  var Layout = Backbone.Marionette.Layout.extend({
+    template: "#versionedDocuments",
+
+    regions: {
+      treeView: '.treeview_container',
+      documents: '#documents'
+    },
+
+    events: {
+      "click .battlebox-functions-left a:first": "addDocument",
+      "click .battlebox-functions-left a:last": "addFolder"
+    },
+
+    addDocument: function(e){
+      e.preventDefault();
+    },
+
+    addFolder: function(e){
+      e.preventDefault();
+    }
+  });
+
+  DocumentManager.addInitializer(function(){
+    DocumentManager.layout = new Layout();
+
+    DocumentManager.layout.on("show", function(){
+      DocumentManager.vent.trigger("layout:rendered");
+    });
+
+    DocumentManager.content.show(DocumentManager.layout)
+  });  
+
+  return Layout;
+});

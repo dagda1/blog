@@ -1,0 +1,12 @@
+WZ.Router = Em.Router.extend
+  enableLogging: true
+  location: 'hash'
+  root: Em.Route.extend
+    index: Ember.Route.extend
+      route: '/'
+      redirectsTo: 'home'
+    home: Em.Route.extend
+      route: '/home'
+      connectOutlets: (router, event) ->
+        router.get('applicationController').connectOutlet 'home'
+        router.get('homeController').connectOutlet 'bottombar', 'bottombar'

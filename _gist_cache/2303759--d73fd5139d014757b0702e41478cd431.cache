@@ -1,0 +1,7 @@
+describe 'Controllers', ->
+  describe 'UrlSearch', ->
+    it 'should create search capture dialog', ->
+      Ember.run ->
+        controller = Lead.Controllers.UrlSearch.create()
+
+      expect($('#goButton').length).toEqual(1)

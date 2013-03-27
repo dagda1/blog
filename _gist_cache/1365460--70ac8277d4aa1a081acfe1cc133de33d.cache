@@ -1,0 +1,17 @@
+class ReportBusinessUnitView extends MIBaseView
+  initialize: (options) ->
+    @vent = options.vent
+    @template = _.template($('#businessunit_template').html())
+
+  events:
+    "click .individualBu": "showBusinessUnitDetail"
+
+  showBusinessUnitDetail: (e) =>
+    e.preventDefault()    
+    self = @   
+
+    @vent.trigger('management:showbusinessunitdeail', @model)
+
+  render: =>
+    $(@el).html(@template(@model.toJSON()))
+    @

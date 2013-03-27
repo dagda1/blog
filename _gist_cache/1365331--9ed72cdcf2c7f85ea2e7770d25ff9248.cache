@@ -1,0 +1,10 @@
+class BusinessUnit extends Backbone.Model
+
+class BusinessUnits extends Backbone.Collection
+  model: BusinessUnit
+
+  url: ->
+    "#{_getBusinessUnitScores}#{@getUids()}"
+
+  getUids: ->
+    @pluck("Uid").join(',')

@@ -1,0 +1,3 @@
+it 'should transition to step1', ->
+  WZ.router.route 'vault/new/step1'
+  expect(WZ.router.get('currentState.path')).toEqual 'root.vault.new.step1'

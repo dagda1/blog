@@ -1,0 +1,3 @@
+<label for="url_search_url">Url</label>
+{{view Ember.TextField size="30" valueBinding="urlSearch.search_url"}}
+{{#view Ember.Button id="goButton" targetBinding="this" action="crawl"}}GO{{/view}}

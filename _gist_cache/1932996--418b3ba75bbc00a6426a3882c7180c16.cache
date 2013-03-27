@@ -1,0 +1,8 @@
+@view = Ember.View.create
+  controller: @
+  urlSearchBinding: 'controller.url_search'
+  templateName: 'app/templates/url_search/show'
+  didInsertElement: ->
+    $('#url_search_url').focus()
+  crawl: =>
+    Lead.state_chart.sendAction('startParsing', {search_url: @url_search.search_url})
