@@ -1,8 +1,0 @@
-input, textarea
-  &:hover
-    background: darken($text-box-from-gradient, 10)
-    border-color: $text-box-hover
-
-input, textarea
-  @include transition-property(background)
-  @include transition-duration(0.5s)

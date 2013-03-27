@@ -1,5 +1,0 @@
-class App
-  init: ->
-    vent = _.extend({}, Backbone.Events)
-    businessUnitsView = new BusinessUnitsView({vent: vent, el: $('#businessUnits')})   
-    managementView = new ManagementReportView({vent: vent, el: $('#managementReport')}) 

@@ -1,9 +1,0 @@
-<script type="text/template" id="businessunit_template">
-  <tr data-uid="{{Uid}}">
-    <td class="first"><span>{{Name}}</span></td>
-    <td class="{{StatusClass}} tac">{{OverallScore}}%</td>
-    <td>
-        <a class="impactanalysis individualBu" href="#"> </a>
-    </td>
-  </tr>
-</script>

@@ -1,5 +1,0 @@
-Lead.Lead = Em.Object.extend
-  hasEmails: Ember.computed ->
-                @get('emails').length > 0
-  hasContacts: Ember.computed -> 
-                @get('contacts').length > 0
