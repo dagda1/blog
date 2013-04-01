@@ -5,27 +5,27 @@ date: 2013-03-24 19:00
 comments: true
 categories: JavaScript Ember
 ---
-I have travelled around the beautiful country of Vietnam twice and they have a rather quaint saying:
+I have travelled around the beautiful country of Vietnam twice and they have a great saying:
 {%blockquote %}
-Same same but different
+Same, same but different
 {% endblockquote %}
-I think this saying is descended from the ember controller.  The ember controller is similar in many respects to a controller object that you might find in a server side framework such as rails but at the same time it is quite different.  Let us flesh this out.
+I think this saying is descended from the ember controller.  The ember controller is similar in many respects to a controller object that you might find in a server side framework such as rails but at the same time it is quite different.
 
 In my last <a href="http://www.thesoftwaresimpleton.com/blog/2013/03/23/client-side-mvc/">post</a> I made this statement:
 {%blockquote%}
 a model can notify the view of any changes via the observer pattern.
 {%endblockquote%}
-As it turns out, the above statement is not entirely true or at least, I purposely omitted some facts.  A model does indeed notify the view of any changes but it does so by way of a middle man who sits in between the view and the model.  This middleman is of course the ember.js <a href="http://emberjs.com/guides/controllers/">controller</a>.  The ember api docs portray this shadowy middleman as this:
+As it turns out, the above statement is not entirely true or at least, I purposely omitted some facts.  A model does indeed notify the view of any changes but it does so by way of a middle man who sits in between the view and the model.  This middleman is the ember.js <a href="http://emberjs.com/guides/controllers/">controller</a> and templates are **always** bound to a controller of some description.  The ember api docs portray this shadowy middleman as this:
 {%blockquote %}
 In Ember.js, controllers allow you to decorate your models with display logic. In general, your models will have properties that are saved to the server, while controllers will have properties that your app does not need to save to the server.
 {%endblockquote%}
 As always the best way to illustrate this is with some code.  Let us look at an example of what would happen if we did not have a controller.
 
-Let us say we had an ember-data Employee object like this:
+Let us say we had an ember-data Employee model class like this:
 {% gist 5257190 %}
 The above model has 3 simple fields of **firstName**, **surname** and **age** and a computed property of **fullName**.
 
-Now let us say we are working on an application where we can change the status of an employee to retired or we can reinstate retired employees.  We might have a view like this to set an employees status to retired:
+Now let us say that we are working on an application that has one employee and we can change the status of this employee to retired or we can reinstate the retired employee.  A very specific and limited application you might say.  We might have a view like this to set an employees status to retired:
 
 {%img /images/employee/retire2.png %}
 
@@ -33,16 +33,17 @@ You will have to forgive the crude html but it is a jsfiddle that you can see in
 
 {%img /images/employee/active2.png %}
 
-Now what if we wanted to capture the fact that we had selected the contact by checking the checkbox?  Part of the reason for using a client MV* framework is that we want to deal with nice abstractions to capture what is going on, we don't want to be mucking about the DOM to check if an item is selected, we want to use our rich abstraction to capture this check, so we might to might add an **isChecked** property to our model as I have done on line 8 of the gist below.  
+Now what if we wanted to capture the fact that we had selected the contact by checking the checkbox?  Part of the reason for using a client MV* framework is that we want to deal with nice abstractions to capture what is going on, we don't want to be mucking about the DOM to check if a checkbox is selected and then tie this back to our beautiful model.  We want to use our rich abstraction to capture this check, so we might to might add an **isChecked** property to our model as I have done on line 8 of the gist below.  
 {% gist 5257792 %} 
 We could then set up a two way binding (refer to my last <a href="http://www.thesoftwaresimpleton.com/blog/2013/03/23/client-side-mvc/">post</a>) between the  **isChecked** property of the model and the checked attribute of the checkbox like this:
 {% gist 5257860 %}
-On line 3 of the above gist we have an **checkedBindig="isChecked"** that will take care of changing the model's **isChecked** property without any DOM manipulation.
+On line 3 of the above gist there is a **checkedBinding="isChecked"** declaration that will take care of changing the model's **isChecked** property without any DOM manipulation.
 
-Now we can capture the whether **isChecked** for this item on the model.  All is great, slap yourself on the back, you are a client MVC wizard.  But hold on, do not gather your wife and kids around you and tell them of your gallant exploits just yet.  
+Now we can capture whether **isChecked** is true for this item on the model.  All is great, slap yourself on the back, you are a client MVC wizard.  But hold on, do not gather your wife and kids around you and tell them of your gallant exploits just yet.  
 
 Using the gist below, take the following steps:
 
+- make sure you scroll the iframe down to show the 2 links
 - Click the active link
 - Check the checkbox
 - Click home
@@ -77,9 +78,9 @@ Our work here is almost done, we can decorate the model with application state t
 ###Conclusion###
 This is a fairly stupid example but I hope this clarifies why we need a controller and what its job is.  The bottom line is this, templates bind to controllers and controllers are proxies to their underlying model objects.  This allows us to pin application state that is contextual to the current view on the current controller and not data that will be saved with the model.
 
-You can now call your wife and children to gather around to tell them of your brave exploits.  They will be amazed.
+In reality this example would be a list of employees and you would probably attach the **isChecked** property to an **itemController** which can be bound to each item on a list.
 
-I'll cover the **ArrayProxy** next.  
+You can now call your wife and children to gather around to tell them of your brave exploits.  They will be amazed.
 
 If you find these posts useful, then let me know what else you would like me to cover.
 
