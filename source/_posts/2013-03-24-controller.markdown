@@ -27,19 +27,20 @@ The above model has 3 simple fields of **firstName**, **surname** and **age** an
 
 Now let us say that we are working on an application that has one employee and we can change the status of this employee to retired or we can reinstate the retired employee.  A very specific and limited application you might say.  We might have a view like this to set an employees status to retired:
 
-{%img /images/employee/retire2.png %}
+{%img /images/employee/active2.png %}
 
 You will have to forgive the crude html but it is a jsfiddle that you can see in it's entirety <a href="http://jsfiddle.net/dagda1/CFyVH/3/" target="_blank">here</a>.   You might also have a view that allows you to make that employee active again which would look like this:
 
-{%img /images/employee/active2.png %}
+{%img /images/employee/retire2.png %}
 
-Now what if we wanted to capture the fact that we had selected the contact by checking the checkbox?  Part of the reason for using a client MV* framework is that we want to deal with nice abstractions to capture what is going on, we don't want to be mucking about the DOM to check if a checkbox is selected and then tie this back to our beautiful model.  We want to use our rich abstraction to capture this check, so we might to might add an **isChecked** property to our model as I have done on line 8 of the gist below.  
+
+Now what if we wanted to capture the fact that we had selected the contact by checking the checkbox?  Part of the reason for using a client MV* framework is that we want to deal with nice abstractions to capture what is going on, we don't want to be mucking about the DOM to check if a checkbox is selected and then tie this back to our beautiful model.  We want to use our rich abstraction to capture this check, so we might add an **isChecked** property to our model as I have done on line 8 of the gist below.  
 {% gist 5257792 %} 
 We could then set up a two way binding (refer to my last <a href="http://www.thesoftwaresimpleton.com/blog/2013/03/23/client-side-mvc/">post</a>) between the  **isChecked** property of the model and the checked attribute of the checkbox like this:
 {% gist 5257860 %}
 On line 3 of the above gist there is a **checkedBinding="isChecked"** declaration that will take care of changing the model's **isChecked** property without any DOM manipulation.
 
-Now we can capture whether **isChecked** is true for this item on the model.  All is great, slap yourself on the back, you are a client MVC wizard.  But hold on, do not gather your wife and kids around you and tell them of your gallant exploits just yet.  
+Now we can capture whether **isChecked** is true for this property on the model.  All is great, slap yourself on the back, you are a client MVC wizard.  But hold on, do not gather your wife and kids around you and tell them of your gallant exploits just yet.  
 
 Using the gist below, take the following steps:
 
