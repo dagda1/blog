@@ -5,9 +5,9 @@ date: 2013-04-07 12:50
 comments: true
 categories: 
 ---
-If you ever have wondered wanted to avoid duplication in your <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> helpers but were unsure how to, then fret no more.  
+If you ever have wondered how to call a <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> helper from another <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> helper but were unsure how to, then fret no more.  
 
-In case you do not know, <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> is the templating language of choice for the <a href="http://emberjs.com/" target="_blank">ember.js</a> client side library.  One of the really great things about handlebars is that it is logic free and you cannot litter your templates with gargantuan expressions.  We have all been guilty of this with rails erb, haml, jsp, asp, asp.net or whatever and let ye without guilt cast the first stone.  Handlebars is the perfect antidote to this simple but very complex erb templating code below:
+In case you do not know, <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> is the templating language of choice for the <a href="http://emberjs.com/" target="_blank">ember.js</a> client side mv* framework.  One of the really great things about handlebars is that it is logic free and you cannot litter your templates with gargantuan expressions.  We have all been guilty of this with rails erb, haml, jsp, asp, asp.net or whatever and let ye without guilt cast the first stone.  Handlebars is the perfect antidote to this simple but very complex erb templating code below:
 {% gist 5330234 %}
 I came to ember from backbone and I found this logicless approach quite limiting at first but I have grown to love it.  It really does make your templates a hell of a lot cleaner and even if you do get tempted to stray from the chosen path, there is not much you can do apart from create a <a href="http://blog.teamtreehouse.com/handlebars-js-part-2-partials-and-helpers" target="_blank">handlebars helper</a>.
 
@@ -15,7 +15,7 @@ If you are familiar with ember then you will have used handlebars helpers extens
 {% gist 5330298 %}
 You might also have used the **#if**, **#unless** or **#each** block helpers.  You can also create your own helpers that are evaluated in the context of a handlebars template.  In the example I am going to show below, I want to call a helper and pass in a model that contains an image property, the helper will contain all the logic for generating the correct **img** element for a particular model instance.  This logic will also generate a default **img** if the image property of this model instance has not been defined.  Below is a simplified version of how I would call the helper from a template:
 {% gist 5330297 %}
-This **exerciseImage** helper is being called in an **each** block that is iterating over the model of an **ArrayController**.  The **ArrayController** is made up of a model of exercise model instances and the **this** on line 3 of the above gist is the current model in the iteration loop.
+This **exerciseImage** helper is being called in an **each** block that is iterating over the model of an **ArrayController**.  The **ArrayController** is made up of **exercise** model instances and the **this** on line 3 of the above gist is the current **exercise** model instance of the iteration loop.
 
 The logic I want to capture is this
 
@@ -37,7 +37,7 @@ Below is the handlebars helper for an **exercise** model instance that will make
 - On **line 6**, I push to the front of the new arguments array, the string path to the **group** model from the current context which is the **exercise** model instance.
 - The reason I am pushing the string path as the first argument is because we are simulating how this helper would be called when directly calling it from a handlebars template like this:
 {% gist 5331481 %}
-- The runtime is expecting a path to some property of the context, in this case the exercise model instance.
+- The runtime is expecting a path to some property of the context which in this case is **group** property of the **exercise** model instance.
 - On **line 7**, the javascript function object's **apply** method is used:
 
 {% codeblock %}
