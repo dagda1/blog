@@ -47,7 +47,7 @@ return Ember.Handlebars.helpers.groupIcon.apply(this, args);
 
 You can also use this technique to apply a layer of indirection to existing handlebars which can be useful to intercept the call to one of the other helpers.
 
-If you have anything to say about this then leave a comment below.
+If you have anything to say about this then please leave a comment below.
 
 
  
