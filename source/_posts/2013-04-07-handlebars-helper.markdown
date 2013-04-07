@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Ember.js - Calling a handlebars helper from a handlebars helper"
+title: "Ember.js - Calling a handlebars helper from another handlebars helper"
 date: 2013-04-07 12:50
 comments: true
 categories: 
