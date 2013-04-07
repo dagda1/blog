@@ -45,7 +45,7 @@ return Ember.Handlebars.helpers.groupIcon.apply(this, args);
 {% endcodeblock %}
 **apply** is used to ensure that the method call is made with the correct context and with the newly constructed set of arguments that we created with the string path to the **group** as the first element.
 
-You can also use this technique to apply a layer of indirection to existing handlebars which can be useful to intercept the call to one of the other helpers.
+You can also use this technique to apply a layer of indirection to an existing handlebars helper which can be useful to intercept the call and apply some decoration or whatever.
 
 If you have anything to say about this then please leave a comment below.
 
