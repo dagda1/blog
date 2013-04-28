@@ -1,0 +1,57 @@
+---
+layout: post
+title: "Creating Computed Macros"
+date: 2013-04-27 15:00
+comments: true
+categories: 
+---
+One of the recent <a href="https://github.com/emberjs/ember.js/pull/2219" target="_blank">pull requests</a> that made it into <a href="http://emberjs.com/" target="_blank">ember.js</a> contains a whole raft of new computed macros for you to take advantage of.  But what is a computed macro or for that matter what is a macro?
+
+Wikipedia describes a macro as this:
+{% blockquote %}
+A rule or pattern that specifies how a certain input sequence (often a sequence of characters) should be mapped to a replacement input sequence (also often a sequence of characters) according to a defined procedure
+{% endblockquote %}
+The **attr_accessor** class macro in ruby is a perfect example of a macro.  The **attr_accessor** class macro takes a symbol (input) and generates two new methods (replacement).
+
+As the title of the post suggests, it is possible to write your own computed property macros in <a href="http://emberjs.com/" target="_blank">ember.js</a>.
+
+Below are some examples of the computed macros that come out of the box with ember:
+{% gist 5475983 %}
+
+- On line 3 of the above gist we are creating a short hand alias to another property using **Ember.computed.alias**.
+- On line 4, **Ember.computed.equal** is used to check that a property equals a static value. 
+- On line 5, **Ember.computed.not** is used to check the inverse of another property.
+- On line 6, **Ember.computed.bool** is used to check that a condition is truthy, in this case that a property path actually returns a value.
+
+It is worth remembering that computed properties update themselves when the property changes and remain cached otherwise.
+
+##Creating your own computed macro##
+Let me first illustrate a simple scenario, below is a gist of the ember-data domain model that I will use to illustrate this example:
+{% gist 5475989 %}
+
+The above gist that contains a **Contact** model definition that has two **hasMany** relationships with **phoneNumbers** and **emailAddresses**. The **PhoneNumber** and **EmailAddress** models are identical and in any given collection of either, there can be only one of the collection that **isPrimary** or the main item.  Let us say we wanted to create a computed property for each collection that selected the **isPrimary** value **and** observed any changes to which item had **isPrimary** set to true.
+
+A very bad way of doing this might be this might be this:
+
+{% gist 5476006 %}
+
+On lines 10 and 16, the same functionality is repeated twice.  You can see a working example of this on this <a href="http://jsfiddle.net/rG56F/6/" target="_blank">jsFiddle</a>.
+
+So how can we DRY this up?  By creating a computed macro of course.  Below is a listing of creating a **primary** macro that will transform the instruction into basically the code above:
+{% gist 5476032 %}
+
+We pass the following instructions into the macro:
+{% codeblock %}
+primaryEmail: App.computed.primary('emailAddresses'),
+primaryPhoneNumber: App.computed.primary('phoneNumbers'),
+{% endcodeblock %}
+The macro will effectively create the two duplicated computed properties that were originally created.  All the macro really does is create the following dependent key:
+{% codeblock %}
+var dependentKey = hasMany + ".@each.isPrimary";
+{% endcodeblock %}
+This dependent key and a function are then passed passed as arguments to **Ember.computed** that does the clever stuff.
+You can find a working example at this <a href="http://jsfiddle.net/q6TAa/1/" target="_blank">jsFiddle</a>.
+
+I need to restrain myself from seeing computed macros as my current hammer with everything looking like a nail but I am sure you must agree that they are insanely easy to create and insanely useful.
+
+
