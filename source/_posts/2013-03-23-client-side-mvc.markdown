@@ -33,7 +33,7 @@ a model can notify the view of any changes via the observer pattern.
 {%endblockquote%}
 This is why comparing ember to rails is not entirely accurate, ember is a spin off from sproutcore which had a stated aim of bringing OSX's <a href="https://developer.apple.com/technologies/mac/cocoa.html" target="_blank">cocoa</a> to the browser.
 
-The best way to flesh this out is with a practical code example.  The gist below contains about the least amount of code I could write to illustrate how a view is updated with changes to the model and vice versa.  You can view this code in the following <a href="http://jsfiddle.net/dagda1/EhyMR/7/" target="_blankd">jsfiddle</a>.
+The best way to flesh this out is with a practical code example.  The gist below contains about the least amount of code I could write to illustrate how a view is updated with changes to the model and vice versa.  You can view this code in the following <a href="http://jsfiddle.net/EhyMR/61/" target="_blankd">jsfiddle</a>.
 
 First up we have the code that will create a very simple object that we can use to show how these updates are reflected.
 {% gist 5231923 %}
@@ -62,8 +62,8 @@ view Ember.TextField valueBinding="App.Person.firstName"
 {% endcodeblock %}
 The left side of the **valueBinding** expression points to a value of the containing object that is the name minus the **Binding** part.  An input has a **value** attribute and **Ember.TextField** is an abstraction of the input element, so it also has a **value** property.  The right side of the expression can be thought of as a **path** to one of our objects.  The Person object was created as **App.Person** and this object has a **firstName** property.
 
-In short we are wiring together the value of the **firstName** property of the **Person** object to the **value** property of the input.  You can confirm this by typing any text into input field of this <a href="http://jsfiddle.net/dagda1/EhyMR/7/" target="_blankd">jsfiddle</a> below:
-<iframe width="100%" height="300" src="http://jsfiddle.net/dagda1/EhyMR/7/embedded/result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+In short we are wiring together the value of the **firstName** property of the **Person** object to the **value** property of the input.  You can confirm this by typing any text into input field of this <a href="http://jsfiddle.net/EhyMR/61/" target="_blankd">jsfiddle</a> below:
+<iframe width="100%" height="300" src="http://jsfiddle.net/EhyMR/61/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 It is worth noting that the Ember Handlebars templates are binding aware and they pick up these changes automagically without any additional code.  Once I learned about bindings, I knew ember was something I should take notice of.
 
 So here we have it, the model is updated from any changes in the view via the observer pattern with no additional code.  No hacky pulling the value out of the DOM and updating the model.  Leave all that behind you, it does not belong here.  The opposite is true also, if the model was updated, the input's value attribute would be updated.
