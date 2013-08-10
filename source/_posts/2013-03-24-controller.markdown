@@ -29,7 +29,7 @@ Now let us say that we are working on an application that has one employee and w
 
 {%img /images/employee/active2.png %}
 
-You will have to forgive the crude html but it is a jsfiddle that you can see in it's entirety <a href="http://jsfiddle.net/dagda1/CFyVH/3/" target="_blank">here</a>.   You might also have a view that allows you to make that employee active again which would look like this:
+You will have to forgive the crude html but it is a jsfiddle that you can see in it's entirety <a href="http://jsfiddle.net/CFyVH/12/" target="_blank">here</a>.   You might also have a view that allows you to make that employee active again which would look like this:
 
 {%img /images/employee/retire2.png %}
 
@@ -52,7 +52,7 @@ Using the gist below, take the following steps:
 - Recoil in horror as the checkbox is already checked.  You did not check this checkbox, why is it checked???  
 - Scream that you want to use jQuery and jQuery only as this is now getting complicated.
 
-<iframe width="100%" height="300" src="http://jsfiddle.net/dagda1/CFyVH/3/embedded/result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<iframe width="100%" height="300" src="http://jsfiddle.net/CFyVH/12/embedded/result" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 This is of course because the model instance is shared throughout the whole application and **isChecked** is a two way binding.  When we set isChecked on the model, we are setting it throughout the application.  There is of course an answer to this.
 
@@ -73,7 +73,8 @@ We have one resource which is the **Employee** resource that we are dealing with
 The route handler is the place where you set the underlying model for a controller as the route handler's job is to translate a specific url into a model object.  There are a number of hooks that serve this purpose and both routes in the above gist are using the **model** hook to specify which model is associated with each url.  In both cases, we are hardcoding which model is going to be associated with each url.  We are now going to change things by specifying a controller for each of these routes that will override the automagically generated controllers.  Following the convention of **xxxController**, we create the following two controllers:
 {% gist 5260990 %}
 Our work here is done, take the same actions as before on the jsfiddle below:
-<iframe width="100%" height="300" src="http://jsfiddle.net/dagda1/CFyVH/4/embedded/result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<iframe width="100%" height="300" src="http://jsfiddle.net/CFyVH/14/embedded/result" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
 Our work here is almost done, we can decorate the model with application state that is not persistent outside of the controller's scope.
 
 ###Conclusion###
