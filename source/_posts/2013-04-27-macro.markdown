@@ -3,7 +3,7 @@ layout: post
 title: "Creating Computed Macros in ember.js"
 date: 2013-04-27 15:00
 comments: true
-categories: 
+categories: JavaScript Ember
 ---
 One of the more recent <a href="https://github.com/emberjs/ember.js/pull/2219" target="_blank">pull requests</a> that has made it into <a href="http://emberjs.com/" target="_blank">ember.js</a> contains a whole raft of new computed macros for you to take advantage of.  But what is a computed macro or for that matter what is a macro?
 

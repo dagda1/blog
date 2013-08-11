@@ -3,7 +3,7 @@ layout: post
 title: "Ember.js - Calling a handlebars helper from another handlebars helper"
 date: 2013-04-07 12:50
 comments: true
-categories: 
+categories: JavaScript Ember
 ---
 If you ever have wondered how to call a <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> helper from another <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> helper but were unsure how to, then fret no more.  
 
