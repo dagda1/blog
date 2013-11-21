@@ -19,13 +19,13 @@ The component is declared using the hyphonated convention like this:
 
 This all works great but what if I wanted give users of the component the ability to add their own content to the results?  
 
-An example of this might be if you wanted to use the component to add mail recipents to an email form and you wanted to add an avatar to each possible suggestion and selection:
+An example of this might be if you wanted to use the component to add mail recipients to an email form and you wanted to add an avatar to each possible suggestion and selection:
 
 {%img /images/custom.png%}
 
-It turns out that you can also delare <a href="http://emberjs.com/guides/components/" target="_blank">components</a> in a block form whereby components can be passed a <a href="http://handlebarsjs.com/" target="_blank">handlebars</a> teamplate that is rendered inside the component's template whenever a &#123;&#123;yield&#125;&#125; expression appears.
+It turns out that you can also declare <a href="http://emberjs.com/guides/components/" target="_blank">components</a> in a block form whereby components can be passed a <a href="http://handlebarsjs.com/" target="_blank">handlebars</a> teamplate that is rendered inside the component's template whenever a &#123;&#123;yield&#125;&#125; expression appears.
 
-I wrongly assumed that if I added the appropriate &#123;&#123;yield&#125;&#125; statements to my component template then it would be possible for the user to specify their own content like this **AND** the current context would be mainatined.
+I wrongly assumed that if I added the appropriate &#123;&#123;yield&#125;&#125; statements to my component template then it would be possible for the user to specify their own content like this **AND** the component's context would be mainatined.
 
 {%gist 7581481 %}
 
@@ -34,7 +34,7 @@ All that appeared to be left was to add the&#123;&#123;yield&#125;&#125; stateme
 
 And now we get to the meat of the post, the above approach will work fine if you are adding static content to each item but in my case I wanted to bind the appropriate avatar to the **src** attribute of the **img** tag and the appropriate text to the **alt** attribute.  On closer inspection, this was not happening.
 
-It is worth remembering that both my &#123;&#123;yield&#125;&#125; statements are decared in an &#123;&#123;each&#125;&#125; helper:
+It is worth remembering that both my &#123;&#123;yield&#125;&#125; statements are declare in an &#123;&#123;each&#125;&#125; helper:
 {%gist 7581348 %}
 
 If I log what the context is in the component's block, I can see it is the context of the parent view and not of the component:
