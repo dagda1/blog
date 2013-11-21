@@ -3,4 +3,7 @@
   Imported. Load order is alphabetical and styles can be overriden in
   custom/_style.scss which is loaded after all plugin stylesheets.
 */
+.gist .gist-file .gist-data .line-numbers{
+  font-size: inherit;
+}
 
