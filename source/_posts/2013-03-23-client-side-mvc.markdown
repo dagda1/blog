@@ -87,8 +87,8 @@ On **line 1** of the above gist, we are pointing to the **fullName** function th
 
 Changing either of the text in the inputs causes the computed property **fullName** to recalculate.  
 
-You can verify this below or at this <a href="http://jsfiddle.net/dagda1/Jr4CB/4/" target="_blank">jsfiddle</a>.
-<iframe width="100%" height="300" src="http://jsfiddle.net/dagda1/Jr4CB/4/embedded/result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+You can verify this below or at this <a href="http://jsfiddle.net/Jr4CB/23/" target="_blank">jsfiddle</a>.
+<iframe width="100%" height="300" src="http://jsfiddle.net/Jr4CB/23/embedded/result" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 ###Conclusion###
 Ember is brimming with a multitude of abstractions that might be different than anything you have come across in the past.  I believe it is better to try and take these concepts in one at a time rather than dive in and get blown away by the routing, controllers, itemControllers and the rest.  I believe it is important to grasp these core concepts first before progressing.  You will use them more than anything else.  Bindings and computed properties are powerful and much more powerful than the examples I have used but we need to get the basics right first.
 
