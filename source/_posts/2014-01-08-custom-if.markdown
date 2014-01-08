@@ -35,7 +35,7 @@ One of Handlebars strengths is that it is logicless, which means you cannot use 
 &#123;&#123;/if&#125;&#125;
 {% endcodeblock %}
 
-You could put together an ugly hack that creates multiple **if** calls like below but I really did not want to go down this path.
+You could put together an ugly hack that creates multiple **if** calls like below but I really did not want to go down that path.
 {% codeblock %}
 &#123;&#123;#if isTrue&#125;&#125;
   &#123;&#123;#if alsoTrue&#125;&#125;
@@ -57,7 +57,7 @@ The naieve and crude approach would have been to do this:
 &#123;&#123;/unless&#125;&#125;
 {% endcodeblock %}
 
-Instead I created my own custom **if** helper that is really just a wrapper around the **boundIf** helper that adds a property to the context and then calls the real **boundIf** helper.
+Instead I created my own custom **if** helper that is really just a wrapper around the handlebars **boundIf** helper that adds a property to the context and then calls the real **boundIf** helper.
 
 Below is how the newly christened **ifIsLive** helper is called from the handlebars template:
 {% codeblock %}
@@ -72,6 +72,6 @@ And here is the implementation:
 - On **line 2**, I retrieve the model from the context.
 - On **line 5**, I check to see if the custom property exists on the context.
 - If the property does not exist then I create the computed property using ember's slant on the EMAScript 5 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty" target="_blank">defineProperty</a> which takes an array of dependant keys to create a computed property from.
-- Lastly, I call **Ember.Handlebars.helpers.boundIf**, using the JavaScript **call** method to maintain the context and I also pass in the newly created **isLive** property which the framework will create an observer to watch for changes.
+- Lastly, I call **Ember.Handlebars.helpers.boundIf**, using the JavaScript **call** method to maintain the context and I also pass in the newly created **isLive** property from which the framework will create an observer to watch for changes.
 
 The **boundIf** does all the clever stuff and is really the hero of the piece but I think this is a useful technique to DRY up your code. 
