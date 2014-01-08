@@ -59,7 +59,7 @@ The naieve and crude approach would have been to do this:
 
 Instead I created my own custom **if** helper that is really just a wrapper around the handlebars **boundIf** helper that adds a property to the context and then calls the real **boundIf** helper.
 
-Below is how the newly christened **ifIsLive** helper is called from the handlebars template:
+Below is how the newly christened **ifIsLive** helper that is called from the handlebars template:
 {% codeblock %}
 &#123;&#123;#ifIsLive model&#125;&#125;
   &#123;&#123;!do stuff&#125;&#125;
