@@ -1,0 +1,77 @@
+---
+layout: post
+title: "Ember.js - Creating a custom handlebars if helper"
+date: 2014-01-08 16:21:26 +0000
+comments: true
+categories:  JavaScript Ember
+---
+This is post is really a continuation of <a href="http://www.thesoftwaresimpleton.com/blog/2013/04/07/handlebars-helper/" target="_blank">a post</a> that I wrote some time ago about how to call a <a href="http://handlebarsjs.com/" target="_blank">handlebars</a> helper from another <a href="http://handlebarsjs.com/" target="_blank">handlebars</a> helper. 
+
+I came across a situation today that cried out for me to create my own version of the handlebars **if** helper.  The **if** helper is one  of the first handlebars helpers that you will experience and one you will use time and time again along with its inverse, the **unless** helper.
+
+The **if** helper can be used in a hanldebars template like so:
+{% codeblock %}
+&#123;&#123;#if isTrue&#125;&#125;
+  &#123;&#123;!do stuff&#125;&#125;
+&#123;&#123;else&#125;&#125;
+  &#123;&#123;! don't do stuff&#125;&#125;
+&#123;&#123;/if&#125;&#125;
+{% endcodeblock %}
+The above code will test the property expression of the current context for a truthy value and if one is found it will execute the code between the **if** and the **else** or the closing **if**, if no alternative **else** was provided.  If the current context in the above code was a controller called **IndexController** then it would check the **isTrue** value of that controller:
+{% codeblock %}
+App.IndexController = Ember.ObjectController.extend({
+	isTrue: (function(){
+		return true;
+	}).property()
+})
+{% endcodeblock %}
+
+The **if** helper is also a live helper and **handlebars** creates an observer for whatever property expression you pass to it which means that any changes to the property will cause that part of the template to re-render.  This is one of the things that first drew me to ember.
+
+One of Handlebars strengths is that it is logicless, which means you cannot use things like the logical **&&** operator to combine property expressions like this:
+{% codeblock %}
+&#123;&#123;#if isTrue && alsoTrue&#125;&#125;
+  &#123;&#123;!do stuff&#125;&#125;
+&#123;&#123;/if&#125;&#125;
+{% endcodeblock %}
+
+You could put together an ugly hack that creates multiple **if** calls like below but I really did not want to go down this path.
+{% codeblock %}
+&#123;&#123;#if isTrue&#125;&#125;
+  &#123;&#123;#if alsoTrue&#125;&#125;
+    &#123;&#123;!do stuff&#125;&#125;
+  &#123;&#123;/if&#125;&#125;
+&#123;&#123;/if&#125;&#125;
+{% endcodeblock %}
+My scenario concerned only displaying ember-data models that did not have their **isNew**, **isDeleted** or **isLoading** flags set.
+
+The naieve and crude approach would have been to do this:
+{% codeblock %}
+
+&#123;&#123;#unless isNew&#125;&#125;
+  &#123;&#123;#unless isDeleted&#125;&#125;
+    &#123;&#123;#unless isLoading&#125;&#125;
+      &#123;&#123;!do stuff&#125;&#125;
+    &#123;&#123;/unless&#125;&#125;
+  &#123;&#123;/unless&#125;&#125;
+&#123;&#123;/unless&#125;&#125;
+{% endcodeblock %}
+
+Instead I created my own custom **if** helper that is really just a wrapper around the **boundIf** helper that adds a property to the context and then calls the real **boundIf** helper.
+
+Below is how the newly christened **ifIsLive** helper is called from the handlebars template:
+{% codeblock %}
+&#123;&#123;#ifIsLive model&#125;&#125;
+  &#123;&#123;!do stuff&#125;&#125;
+&#123;&#123;/ifIsLive&#125;&#125;
+{% endcodeblock %}
+All I am doing is passing in a property path to the model object from the context.
+
+And here is the implementation:
+{% gist 8320318 %}
+- On **line 2**, I retrieve the model from the context.
+- On **line 5**, I check to see if the custom property exists on the context.
+- If the property does not exist then I create the computed property using ember's slant on the EMAScript 5 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty" target="_blank">defineProperty</a> which takes an array of dependant keys to create a computed property from.
+- Lastly, I call **Ember.Handlebars.helpers.boundIf**, using the JavaScript **call** method to maintain the context and I also pass in the newly created **isLive** property which the framework will create an observer to watch for changes.
+
+The **boundIf** does all the clever stuff and is really the hero of the piece but I think this is a useful technique to DRY up your code. 

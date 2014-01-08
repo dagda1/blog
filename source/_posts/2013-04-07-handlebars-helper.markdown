@@ -5,9 +5,9 @@ date: 2013-04-07 12:50
 comments: true
 categories: JavaScript Ember
 ---
-If you ever have wondered how to call a <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> helper from another <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> helper but were unsure how to, then fret no more.  
+If you ever have wondered how to call a <a href="http://handlebarsjs.com/" target="_blank">handlebars</a> helper from another <a href="http://handlebarsjs.com/" target="_blank">handlebars</a> helper but were unsure how to, then fret no more.  
 
-In case you do not know, <a href="http://handlebarsjs.com/" target="_blannk">handlebars</a> is the templating language of choice for the <a href="http://emberjs.com/" target="_blank">ember.js</a> client side mv* framework.  One of the really great things about handlebars is that it is logic free and you cannot litter your templates with gargantuan expressions.  We have all been guilty of this with rails erb, haml, jsp, asp, asp.net or whatever and let ye without guilt cast the first stone.  Handlebars is the perfect antidote to this simple but very complex erb templating code below:
+In case you do not know, <a href="http://handlebarsjs.com/" target="_blank">handlebars</a> is the templating language of choice for the <a href="http://emberjs.com/" target="_blank">ember.js</a> client side mv* framework.  One of the really great things about handlebars is that it is logic free and you cannot litter your templates with gargantuan expressions.  We have all been guilty of this with rails erb, haml, jsp, asp, asp.net or whatever and let ye without guilt cast the first stone.  Handlebars is the perfect antidote to this simple but very complex erb templating code below:
 {% gist 5330234 %}
 I came to ember from backbone and I found this logicless approach quite limiting at first but I have grown to love it.  It really does make your templates a hell of a lot cleaner and even if you do get tempted to stray from the chosen path, there is not much you can do apart from create a <a href="http://blog.teamtreehouse.com/handlebars-js-part-2-partials-and-helpers" target="_blank">handlebars helper</a>.
 
