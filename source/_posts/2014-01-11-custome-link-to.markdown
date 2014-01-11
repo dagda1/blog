@@ -35,12 +35,14 @@ or this:
 {% endcodeblock %}
 And the correct link will be rendered without any thought from me
 ###The Solution
-First of all I wanted to create an easy way of getting the corresponding route path from a **DS.Model** type.  I want to be able to transfrom **App.Employee** into **employee** from the instance and below is a **humanize** method which exactly that and is mixed into all **DS.Model** types:
+Here is a <a href="http://jsbin.com/OnuCaCep/34/edit" target="_blank">jsbin</a> of the what I ended up with.
+
+First of all I wanted to create an easy way of getting the corresponding route path from a **DS.Model** type.  I want to be able to transfrom **App.Employee** into **employee** from the instance and below is a **humanize** method which does exactly that and is mixed into all **DS.Model** types:
 {% gist 8377614 %}
 Below is my **resource-link-to** helper that I finally ended up with after much coffee and profanity.  The premise is that I am simply creating a new argument list to pass to the **link-to** helper.
 {% gist 8377389 %}
 - **DISCLAIMER: **I am not a handlebars expert so please leave a comment below if I am wrong on any of these points.
-- On **line 3**. I am pulling the resource from the context via the name parameter that is defined in the argument list on **line 1**.
+- On **line 3**. I am pulling the resource from the context via the **name** parameter that is defined in the argument list on **line 1**.
 - On **line 4** I am using the **humanize** extension function to get the name of the route.
 - **Line 6** contains an **if** expression where we branch depending on whether the **resource-link-to** helper is called in its block or non-block formats.  
 - **options.fn** will be present if we create the helper in the block form and **options.fn** is the function that will be called to create the text between the blocks.  If the helper is called in its non-block format then we need to pass an extra argument to the real **link-to** helper and on **line 11** we get the new argument from a common property that appears on every model in my example but you could use any logic you like here.
