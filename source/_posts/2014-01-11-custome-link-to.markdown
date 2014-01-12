@@ -37,7 +37,7 @@ And the correct link will be rendered without any thought from me
 ###The Solution
 Here is a <a href="http://jsbin.com/OnuCaCep/34/edit" target="_blank">jsbin</a> of my finished **resource-link-to** helper.
 
-First of all I wanted to create an easy way of getting the corresponding route path from a **DS.Model** type.  I want to be able to get the corresponding route from the type.  So I have an **App.Employee** type then I want to be able to get the string route to the resource which is **employee**. Below is a **humanize** method which does exactly that and is mixed into all **DS.Model** types:
+First of all I wanted to create an easy way of getting the corresponding route path from a **DS.Model** type.  I want to be able to get the corresponding route from the type.  If for example, I have an **App.Employee** type then I want to be able to get the string route to that the resource which is **employee**. Below is a **humanize** method which does exactly that and is mixed into all **DS.Model** types:
 {% gist 8377614 %}
 Below is my **resource-link-to** helper that I finally ended up with after much coffee and profanity.  The premise is that I am simply creating a new argument list to pass to the **link-to** helper.
 {% gist 8377389 %}
