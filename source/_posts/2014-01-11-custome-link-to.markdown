@@ -23,7 +23,7 @@ Another consideration is that I want to be able to call my custom helper in both
 {% codeblock %}
 &#123;&#123;link-to 'Link Label' 'users' model&#125;&#125;
 {% endcodeblock %}
-The end result is that I want is to be able to create the same handlebars expression anywhere in the application and have the helper create the correct link for me.  I want to do this:
+The end result is that I want to be able to create the same handlebars expression anywhere in the application and have the helper create the correct link for me.  I want to do this:
 {% codeblock %}
 &#123;&#123;resource-link-to this&#125;&#125;
 {% endcodeblock %}
