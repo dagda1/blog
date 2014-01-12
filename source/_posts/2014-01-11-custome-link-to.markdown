@@ -8,7 +8,7 @@ categories:
 <!--http://jsbin.com/OnuCaCep/36/edit-->
 Following on from my last <a href="http://www.thesoftwaresimpleton.com/blog/2014/01/08/custom-if/">post</a> about how to create a custom **if** helper, I now want to show how to create a custom **link-to** helper.
 
-Ember's routing is arguably the best feature of ember.  Recently while using amazon's S3 file storage interface where the tree like structure of buckets or folders is all done client side, I was frustrated to find that the url does not change as you navigate from bucket to bucket so you cannot link to a specific bucket or if you refresh the page, you are back at the root bucket.  With ember, you have the ability to make every location on your site linkable thanks to ember's execellent <a href="http://emberjs.com/guides/routing/">routing</a> and links can easily be created from resources using ember's <a href="http://emberjs.com/guides/templates/links/" target="_blank">&#123;&#123;link-to&#125;&#125;</a> helper.
+Ember's routing is arguably the best feature of ember.  Recently while using amazon's S3 file storage interface where the tree like structure of buckets or folders is all done client side, I was frustrated to find that the url does not change as you navigate from bucket to bucket so you cannot link to a specific bucket or if you refresh the page, you are back at the root bucket.  With ember, you have the ability to make every location on your site linkable thanks to ember's execellent <a href="http://emberjs.com/guides/routing/">routing</a> and the <a href="http://emberjs.com/guides/templates/links/" target="_blank">&#123;&#123;link-to&#125;&#125;</a> helper is a nice convenience for creating links from resource.
 
 ###The Problem
 While iterating over a list of similar model types, you can simply use the **link-to** helper to create links to each item in the list but what if I have two or more different types as is illustrated in the gist below which contains a route which returns a combination of **user** and **contact** model types.
@@ -17,7 +17,7 @@ One approach would be to do something like this:
 {% gist 8377172 %}
 The **isUser** condition could compare the context's constructor but this approach is limited as every time I want to include a different type, I need to update the template. I actually started down this unmaintainable path before souring on the idea as is illustrated in this <a href="http://jsbin.com/OnuCaCep/30/edit" target="_blank">jsbin</a>.
 
-As in my previous posts, the answer to the problem was to create a wrapper around the **link-to** helper and do a bit of massaging with the arguments before passing it on to the real **link-to** helper.
+As in my previous posts, the answer to the problem was to create a wrapper around the **link-to** helper and do a bit of massaging with the arguments before passing them on to the real **link-to** helper.
 
 Another consideration is that I want to be able to call my custom helper in both the block form and the non-block form.  It is possible to call the link-to helper in its non-block form like this:
 {% codeblock %}
