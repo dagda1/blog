@@ -8,14 +8,14 @@ categories:
 <!--http://jsbin.com/OnuCaCep/36/edit-->
 Following on from my last <a href="http://www.thesoftwaresimpleton.com/blog/2014/01/08/custom-if/">post</a> about how to create a custom **if** helper, I now want to show how to create a custom **link-to** helper.
 
-Ember's routing is arguably the best feature of ember.  Recently while using amazon's S3 file storage interface where the tree like structure of buckets or folders is all done client side, I was frustrated to find that the url does not change as you navigate from bucket to bucket so you cannot link to a specific bucket or if you refresh the page, you are back at the root bucket.  With ember, you have the ability to make every location on your site linkable thanks to ember's execellent <a href="http://emberjs.com/guides/routing/">routing</a> and the <a href="http://emberjs.com/guides/templates/links/" target="_blank">&#123;&#123;link-to&#125;&#125;</a> helper is a nice convenience for creating links from resource.
+Ember's routing is arguably the best feature of ember.  Recently while using amazon's S3 file storage web interface where the tree like structure of buckets or folders is all done client side, I was frustrated to find that the url does not change as you navigate from bucket to bucket so you cannot link to a specific bucket or if you refresh the page, you are back at the root bucket.  With ember, you have the ability to make every location on your site linkable thanks to ember's execellent <a href="http://emberjs.com/guides/routing/">routing</a> and the <a href="http://emberjs.com/guides/templates/links/" target="_blank">&#123;&#123;link-to&#125;&#125;</a> helper is a nice convenience that takes a resource and returns a url to that resource.
 
 ###The Problem
-While iterating over a list of similar model types, you can simply use the **link-to** helper to create links to each item in the list but what if I have two or more different types as is illustrated in the gist below which contains a route which returns a combination of **user** and **contact** model types.
+While iterating over a list of similar model types, you can simply use the **link-to** helper to create links to each item in the list but what if the list contains two or more different types as is illustrated in the gist below where the route's model hook returns a combination of **user** and **contact** types.
 {% gist 8377078 %}
 One approach would be to do something like this:
 {% gist 8377172 %}
-The **isUser** condition could compare the context's constructor but this approach is limited as every time I want to include a different type, I need to update the template. I actually started down this unmaintainable path before souring on the idea as is illustrated in this <a href="http://jsbin.com/OnuCaCep/30/edit" target="_blank">jsbin</a>.
+The **isUser** condition could compare the context's constructor but this approach is limited as every time you want to link to a different type,  need to update the template. I actually started down this unmaintainable path before souring on the idea as is illustrated in this <a href="http://jsbin.com/OnuCaCep/30/edit" target="_blank">jsbin</a>.
 
 As in my previous posts, the answer to the problem was to create a wrapper around the **link-to** helper and do a bit of massaging with the arguments before passing them on to the real **link-to** helper.
 
@@ -35,9 +35,9 @@ or this:
 {% endcodeblock %}
 And the correct link will be rendered without any thought from me
 ###The Solution
-Here is a <a href="http://jsbin.com/OnuCaCep/34/edit" target="_blank">jsbin</a> of the what I ended up with.
+Here is a <a href="http://jsbin.com/OnuCaCep/34/edit" target="_blank">jsbin</a> of my finished **resource-link-to** helper.
 
-First of all I wanted to create an easy way of getting the corresponding route path from a **DS.Model** type.  I want to be able to transfrom **App.Employee** into **employee** from the instance and below is a **humanize** method which does exactly that and is mixed into all **DS.Model** types:
+First of all I wanted to create an easy way of getting the corresponding route path from a **DS.Model** type.  I want to be able to get the corresponding route from the type.  So I have an **App.Employee** type then I want to be able to get the string route to the resource which is **employee**. Below is a **humanize** method which does exactly that and is mixed into all **DS.Model** types:
 {% gist 8377614 %}
 Below is my **resource-link-to** helper that I finally ended up with after much coffee and profanity.  The premise is that I am simply creating a new argument list to pass to the **link-to** helper.
 {% gist 8377389 %}
