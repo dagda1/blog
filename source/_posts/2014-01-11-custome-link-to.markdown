@@ -3,7 +3,7 @@ layout: post
 title: "Ember.js - Creating a Custom #link-to Handlebars Helper"
 date: 2014-01-11 17:12:55 +0000
 comments: true
-categories: 
+categories:  JavaScript Ember
 ---
 <!--http://jsbin.com/OnuCaCep/36/edit-->
 Following on from my last <a href="http://www.thesoftwaresimpleton.com/blog/2014/01/08/custom-if/">post</a> about how to create a custom **if** helper, I now want to show how to create a custom **link-to** helper.
