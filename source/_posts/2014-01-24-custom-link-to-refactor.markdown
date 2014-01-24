@@ -26,7 +26,7 @@ if (!options.fn)  &#123;
   args.unshift(resource.get('displayName'));
 &#125;else&#123;
 {% endcodeblock %}
-The args variabe will look like this when we are finished:
+The args variable will look like this when we are finished:
 {% codeblock %}
 [undefined, "contact", "contact", Object]
 {% endcodeblock %}
