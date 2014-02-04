@@ -5,7 +5,7 @@ date: 2014-02-4 08:40:38 +0000
 comments: true
 categories:  JavaScript Ember
 ---
-I'm not entirely sure when this dropped but I am currently on version 1.3.1 of ember and there is a new computed property macro that is especially designed for working with arrays.  
+I'm not entirely sure when this dropped but I am currently on version 1.3.1 of ember and there is a new computed property macro named unsurprisingly **arrayComputed** that is especially designed for working with arrays.  
 
 The basic premise is that you can observe an array and intercept any additions or removals from the array via some useful hooks that gives the developer the opportunity to further mould the data to their needs.
 
@@ -35,12 +35,13 @@ dealTotals: Ember.arrayComputed('deals' {
 
 The best way to illustrate this is with an example, I am going to start with a simple example that works great for a throwaway **jsbin** or very small amounts of data but is pretty impractical in a real world application.  Here is such a working <a href="http://jsbin.com/ilosel/39/edit" target="_blank">jsbin</a> and here is an **arrayComputed** definition that will take advantage of the new construct's hooks to further group the data and provide totals for the grouped data:
 {% gist 8801886 %}
-- **Line 1** declares a function entry point from wich an **arrayComputed** property will be returned from.  It takes a dependent key and a callback which is used to return an object by which the dependent array will be grouped by.
-- **Lines 2 - 37** is an object literal definition with the members that the **Ember.arrayComputed** function expects.
+- **Line 1** declares a function entry point from which an **arrayComputed** property will be returned from.  It takes a dependent key and a callback which is used to return an object by which the dependent array will be grouped by.
+- **Lines 2 - 37** is an object literal definition that defines the members that the **Ember.arrayComputed** function expects.
 - **Line 3** - declares an initial value for the resulting array.
 - **Line 4** - is an **initialize** method that will be called by the framework whenever the computed property is created for real.  I am not taking advantage of that in this example but the example at the end of the post does.
-- **Lines 6 - 19** provides the **addedItem** hook that is called every time an item is added to the observed array.  This method uses the **groupBy** callback argument specified in **line 1** that when called, åprovides a key to the array items by.  This method then simply creates a group if none exists or increments the count if a group already exists.  What is worth noting here is that we are not actually adding the item to the array but we are adding the group to the array or updating the group if the array already contains it.
+- **Lines 6 - 19** provides the **addedItem** hook that is called every time an item is added to the observed array.  This method uses the **groupBy** callback argument specified in **line 1** that when called returns a key to group the array elements by.  This method then simply creates a group if none exists or increments the count if a group already exists.  What is worth noting here is that we are not actually adding the item to the array but we are adding the group to the array or updating the group if the array already contains it.
 - **Lines 20 - 26** provides the **removedItem** implementaiton that is really the converse of **addedItem**.
+- **Line 39** actually makes the call to return the **arrayComputed** property.
 
 Below is how you would use the above computed property:
 {% codeblock %}
@@ -63,4 +64,4 @@ The **arrayComputed** construct is a real winner for both of the examples in thi
 
 One of the challenges of ember or indeed any single page application architecture is to come up with better abstractions for situations like the second example.  I think we need to have less emphasis on examples like the first which make for great demos or jsbins but quickly fall apart when working with real asynchronous data.
 
-My next few posts will be about some of the pitfalls you will face and some soutions when working with real data.
+My next few posts will be about some of the pitfalls you will face and some solutions when working with real data.
