@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "ember.js - reduceComputed and brace expansion"
+title: "Ember.js - reduceComputed and Property Brace Expansion"
 date: 2014-02-19 10:25:56 +0000
 comments: true
 categories:  JavaScript Ember
