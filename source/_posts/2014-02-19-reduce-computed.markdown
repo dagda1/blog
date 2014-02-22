@@ -47,7 +47,6 @@ Here is a <a href="http://jsbin.com/ilosel/54/edit" target="_blank">jsbin</a> wi
 
 I believe there are composable computed properties in the pipeline that will make this code even terser so I look forward to that.
 
-
 **UPDATE:** Thanks to <a href="https://twitter.com/hjdivad" target="_blank">hjdivad</a> who I think implemented the arrayComputed features and who pointed out in the comments that I can use the property brace exapansion with **Ember.computed.filter**.
 
 
