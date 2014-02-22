@@ -41,17 +41,14 @@ In the above gist, I am effectively chaining the results of 3 computed propertie
 
 - On **line 2** I use **Ember.computed.filter** to only select the items that I am interested in.
 - On **line 5**, I map the value I am interested in.
-- On **line 7**, I then use **Ember.computed.sum** to reduce the values into one total.
+- On **line 6**, I then use **Ember.computed.sum** to reduce the values into one total.
 
-Here is a <a href="http://jsbin.com/ilosel/50/edit" target="_blank">jsbin</a> with a working example.
+Here is a <a href="http://jsbin.com/ilosel/54/edit" target="_blank">jsbin</a> with a working example.
 
 I believe there are composable computed properties in the pipeline that will make this code even terser so I look forward to that.
 
-One problem with the refactored <a href="http://jsbin.com/ilosel/50/edit" target="_blank">code</a> is that it is no loger referencing the two keys that I used in the property brace expansion that I originally used:
-{%codeblock%}
-total: Ember.reduceComputed("deals.@each.{status,value}"
-{%endcodeblock%}
-If anybody can suggest a way that I can do that with the refactored code then that would be much appreciated.
+
+**UPDATE:** Thanks to <a href="https://twitter.com/hjdivad" target="_blank">hjdivad</a> who I think implemented the arrayComputed features and who pointed out in the comments that I can use the property brace exapansion with **Ember.computed.filter**.
 
 
 
