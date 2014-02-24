@@ -43,7 +43,7 @@ In the above gist, I am effectively chaining the results of 3 computed propertie
 - On **line 5**, I map the value I am interested in.
 - On **line 6**, I then use **Ember.computed.sum** to reduce the values into one total.
 
-Here is a <a href="http://jsbin.com/ilosel/56/edit" target="_blank">jsbin</a> with a working example.
+Here is a <a href="http://jsbin.com/ilosel/58/edit" target="_blank">jsbin</a> with a working example.
 
 I believe there are composable computed properties in the pipeline that will make this code even terser so I look forward to that.
 
