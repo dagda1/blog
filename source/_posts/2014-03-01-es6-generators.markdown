@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "es6-generators"
+title: "ES6 Generators - Synchronous Looking Asynchronous Code"
 date: 2014-03-01 12:10:14 +0000
 comments: true
 categories: JavaScript es6
@@ -19,11 +19,11 @@ try {
 {% endcodeblock %}
 
 
-The left part of our brain brains think sequentially and these thoughts are really an abstraction of reality.  The universe is actually an infinitesimal series of events happening simultaneously at the same time but we think sequentially, we process one thought at a time and we have created our computers to reflect this were for all intensive purposes programs are a series of sequential inputs.  
+The left part of our brain brains think sequentially and these thoughts are really an abstraction of reality.  The universe is actually an infinitesimal series of events happening simultaneously at the same time but we think sequentially, we process one thought at a time and we have created our computers to reflect this and for all intensive purposes programs are a series of sequential inputs.  
 
 I think it is safe to say that the real goal of writing asynchronous code is to make it look synchronous.
 
-The unfortunate thing is that when trying to deal with asynchronicity with the use of callbacks, our code has often ended up like below which is the artist also formerly known as **callback hell**:
+The unfortunate thing is that when trying to deal with asynchronicity with the use of callbacks, our code has often ended up like below which is often referred to as **callback hell**:
 {% codeblock %}
 $.getJSON('/login').done(function(data) {
   $.getJSON('/users').done(function(data) {
@@ -39,14 +39,16 @@ $.getJSON('/login').done(function(data) {
 });
 {% endcodeblock %}
 
-What a mess!  Promises are probably the most commonly used alternative to callback hell and below is a refactoring of the above:
+It is worth noting that there is absolutely nothing wrong with callbacks and they are in fact the currency of asynchronous programming and the newer asynchronous abstractions like promises still make heavy use of them and indeed would be impossible without them.  What is wrong with the above code is that it quickly becomes tightly couple as you pass success callback and failure errorBack callbacks to each asynch call.  
+
+Promises are probably the most commonly used alternative to callback hell and below is a refactoring of the above:
 {% codeblock %}
 // FINISH THIS
 {% endcodeblock %}
 
-A promise is also referred to as a **thenable**, which is really just an object or a function that defines a **then** meethod.  A promise is either fulfilled in the good case or rejected in the not so good case.  A promise will execute a success callback or an error callback on completion of the asynchronous or even synchronous work.  Promises are a nice next step but the code is still quite removed from our orignal example of what we want to achieve.
+A promise represents the eventual outcome of an asynchronous or synchronous operation.  A promise is also referred to as a **thenable**, which is really just an object or a function that defines a **then** meethod.  A promise is either fulfilled in the good case or rejected in the not so good case.  A promise will execute a success callback or an error callback on completion of the asynchronous or even synchronous work.  Promises are possibly the most popular alternative to the humble callback that you will find in production code.  The solution I am going to show with es6 generators still makes use of promises to achieve the asynchronous results.
 
-So if promises are where we are, es6 generators appears to be where we are headed.  I've just spent the morning playing about with the new generators feature of es6 and was able to come up with the code sample below which looks a lot more synchronous:
+So if promises are where we are then es6 generators appears to be where we are headed.  I've just spent the morning playing about with the new generators feature of es6 and I was able to come up with the code sample below which looks a whole lot more synchronous:
 {% codeblock %}
 BulkLoader.prototype.load = function() {
   var self = this;
@@ -117,9 +119,9 @@ console.log(result.contacts);
 console.log(result.companies);
 {% endcodeblock %}
 
-In the above example, the return of the **yield** statement is passed back to the iterator where it is assigned to the variable on the left hand side of the **yield** statement.
+In the above example, the return of the **yield** statement is passed back to the iterator where it is assigned to the variable on the left hand side of the **yield** statement.  Using this technique, the variables **users**, **contacts** and **companies** on lines 12, 13 and 14 can all be assigned values by passing arguments via **next**.
 
-So that example is still quite far removed from how we got here:
+If you have grasped this two way communication between the calling code and iterator then you can see that the code above code is not a million miles away from the code below where **self.users**, **self.contacts** and **self.companies** on lines 6, 7 and 8 below are seemingly assigned to the results of asynchronous calls. 
 {% codeblock %}
 BulkLoader.prototype.load = function() {
   var self = this;
@@ -166,13 +168,13 @@ Generators work syncnronously which is different than what I originally thought,
 self.users = yield getJSON('/users');
 {% endcodeblock %}
 
-I got this from the <a href="https://github.com/kriskowal/q/blob/v1/q.js#L1167" target="_blank">Q promise library</a> with some minor changes to get it to integrate with promises defined in <a href="https://github.com/tildeio/rsvp.js/" target="_blank">RSVP</a> that I use on a day to day basis with ember.
+I got the **async** method from the <a href="https://github.com/kriskowal/q/blob/v1/q.js#L1167" target="_blank">Q promise library</a> with some minor changes to get it to integrate with promises defined in <a href="https://github.com/tildeio/rsvp.js/" target="_blank">RSVP</a> that I use on a day to day basis with ember.
 
 There is a lot going on in the 2 code sniippets above but the basic premise is that we are passing the generator function to **async** like this:
 {% codeblock %}
   return async(function * () {
 {% endcodeblock %}
-The **async** assigns the iterator that is returned from this generator function to a local variable:
+The **async** function assigns the iterator that is returned from this generator function to a local variable on **line 16**:
 {% codeblock %}
   var generator = generatorFunc();
 {% endcodeblock %}
@@ -181,19 +183,30 @@ The async function then uses the often overlooked ability to pass arguments via 
 var callback = continuer.bind(continuer, "next");
 var errback = continuer.bind(continuer, "throw");
 {% endcodeblock %}
-The callback and errback function pointers both reference the **continuer** function but with different arguments being passed in as the **verb** to the **continuer** function.  So when the **return callback();** statement is executed, the continuer will be constructed with an argument of next which will result in the line below asking for the first value from the iterator:
+The **callback** and **errback** function pointers both reference the **continuer** function on **line 2** but because of the way they were declared with the **bind** function, either **next** or **throw** will be bound to the **verb** parameter depending on which function pointer is invoked.   
+
+When the **callback** reference is invoked on **line 20** with the **return callback();** statement, the **verb** argument will have a value of **next** which will result in the generator asking for the first value from the iterator or generator function.
+
 {% codeblock %}
 result = generator[verb](arg);
 {% endcodeblock %}
+
 Which is the equivelant of:
+
 {% codeblock %}
 result = generator.next(arg);
 {% endcodeblock %}
-Exectution will then return to the generator function where this line will execute:
+
+The **arg** argument will be undefined at thes stage because we have not had a value returned from the iterator. When the first value is asked of the iterator with the above code, the code below will be executed.
+
 {% codeblock %}
 self.users = yield getJSON('/users');
 {% endcodeblock %}
-The **getJSON** method returns a promise that is fulfilled or rejected with respect to the aynchronous ajax call.  Once the pomise has been created, this code will execute:
+The **getJSON** method returns a promise that is fulfilled or rejected with respect to the successful completion or rejection of the aynchronous ajax call.  Once the promise has been created, the **yield** statement will suspend execution of this function and return the promise created via the **getJSON** function back to the calling code or **async** function.
+
+The **result** variable has been assigned a **nextResult** object that was described earler that will have a **done** flag value of false and a **value** property that will point to the promise created in the iterator.
+
+The code will now encounter this if statment. 
 {% codeblock %}
 if (result.done) {
   return result.value;
@@ -201,23 +214,46 @@ if (result.done) {
   return RSVP.Promise.resolve(result.value).then(callback, errback);
 }
 {% endcodeblock %}
-As not all of the **yield** statements have been returned by the iterator, the **done** flag will false and so the line after the **else** statement will run which calls **RSVP.Promise.resolve** with the **result.value** which at this stage is still the promise returned from **getJSON**.  **RSVP.Promise.resolve** just really massages **result.value** into a **Promise** if it is not currently one and the **callback** is the **callback** defined earlier in the **var callback = continuer.bind(continuer, "next");** statement that will call the **continuer** function again with a value of **next** 
+As not all of the **yield** statements have been executed, the **done** flag will be false and execution will continue after the **else** statement. The next line calls **RSVP.Promise.resolve** and passes **result.value** as an argument which at this stage is still the promise returned from **getJSON**.  **RSVP.Promise.resolve** in this instance just checks that **result.value** is a promise and if not, it creates a promise that will become resolved with the passed value.  In this instance, **result.value** is a promise so no **Promise** cast is required.  
+
+This is where things get complicated so keep your wits about you.  This **result.value** promise which was created from the **getJSON('/users')** call and will resolve successfully and result in the **callback** being executed in the **promises'** **then** method below:
 {% codeblock %}
+return RSVP.Promise.resolve(result.value).then(callback, errback);
 {% endcodeblock %}
 
+The **callback** will call the **continuer** function again:
 {% codeblock %}
+function continuer(verb, arg) {
 {% endcodeblock %}
 
+The callback will call the **continuer** and bind **next** to the **verb** paramter but this time, the **arg** value will be bound to whatever was returned from the **getJSON('/users')** asynchronous call.  This means that whenever **next** is called:
 {% codeblock %}
+result = generator[verb](arg);
 {% endcodeblock %}
 
+The **arg** value will be returned to the iterator function as was explained in the two way communication section earlier and assigned to the **self.users** property that was on the left hand side of the **yield** statement that called **getJSON('/users')**.
 
-As soon as a yield statement is encountered:
+This means that **self.users** below will now be assigned the result of the async ajax call albeit in a rather round about fashion.
 {% codeblock %}
   self.users = yield getJSON('/users');
 {% endcodeblock %}
-Execution will then jump back to the **async** method
 
-async hands control of the function over to the scheduler, which assumes the function will yield promises and will send the values back once the promises are fulfilled
+The **async** function then continues in this recursive manner until all of the yield statements have been called and all of the properties on the left hand side of the **yield** statements below have been assigned:
+{% codeblock %}
+self.users = yield getJSON('/users');
+self.contacts = yield getJSON('/contacts');
+self.companies = yield getJSON('/companies');
 
-http://blog.alexmaccaw.com/how-yield-will-transform-node
+return self;
+{% endcodeblock %}
+
+Once all the yield statements have been executed, the last **nextResult** returned from the iterator will point to **line 5** of the above code sample and will have the **done** flag set to **true**. This means that execution will continue in the **if** path of the code below and the value of the last **nextResult** object will be returned to the calling code and the process has completed:
+{% codeblock %}
+if (result.done) {
+  return result.value;
+} else {
+  return RSVP.Promise.resolve(result.value).then(callback, errback);
+}
+{% endcodeblock %}
+
+Writing this blog post has completelly demystified what initially seemed like black magic to me.  I hope it has done the same for you.
