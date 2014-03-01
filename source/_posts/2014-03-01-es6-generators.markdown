@@ -86,6 +86,39 @@ while(!obj.done) {
 
 - **Line 11** assigns a returned **nextResult** object to the local object which we can check on each iteration of the loop.  When next is called, the iterator returned from the **oneToThree** function points to the next **yield** statement (**lines 2- 5**) and returns the value.  If there are no more yield statements then the **done** flag is set to true.
 
+It is also possible to send values back to the iterator by calling next with an argument:
+{% codeblock %}
+function BulkLoader(){
+  this.users = [];
+  this.companies = [];
+  this.contacts = [];
+};
+
+BulkLoader.prototype.iterator = function * () {
+  // var a = yield 1;
+  // var b = yield 2;
+  // var c = yield 3;
+
+  this.users = yield [{name: 'bob', email: 'bob@hotmail.com'}];
+  this.contacts = yield [{name: 'brian', email: 'brian@hotmail.com'}];
+  this.companies = yield [{name: 'company', email: 'company@hotmail.com'}];
+
+  return this;
+};
+
+var users = iterator.next();
+var contacts = iterator.next(users.value);
+var companies = iterator.next(contacts.value);
+
+var result = iterator.next(companies.value).value;
+
+console.log(result.users);
+console.log(result.contacts);
+console.log(result.companies);
+{% endcodeblock %}
+
+In the above example, the return of the **yield** statement is passed back to the iterator where it is assigned to the variable on the left hand side of the **yield** statement.
+
 So that example is still quite far removed from how we got here:
 {% codeblock %}
 BulkLoader.prototype.load = function() {
@@ -128,13 +161,62 @@ export default function async(generatorFunc) {
   return callback();
 }
 {% endcodeblock %}
+Generators work syncnronously which is different than what I originally thought, I thought there was some magic that made them work asynchronously.  This is not true, the key to making them work asynchronously is to return a promise or another object that describes an async task.  In this example, each **yield** statement returns a promise like this:
+{% codeblock %}
+self.users = yield getJSON('/users');
+{% endcodeblock %}
 
 I got this from the <a href="https://github.com/kriskowal/q/blob/v1/q.js#L1167" target="_blank">Q promise library</a> with some minor changes to get it to integrate with promises defined in <a href="https://github.com/tildeio/rsvp.js/" target="_blank">RSVP</a> that I use on a day to day basis with ember.
 
-There is a lot going on in the above 2 code sniippets but the basic premise is that we are passing the generator function to **async** like this:
+There is a lot going on in the 2 code sniippets above but the basic premise is that we are passing the generator function to **async** like this:
 {% codeblock %}
   return async(function * () {
 {% endcodeblock %}
+The **async** assigns the iterator that is returned from this generator function to a local variable:
+{% codeblock %}
+  var generator = generatorFunc();
+{% endcodeblock %}
+The async function then uses the often overlooked ability to pass arguments via the **bind** function:
+{% codeblock %}
+var callback = continuer.bind(continuer, "next");
+var errback = continuer.bind(continuer, "throw");
+{% endcodeblock %}
+The callback and errback function pointers both reference the **continuer** function but with different arguments being passed in as the **verb** to the **continuer** function.  So when the **return callback();** statement is executed, the continuer will be constructed with an argument of next which will result in the line below asking for the first value from the iterator:
+{% codeblock %}
+result = generator[verb](arg);
+{% endcodeblock %}
+Which is the equivelant of:
+{% codeblock %}
+result = generator.next(arg);
+{% endcodeblock %}
+Exectution will then return to the generator function where this line will execute:
+{% codeblock %}
+self.users = yield getJSON('/users');
+{% endcodeblock %}
+The **getJSON** method returns a promise that is fulfilled or rejected with respect to the aynchronous ajax call.  Once the pomise has been created, this code will execute:
+{% codeblock %}
+if (result.done) {
+  return result.value;
+} else {
+  return RSVP.Promise.resolve(result.value).then(callback, errback);
+}
+{% endcodeblock %}
+As not all of the **yield** statements have been returned by the iterator, the **done** flag will false and so the line after the **else** statement will run which calls **RSVP.Promise.resolve** with the **result.value** which at this stage is still the promise returned from **getJSON**.  **RSVP.Promise.resolve** just really massages **result.value** into a **Promise** if it is not currently one and the **callback** is the **callback** defined earlier in the **var callback = continuer.bind(continuer, "next");** statement that will call the **continuer** function again with a value of **next** 
+{% codeblock %}
+{% endcodeblock %}
+
+{% codeblock %}
+{% endcodeblock %}
+
+{% codeblock %}
+{% endcodeblock %}
+
+
+As soon as a yield statement is encountered:
+{% codeblock %}
+  self.users = yield getJSON('/users');
+{% endcodeblock %}
+Execution will then jump back to the **async** method
 
 async hands control of the function over to the scheduler, which assumes the function will yield promises and will send the values back once the promises are fulfilled
 
