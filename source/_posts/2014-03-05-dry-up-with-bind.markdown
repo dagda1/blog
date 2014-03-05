@@ -25,7 +25,7 @@ Let me illustrate this with an example, the code below contains a chain of promi
 
 {% gist 9365442 %}
 
-On **lines 4, 8 and 9** of the above gist, I am setting a property of the **self** reference to the data returned from the async call and on lines **6, 10 and 14** I am calling **getJSON** with a different url that will return the next resource.  The only things that are different are the property name and the string literal for the next url.
+On **lines 4, 8 and 12** of the above gist, I am setting a property of the **self** reference to the data returned from the async call and on lines **6, 10 and 14** I am calling **getJSON** with a different url that will return the next resource.  The only things that are different are the property name and the string literal for the next url.
 
 The function below would DRY this up nicely:
 {% gist 9365578 %}
