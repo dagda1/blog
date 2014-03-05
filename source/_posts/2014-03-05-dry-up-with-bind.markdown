@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Drying up callbacks with bind"
+title: "Partial Functions with bind"
 date: 2014-03-05 09:33:52 +0000
 comments: true
 categories: JavaScript
