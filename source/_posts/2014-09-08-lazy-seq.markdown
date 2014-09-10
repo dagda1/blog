@@ -15,7 +15,7 @@ sequence must be lazy.
 {% endcodeblock %}
 What struck me as totally strange when I first read this problem is that an infinite list is being passed to the function in the form of ```(range)```.  I had only previously seen range used with at least an ```end``` argument like below:
 {% codeblock %}
-user=> (take 10 (range))
+user=> (range 10)
 (0 1 2 3 4 5 6 7 8 9)
 {% endcodeblock %}
 
