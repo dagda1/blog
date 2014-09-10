@@ -101,6 +101,6 @@ The question is really asking the user to recreate clojure's core <a href="http:
 
 The important things to note are that an infinite ```range``` is passed into the named anonymous function ```my-reduct``` on **line 12** but becase a lazy sequence is returned on **line 8** and **line 11**, the resulting sequence will only be returned as requested.  Because the ```take``` function is used on line **line 1** to request the lazy sequence with an arguement of 5, the function will only be called 5 times.
 
-I found the lazy sequences very difficult to wrap my head around and part of that process was to write this post.
+I found lazy sequences very difficult to wrap my head around and part of that process was to write this post.
 
 If I have inaccuately described anything or I can improve this explanation then please leave a comment below.
