@@ -1,0 +1,54 @@
+---
+layout: post
+title: "clojurescript - om - Dynamic components and Unique Keys"
+date: 2014-11-06 06:51:37 +0000
+comments: true
+categories: om clojurescript
+---
+As I get older my tolerance for javascript seems to be getting worse so I've been employing clojurescript as a shield from the true horrors of javascript.  I've been playing around wih <a href="https://github.com/swannodette/om" target="_blank">om</a> which acts as an interface to <a href="http://facebook.github.io/react/" target="_blank">facebook's react</a>.
+
+While developing with om, I kept getting the same javascript error after rendering a dynamic list like below:
+
+{%img /images/om-list.png %}
+
+If you have done any developing with om, then I am confident in saying that you will have come across this warning after rendering such a list:
+{% blockquote %}
+Each child in an array should have a unique "key" prop. Check the renderComponent call using &lt;tbody&gt;. See http://fb.me/react-warning-keys for more information.
+{% endblockquote %}
+
+{%img /images/om-error.png %}
+
+Here is the code I was using to render such a list:
+{% gist 807ede3b7490484c743e %}
+Line 12 in the above is the villain of this piece as there is no way that I could find of passing a func that will set the <a href="http://facebook.github.io/react/docs/multiple-components.html#dynamic-children" target="_blank">key</a> property that react uses to identify each dynamic child.
+
+I have been trying to ignore this warning as it did not cause any code to stop executing but I kept seeing this question pop up on the irc channel and I could not find a good answer on the google.
+
+It also turns out that not supplying a react key for each dynamic item could lead to some very <a href="https://coderwall.com/p/jdybeq/the-importance-of-component-keys-in-react-js" target="_blank">unexpected behaviour</a>.
+
+After consulting the <a href="https://github.com/swannodette/om/wiki/Documentation" target="_blank">om docs</a> I discovered that <a href="https://github.com/swannodette/om/wiki/Documentation#build" target="_blank">om/build</a> can take a third ```:opts``` argument and one of the allowed keys is a ```:react-key``` which is one of the solutions to the problem.
+
+Armed with this information, I refactored the above code to the following:
+{% gist ca110a14271797a1170f %}
+
+The only change is on line 12:
+{% codeblock %}
+(map-indexed #(om/build clip-view %2 {:react-key %1}) clips))
+{% endcodeblock %}
+
+I have used the simplest case of an index for the ```:react-key``` but if I was rendering from a list where each item had a unique identifier then I would use the ```:key``` option to specify an element property that would be bound as the react key and would look something like this:
+
+{% codeblock %}
+(map #(om/build clip-view % {:key :id}) clips))
+{% endcodeblock %}
+
+** (thanks to Anna Pawlicka) for mentioning this in the comments below.**
+
+Or probably the best option of is to pass  an ```:opts``` map containing a ```:key``` option to ```om/build-all```:
+{% codeblock %}
+(om/build-all clip-view clips {:key :id})
+{% endcodeblock %}
+
+** Thanks to <a href="https://twitter.com/danielszmu" target="_blank">Daniel Szmulewicz</a> for mentioning this on twitter. **
+
+I can now paste a link to this post when somebody asks how to get rid of this warning on the ```clojurescript``` irc channel.
