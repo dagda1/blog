@@ -9,12 +9,12 @@ categories: JavaScript Ember
 
 I'm not going to go into great detail in this post as I think the code examples will be out of date post ember 1.7.1.
 
-I recently had the problem of how to make a complex table reusable accross different dataset.  As each dataset would contain objects with different fields, I would not be able to use the usual handlebars syntax of binding:
+I recently had the problem of how to make a complex table reusable accross different datasets.  As each dataset would contain objects with different fields, I would not be able to use the usual handlebars syntax of binding:
 {% codeblock %}
 &#123;&#123;property&#125;&#125;
 {% endcodeblock %}
 
-My solution  was to create a json hash like in the gist below that specified which fields I was binding to and whether I was going to render a simple text field, a link or for complex scenarios a component:
+My solution  was to create a json hash that is similar to the one in the gist below that specified which fields I was binding to and whether or not, I was going to render a simple text field, a link or for complex scenarios a component:
 {% gist b417f078e32abcff454c %}
 - The address structure on **line 9** is the most basic as it just specifies a property to bind to.
 - The structure on **line 4** contains a ```route``` property to signify that I want a link generated.
