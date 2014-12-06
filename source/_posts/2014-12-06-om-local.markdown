@@ -1,0 +1,14 @@
+---
+layout: post
+title: "clojure - Installing a local jar with Leiningen"
+date: 2014-12-06 06:32:37 +0000
+comments: true
+categories: clojure clojurescript
+---
+I ran into a situation earlier where I wanted to use the ```0.8.0-beta2``` version of <a href="https://github.com/swannodette/om" target="_blank">om</a> but it had not yet been pushed to clojars.
+
+The answer was to install the jar in a directory local to the project I was working on.
+
+Here are the steps I took to install the om jar locally:
+
+{% gist 0fd68a758ca61ae672f4 %}
