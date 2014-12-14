@@ -1,0 +1,69 @@
+---
+layout: post
+title: "Clojurescript - Using Transducers To Transform Native Javascript Objects"
+date: 2014-12-13 20:56:40 +0000
+comments: true
+categories: clojure clojurescript
+---
+I've been digging into clojurescript more and more but as I am still quite new to cljs, I find myself over zealously calling the <a href="https://github.com/clojure/clojurescript/blob/master/src/cljs/cljs/core.cljs#L8515">clj->js</a> and <a href="https://github.com/clojure/clojurescript/blob/master/src/cljs/cljs/core.cljs#L8539" target="_blank">js->clj</a> interop functions that transform javascript arrays to clojurescript vectors, maps, lists etc. and vice versa.  I found this frustrating as I want to use the power of the clojurescript language and not have to drill down to javascript unless it absolutely necessary.
+
+I've been writing a <a href="https://github.com/facebook/react">react</a> wrapper component which has pretty much dictated that I need to be dealing with native javascript objects at all times and as such I am having to call the interop functions.  An example of this is in the code below:
+{% gist c8164e5b0495b8ed23b6 %}
+On lines 3 and 4, I am calling <a href="https://github.com/clojure/clojurescript/blob/master/src/cljs/cljs/core.cljs#L8515>clj->js</a> to transform the cljs persistent data structures into the javascript native equivalents.  What would be nicer is to be able to use functions like map, reduce, filter etc. on native javascript objects.  I asked if this was possible in the clojurescript irc and <a href="http://clojure.org/transducers" target="_blank">transducrs</a> were put forward as a means of achieving the goal.
+
+###Transducers
+I have heard of transducers in the clojure world without taking the trouble to see what all the fuss was about but I had no idea that they were available in clojurescript.  I'm now going to give a brief introduction as to what transducers are but there are lots of good material out there that probably do a better job and Rich Hickey's <a href="https://www.youtube.com/watch?v=6mTbuzafcII">strangeloop</a> introduction to them is a great start.
+
+I always address a new concept by first of all determining what problem does the new concept solve and with tranducers the problem is one of decoupling.  You are probably familiar ```filter``` which returns all items in a collection that are true in terms of a predicate function:
+{% codeblock %}
+(filter odd? (range 0 10)) ;=> (1 3 5 7 9)
+{% endcodeblock %}
+It should be noted that ```filter``` could be constructed using ```reduce```.
+{% gist f7c1ccdbb7d37a64802d %}
+The problem with the above is that we cannot replace ```conj``` on line 4 with another builder function like```+```.  Transducers set out to decouple the operation from the filter logic.  ```conj``` and ```+``` are reducing functions in that they take a result and an input and return a new result.  We could refactor our ```filter-odd``` function to a more generic ```filtering``` function that allows us to supply different predicates and reducing funtions by using higher order functions:
+{% gist 6905cf2ccb91f2b376bb %}
+The above is not as scary as it looks and you can see on lines 9 and 10 that we are able to supply different reducing functions (```conj``` and ```+```).  This is the problem that transducers set out to solve, the reducing function is now abstracted away so that the creation of the datastructure is decoupled from the sequence function (```filter```, ```map``` etc.) logic.
+
+As of clojure 1.7.0 most of the core sequence functions (```map```, ```filter``` etc.) are gaining a new 1 argument arity that will return a transducer that, for example this call will return a transducer from ```filter```:
+{% codeblock %}
+(filter odd?)
+{% endcodeblock %}
+
+One of the new  ways (but not the only way) to apply transducers is with the <a href="http://clojure.github.io/clojure/branch-master/clojure.core-api.html#clojure.core/transduce" target="_blank">transduce</a> function.  The transduce function takes the following form:
+{% codeblock %}
+transduce(xform, f, init, coll)
+{% endcodeblock %}
+The above states that ```transduce``` will reduce a collection ```coll``` with the inital value ```init```, applying a transformation ```xform``` to each value and applying the reducing function ```f```.
+
+We can now apply this to our previous example
+
+{% gist 206a4e3a28265e1e987e %}
+
+I hope it is obvious that ```(range 0 10)``` is ```coll``` and ```[]``` is the ```init``` value etc.
+
+###Meanwhile Back in Javascript land......
+If we now shift back to our specific example, we can use a transducer to transform a native javascript array because a transducer is fully decoupled from input and output sources.
+
+This is the current code that we want to use transducers with to
+{% codeblock %}
+(clj->js (filter #(not (.hasOwnProperty prevChildMapping %)) nextKeys))
+{% endcodeblock %}
+
+So the first question is what would the reducing function be when dealing with native arrays?  The answer is the native array ```push``` push method which adds a new item to an array.  My first ill thought out attempt at the above looked something like this:
+{% codeblock %}
+(transduce (filter #(not (.hasOwnProperty prevChildMapping %))) (.-push #js[]) #js [] nextKeys)
+{% endcodeblock %}
+
+This is completely wrong because I had not grasped what is required of the reducing funcion.  A reducing function takes a result and an input and returns a new result e.g.
+{% codeblock %}
+(conj [1 2 3] 4) ;=> [1 2 3 4]
+(+ 10 1) ;=> 11
+{% endcodeblock %}
+The ```push``` function does not satisfy what is required as it only returns the length of the new array.  What was needed was someway of turning the ```push``` function into a function that behaved in a way that the transducer expected.  The push function would need to return the result:
+{% codeblock %}
+(fn [arr x] (.push arr x) arr)
+{% endcodeblock %}
+
+But as it turns out, this also does not work because it does not implement the result arity of the transducer function 
+
+As it turns out, both clojure and clojurescript 
