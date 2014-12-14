@@ -59,11 +59,22 @@ This is completely wrong because I had not grasped what is required of the reduc
 (conj [1 2 3] 4) ;=> [1 2 3 4]
 (+ 10 1) ;=> 11
 {% endcodeblock %}
-The ```push``` function does not satisfy what is required as it only returns the length of the new array.  What was needed was someway of turning the ```push``` function into a function that behaved in a way that the transducer expected.  The push function would need to return the result:
+The ```push``` function does not satisfy what is required as the ```push``` function actually returns the length of the array which is not what is expected.  What was needed was someway of turning the ```push``` function into a function that behaved in a way that the transducer expected.  The push function would need to return the result:
 {% codeblock %}
 (fn [arr x] (.push arr x) arr)
 {% endcodeblock %}
 
-But as it turns out, this also does not work because it does not implement the result arity of the transducer function 
+But as it turns out, this also does not work because it does not implement the result arity of the transducer function which expects an extra arity.
 
-As it turns out, both clojure and clojurescript 
+As it turns out, both clojure and clojurescript provide a function called <a href="https://clojure.github.io/clojure/branch-master/clojure.core-api.html#clojure.core/completing" target="_blank">completing</a> that takes a function and returns a function that is suitable for transducing by wrapping the reducing funtion and adding an extra arity that simply calls the <a href="https://clojuredocs.org/clojure.core/identity" target="_blank">identity</a> function behind the scenes.
+
+My final code ended up looking like this:
+{% codeblock %}
+(keysToEnter (transduce (filter #(not (.hasOwnProperty prevChildMapping %))) (completing (fn [arr x] (.push arr x) arr)) #js [] nextKeys)
+{% endcodeblock %}
+
+The reducing function that uses the native javascript push function is wrapped in ```completing``` that makes it suitable for transducing.
+
+I think I've ended up with more code than I started with and I also think that this is a poor example of transducers but I wanted to outline the mechanics involved in using transducers with native javascript object functions or indeed any non clojure sequence function as I could find absolutely nothing on the google etc. to point me in the right direction.
+
+If I have got anyting wrong in this explanation then please leave a comment below.
