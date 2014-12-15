@@ -9,10 +9,10 @@ I've been digging into clojurescript more and more but as I am still quite new t
 
 I've been writing a <a href="https://github.com/facebook/react">react</a> wrapper component which has pretty much dictated that I need to be dealing with native javascript objects at all times and as such I am having to call these interop functions.  An example of this is in the code below:
 {% gist c8164e5b0495b8ed23b6 %}
-On lines 3 and 4, I am calling <a href="https://github.com/clojure/clojurescript/blob/master/src/cljs/cljs/core.cljs#L8515">clj->js</a> to transform the clojurescript ```PersistentVector``` into the javascript native array equivalent.  What I really wanted was to call the clojurescript sequence functions ```map```, ```reduce```, ```filter``` etc. on native javascript objects.  I asked if this was possible in the clojurescript irc and <a href="http://clojure.org/transducers" target="_blank">transducrs</a> were put forward as a means of achieving the goal.
+On lines 3 and 4, I am calling <a href="https://github.com/clojure/clojurescript/blob/master/src/cljs/cljs/core.cljs#L8515">clj->js</a> to transform a clojurescript ```PersistentVector``` into the javascript native array equivalent.  What I really wanted was to call the clojurescript sequence functions ```map```, ```reduce```, ```filter``` etc. on native javascript objects.  I asked if this was possible in the clojurescript irc and <a href="http://clojure.org/transducers" target="_blank">transducrs</a> were put forward as a means of achieving the goal.
 
 ###Transducers
-I had heard of transducers in the clojure world without taking the trouble to see what all the fuss was about but I had no idea that they were available in clojurescript.  I'm now going to give a brief introduction as to what transducers are but there are lots of good material out there that probably do a better job and Rich Hickey's <a href="https://www.youtube.com/watch?v=6mTbuzafcII">strangeloop</a> introduction to them is a great start.
+I had heard of transducers in the clojure world without taking the trouble to see what all the fuss was about but I had no idea that they were available in clojurescript.  I'm now going to give a brief introduction as to what transducers are but there is lots of good material out there that probably do a better job and Rich Hickey's <a href="https://www.youtube.com/watch?v=6mTbuzafcII">strangeloop</a> introduction to them is a great start.
 
 I always address a new concept by first of all determining what problem does the new concept solve and with tranducers the problem is one of decoupling.  You are probably familiar with ```filter``` which returns all items in a collection that are true in terms of a predicate function:
 {% codeblock %}
@@ -20,7 +20,9 @@ I always address a new concept by first of all determining what problem does the
 {% endcodeblock %}
 It should be noted that ```filter``` could be constructed using ```reduce```.
 {% gist f7c1ccdbb7d37a64802d %}
-The problem with the above is that we cannot replace ```conj``` on line 4 with another builder function like```+```.  Transducers set out to decouple the operation from the filter logic.  ```conj``` and ```+``` are reducing functions in that they take a result and an input and return a new result.  We could refactor our ```filter-odd``` function to a more generic ```filtering``` function that allows us to supply different predicates and reducing funtions by using higher order functions:
+The problem with the above is that we cannot replace ```conj``` on line 4 with another builder function like```+```.  This problem holds true for all the pre-transducer sequence functions like ```map```, ```filter``` etc.  Transducers set out to abstract away operations like ```conj``` so that the creation of the resultant datastructure is decoupled from the ```map```/```filter``` logic.
+
+```conj``` and ```+``` are reducing functions in that they take a result and an input and return a new result.  We could refactor our ```filter-odd``` function to a more generic ```filtering``` function that allows us to supply different predicates and reducing funtions by using higher order functions:
 {% gist 6905cf2ccb91f2b376bb %}
 The above is not as scary as it looks and you can see on lines 9 and 10 that we are able to supply different reducing functions (```conj``` and ```+```).  This is the problem that transducers set out to solve, the reducing function is now abstracted away so that the creation of the datastructure is decoupled from the sequence function (```filter```, ```map``` etc.) logic.
 
@@ -39,7 +41,7 @@ We can now apply this to our previous example
 
 {% gist 206a4e3a28265e1e987e %}
 
-I hope it is obvious that ```(range 0 10)``` is ```coll``` and ```[]``` is the ```init``` value etc.
+I hope it is obvious that ```(range 0 10)``` is ```coll``` and ```[]``` is the ```init```, ```xform``` is the transducer function and ```+``` or ```conj``` are the reducing functions.
 
 ###Meanwhile Back in Javascript land......
 If we now shift back to our specific example, we can use a transducer to transform a native javascript array because a transducer is fully decoupled from input and output sources.
@@ -64,9 +66,10 @@ The ```push``` function does not satisfy what is required as the ```push``` func
 (fn [arr x] (.push arr x) arr)
 {% endcodeblock %}
 
-But as it turns out, this also does not work because it does not implement the result arity of the transducer function which expects an extra arity.
+But as it turns out, this also does not work because a reducing function to transduce has to have 0, 1 and 2 arities and our reducing function only has 1.
 
-As it turns out, both clojure and clojurescript provide a function called <a href="https://clojure.github.io/clojure/branch-master/clojure.core-api.html#clojure.core/completing" target="_blank">completing</a> that takes a function and returns a function that is suitable for transducing by wrapping the reducing funtion and adding an extra arity that simply calls the <a href="https://clojuredocs.org/clojure.core/identity" target="_blank">identity</a> function behind the scenes.
+As it turns out, both clojure and clojurescript provide a function called <a href="https://clojure.github.io/clojure/branch-master/clojure.core-api.html#clojure.core/completing" target="_blank">completing</a> that takes a function and returns a function that is suitable for transducing by wrapping the reducing funtion and adding an extra arity that simply calls the <a href="https://clojuredocs.org/clojure.core/identity" target="_blank">identity</a> function behind the scenes.  Below is the ```completing``` function from the ```clojure.core``` source.
+{% gist ce5e4794555b5330e0d0 %}
 
 My final code ended up looking like this:
 {% codeblock %}
@@ -75,6 +78,6 @@ My final code ended up looking like this:
 
 The reducing function that uses the native javascript push function is wrapped in ```completing``` that makes it suitable for transducing.
 
-I think I've ended up with more code than I started with and I also think that this is a poor example of transducers but I wanted to outline the mechanics involved in using transducers with native javascript object functions or indeed any non clojure sequence function as I could find absolutely nothing on the google etc. to point me in the right direction.
+I think I've ended up with more code than I started with and I also think that this is a poor example of transducers but I wanted to outline the mechanics involved in using transducers with native javascript arrays as I could find absolutely nothing on the google etc. so hopefully this will point somebody else in the right direction.
 
 If I have got anyting wrong in this explanation then please leave a comment below.
