@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Clojurescript - Using Transducers To Transform Native Javascript Objects"
+title: "Clojurescript - Using Transducers To Transform Native Javascript Arrays"
 date: 2014-12-13 20:56:40 +0000
 comments: true
 categories: clojure clojurescript
@@ -70,7 +70,7 @@ We can now apply this to our previous example
 (def xform
   (filter odd?))
 
-(transduce xform + 0 (range 0 10)) ;=> 35
+(transduce xform + 0 (range 0 10)) ;=> 25
 (transduce xform conj [] (range 0 10)) ;=>  ;=>[1 3 5 7 9]
 {% endcodeblock %}
 I hope it is obvious that ```(range 0 10)``` is ```coll``` and ```[]``` is the ```init```, ```xform``` is the transducer function and ```+``` or ```conj``` are the reducing functions.
@@ -78,7 +78,7 @@ I hope it is obvious that ```(range 0 10)``` is ```coll``` and ```[]``` is the `
 ###Meanwhile Back in Javascript land......
 If we now shift back to our specific example, we can use a transducer to transform a native javascript array because a transducer is fully decoupled from input and output sources.
 
-This is the current code that we want to use transducers with to
+This is the current code that we want to refactor:
 {% codeblock %}
 (clj->js (filter #(not (.hasOwnProperty prevChildMapping %)) nextKeys))
 {% endcodeblock %}
