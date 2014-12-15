@@ -1,9 +1,13 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
-.gist-file {
-  font-size:.8em !important;
+.gist-data.gist-syntax > div > table {
+  width: 100%;
 }
 
-table.lines{
-  width: 100%;
+.gist-data.gist-syntax table, .gist-data.gist-syntax .line-numbers {
+  font-size: 15px;
+}
+
+.gist-data.gist-syntax > div > table > tbody > tr > td.line-numbers{
+  padding: 0px 3px 0 2px !IMPORTANT;
 }
