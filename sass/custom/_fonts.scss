@@ -8,3 +8,10 @@
 //$heading-font-family: "Verdana", sans-serif;
 //$header-title-font-family: "Futura", sans-serif;
 //$header-subtitle-font-family: "Futura", sans-serif;
+.pre-code span, html .gist .gist-file .gist-syntax .highlight pre span, .highlight code span {
+  font-size: 15px !IMPORTANT;
+}
+
+td.gutter pre {
+  font-size: 13.6px !IMPORTANT;
+}

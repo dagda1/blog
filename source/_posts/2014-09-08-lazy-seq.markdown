@@ -6,7 +6,7 @@ comments: true
 categories: Clojure
 ---
 I have recently fallen head over heals in love with clojure and I've decided to run through the problems in the excellent <a href="http://www.4clojure.com/" target="_blank">4Clojure</a> site to ensure that I have a good understanding of the language before I even think about dealing with IO or building something meaningful. I'm currently on <a href="http://www.4clojure.com/problem/60#prob-title" target="_blank">question 60</a> which has introduced the concept of lazy sequences and is displayed below:
-{% codeblock %}
+{% codeblock r.clj %}
 Write a function which behaves like reduce, but returns each intermediate value of the
 reduction.  Your function must accept either two or three arguments, and the return
 sequence must be lazy.
@@ -14,13 +14,13 @@ sequence must be lazy.
 (= (take 5 (__ + (range))) [0 1 3 6 10])
 {% endcodeblock %}
 What struck me as totally strange when I first read this problem is that an infinite list is being passed to the function in the form of ```(range)```.  I had only previously seen range used with at least an ```end``` argument like below:
-{% codeblock %}
+{% codeblock range.clj %}
 user=> (range 10)
 (0 1 2 3 4 5 6 7 8 9)
 {% endcodeblock %}
 
 But if no start or end arguments are supplied then the default for ```end``` is infinity.
-{% codeblock %}
+{% codeblock d.clj %}
 ;; default value of 'end' is infinity
 user=> (range)
 (0 1 2 3 4 5 6 7 8 9 10 ... 12770 12771 12772 12773 ... n
@@ -36,21 +36,21 @@ The 4clojure problem at the start of this post also asks the user to return a la
 Lazy Sequences
 --------------
 Laziness in this context means that you can specify a computation that could theoretically take forever to complete, **but** you can evalutate as much or as little of it as you need.  A very simple example of this is below:
-{% codeblock %}
+{% codeblock take.clj %}
 user=> (take 10 (range))
 (0 1 2 3 4 5 6 7 8 9)
 {% endcodeblock %}
 In the above example, ```range``` is being called with no ```end``` argument which according to the docs will mean that ```end``` defaults to infinity but if we type the expression into the repl, a sequence with the first 10 elements is immediately evaluated so it would appear that ```take 10``` is not waiting for range to reach infinity before grabbing the first 10 elements.
 
 A closer look at what type of sequence is returned starts to give the game away:
-{% codeblock %}
+{% codeblock class.clj %}
 user=> (class (take 10 (range)))
 clojure.lang.LazySeq
 {% endcodeblock %}
 
 As ```range``` with no ```end``` argument defaults to infinity, the only way that this could possibly work is if ```range``` returns a lazy sequence or one that realizes its elements as requested.  The original <a href ="http://www.4clojure.com/" target="_blank">4Clojure</a> <a href="http://www.4clojure.com/problem/60#prob-title" target="_blank">problem</a> stated that the sequence returned from the solution must be lazy in order to work with an infinite range:
 
-{% codeblock %}
+{% codeblock t.clj %}
 (= (take 5 (__ + (range))) [0 1 3 6 10])
 {% endcodeblock %}
 
@@ -63,8 +63,13 @@ seq calls. See also - realized?
 {% endblockquote %}
 
 In my haste to complete the problem, I simply thought that all I had to do was wrap an existing function in a ```lazy-seq``` call and everything would just magically work.  Here is my original attempt at solving the question:
-
-{% gist 93e28d0057fd6bd2b545 %}
+{% codeblock first.cljs %}
+(= (take 5 ((fn [func se] 
+    (lazy-seq 
+        (reduce (fn [acc item] 
+                      (conj acc (func (last acc) item)))
+                        [(first se)] (rest se)))) +  (range))) [0 1 3 6 10])
+{% endcodeblock %}
 
 All I have done is wrap a call to ```reduce``` on **line 3** in a call to ```lazy-seq``` on **line 2**  which of course resulted in a stackoverflow because ```reduce``` does not return a lazy sequence and instead will execute until the computation is complete which in this case is never because ```reduce``` is being called on an infinite list.  I needed to go back to the drawing board.  What I needed to do was create a sequence that is realized as needed.
 
@@ -73,10 +78,15 @@ After a bit more digging it became apparent that lazy sequences are not really s
 The Simplest Example Imaginable
 -------------------------------
 Below is the simplest example that I could think of:
-{% gist 9e68173abf4286518740 %}
+{% codeblock simple.clj %}
+(defn add-one [se] 
+  (lazy-seq (cons (inc (first se)) (add_one (rest se)))))
+
+(take 5 (add-one (range))) ;;;;;;=>(1 2 3 4 5)
+{% endcodeblock %}
 - **Line 1** defines a function named ```add-one``` that accepts a sequence that could be infinite.
 - **Line 2** is where the action happens, the ```lazy-seq``` macro is employed to create a lazy sequence whose body is an expression.  The body of this lazy sequence uses the <a href="http://clojuredocs.org/clojure_core/clojure.core/cons">cons</a> function which takes an element and a sequence and returns a new sequence by prepending the element to the sequence.  The element in this case is the result of incrementing the first element of the list with the expression:
-{% codeblock %}
+{% codeblock inc.clj %}
 (inc (first se))
 {% endcodeblock %}
 The sequence that the element is prepended to is the result of recursively calling the ```add-one``` function again.  If a lazy sequence was not returned from ```add-one``` then ```add-one``` would be called over and over again until a stackoverflow exception was thrown.  The whole point of the ```lazy-seq``` macro is to circumvent this and ensure that the function will only be accessed as the elements are requested.  A sequence that is returned from ```lazy-seq``` contains the requested element and a pointer or a function to get the next element.
@@ -86,7 +96,7 @@ Another mistake I made in my original misunderstanding was that ```cons``` was r
 The 4clojure Solution
 ---------------------
 Before I show my solution, I will remind you of the original <a href ="http://www.4clojure.com/" target="_blank">4Clojure</a> <a href="http://www.4clojure.com/problem/60#prob-title" target="_blank">problem</a>.
-{% codeblock %}
+{% codeblock red.clj %}
 Write a function which behaves like reduce, but returns each intermediate value of the reduction.
 Your function must accept either two or three arguments, and the return sequence must be lazy.
 
@@ -94,8 +104,20 @@ Your function must accept either two or three arguments, and the return sequence
 {% endcodeblock %}
 
 The question is really asking the user to recreate clojure's core <a href="http://clojuredocs.org/clojure_core/1.2.0/clojure.core/reductions" target="_blank">reductions</a> function.  Below is my solution that took me quite a while to get to but I am very pleased with.
-
-{% gist 9f6a503a8e35cb8006aa %}
+{% codeblock res.clj %}
+(= (take 5 (
+  (fn my-reduct
+    ([func coll]
+       (my-reduct func (first coll) (rest coll)))
+    
+    ([func firstArg coll]
+      (letfn [(reduct [f init se]
+                (lazy-seq (when-not (empty? se)
+                            (let [res (f init (first se))]
+                              (cons res (reduct f res (rest se)))))))]
+        (lazy-seq (cons firstArg (reduct func firstArg coll)))))) 
+                    + (range))) [0 1 3 6 10])
+{% endcodeblock %}
 
 The important things to note are that an infinite ```range``` is passed into the named anonymous function ```my-reduct``` on **line 12** but becase a lazy sequence is returned on **line 8** and **line 11**, the resulting sequence will only be returned as requested.  Because the ```take``` function is used on line **line 1** to request the lazy sequence with an arguement of 5, the function will only be called 5 times.
 

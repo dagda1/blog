@@ -9,20 +9,20 @@ I came across a situation recently where I needed to know the ```x``` and ```y``
 
 The solution was to use the illusory synchronous appearance of <a href="http://clojure.com/blog/2013/06/28/clojure-core-async-channels.html">core.async</a>.  In my opinion, the key to having user friendly asynchronous code is to have it read as synchronous as possible and I think that ```core.async``` outshines ```promises```, ```generators``` and any other abstraction that I have encountered to read synchronously.
 
-I am using the excellent <a href="https://github.com/swannodette/om" target="new">om</a> library to render the html and below I am declaring 3 channels in the ```IInitState``` lifecycle event that will be stored in the local state and can be retrieved in subsequent lifecycle evnets.
-{% codeblock %}
+I am using the excellent <a href="https://github.com/swannodette/om" target="new">om</a> library to render the html and below I am declaring 3 channels in the ```IInitState``` lifecycle event that will be stored in the local state and can be retrieved in subsequent lifecycle events.
+{% codeblock init.cljs %}
 om/IInitState
 (init-state [_]
   {:mouse-down (chan)
    :mouse-up (chan)
    :mouse-move (chan 1 (map (fn [e] (clj->js {:x (.-offsetX e) :y (.-offsetY e)}))))})
 {% endcodeblock %}
-I am creating 3 channels to handle the ```mousedown```, ```mouseup``` and ```mousemove``` and storing them in the local state.
+I am creating 3 channels to handle the ```mousedown```, ```mouseup``` and ```mousemove``` events and storing them in the local state.
 
 On ```line 4``` I am creating a channel and also supplying a transducer to the channel that will transform each event object that is placed on the channel.
 
 In the ```IDidMount``` lifecycle event that is triggered when the component is mounted onto the dom and is displayed below, I am retrieving the channels from the local state and creating event ```listeners``` for the mouse events that I am interested in, ```MOUSEDOWN```, ```MOUSEUP``` and ```MOUSEMOVE```.  All these event handlers do is basically ```put!``` the event object onto the relevant channel:
-{% codeblock %}
+{% codeblock didmount.cljs %}
 om/IDidMount
 (did-mount [_]
   (let [canvas (q ".tutorial")
@@ -39,7 +39,7 @@ om/IDidMount
     (set! (.-lineWidth ctx) 3)))
 {% endcodeblock %}
 Now we come to the meat and two potatoes of the piece.  Below is the ```IWillMount``` handler that is called before the component is mounted onto the dom:
-{% codeblock %}
+{% codeblock willmount.cljs %}
 om/IWillMount
 (will-mount [_]
   (let [mouse-down (om/get-state owner :mouse-down)
@@ -67,10 +67,10 @@ On ```line 8``` of the above, we use a combination of ```loop``` and ```alt!``` 
 
 ```alt!``` works like a sort of poor man's pattern matching by dispatching execution to the right hand side s-expression of the left hand side channel that has received the event.
 
-When the ```mousedown``` event is triggered, execution then proceeds to ```line 12``` in a nice synchronous manner where a second loop will listen for ```mouseup``` or ```mousemove``` events on via the ```alt!``` expression on ```line 13```.
+When the ```mousedown``` event is triggered, execution then proceeds to ```line 12``` in a nice synchronous manner where a second loop will listen for ```mouseup``` or ```mousemove``` events via the ```alt!``` expression on ```line 13```.
 
 If ```mousemove``` events are received then we are simply logging the transformed event object that is transformed via the transducer that was passed to the channel initialisation in ```IInitState```:
-{% codeblock %}
+{% codeblock trans.cljs %}
 :mouse-move (chan 1 (map (fn [e] (clj->js {:x (.-offsetX e) :y (.-offsetY e)}))))
 {% endcodeblock %}
 
