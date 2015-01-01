@@ -27,7 +27,7 @@ It turns out that you can also declare <a href="http://emberjs.com/guides/compon
 
 I wrongly assumed that if I added the appropriate &#123;&#123;yield&#125;&#125; statements to my component template then it would be possible for the user to specify their own content like this **AND** the component's context would be mainatined.
 
-{%gist 7581481 %}
+{% gist 7581481 %}
 
 All that appeared to be left was to add the&#123;&#123;yield&#125;&#125; statements to my existing template which I did on lines **4** and **15** of the following gist:
 {%gist 7580667 %}
@@ -42,7 +42,27 @@ If I log what the context is in the component's block, I can see it is the conte
 {%img /images/yeild.png%}
 
 After a cry for help, I received some sage advice from <a href="https://twitter.com/marciojunior_me" target="_blank">marciojunior_me</a>, that it is possible to override the **_yield** method of the **Ember.Component** to this:
-{% gist 7581585 %}
+{% codeblock five.js %}
+  _yield: function(context, options) {
+    var get = Ember.get, 
+    view = options.data.view,
+    parentView = this._parentView,
+    template = get(this, 'template');
+ 
+    if (template) {
+      Ember.assert("A Component must have a parent view in order to yield.", parentView);      
+      view.appendChild(Ember.View, {
+        isVirtual: true,
+        tagName: '',
+        _contextView: parentView,
+        template: template,
+        context: get(view, 'context'), // the default is get(parentView, 'context'),
+        controller: get(view, 'controller'), // the default is get(parentView, 'context'),
+        templateData: { keywords: parentView.cloneKeywords() }
+      });
+    }
+  },
+{% endcodeblock %}
 
 Lines **14** and **15** are the important lines of the above gist where we keep the context of to the current view and not the parentView.
 

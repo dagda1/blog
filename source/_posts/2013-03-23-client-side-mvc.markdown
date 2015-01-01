@@ -36,8 +36,14 @@ This is why comparing ember to rails is not entirely accurate, ember is a spin o
 The best way to flesh this out is with a practical code example.  The gist below contains about the least amount of code I could write to illustrate how a view is updated with changes to the model and vice versa.  You can view this code in the following <a href="http://jsfiddle.net/EhyMR/61/" target="_blankd">jsfiddle</a>.
 
 First up we have the code that will create a very simple object that we can use to show how these updates are reflected.
-{% gist 5231923 %}
-
+{% codeblock simple.js %}
+window.App = Ember.Application.create();
+ 
+App.Person = Ember.Object.create({
+    firstName: 'Paul',
+    surname: 'Cowan'
+});
+{% endcodeblock %}
 - On lines 3 to 6 of the above gist, we are creating a very simple object that represents a person. 
 - This Person object has **firstName** and **surname** properties.
 - This Person object is the **M** for **Model** of the MVC acronym.
@@ -72,9 +78,22 @@ So here we have it, the model is updated from any changes in the view via the ob
 If we wanted to display my full name or a combination of the **firstName** and **surname** properties of our Person object then we could update the handlebars to look like this.
 {% gist 5232287 %}
 I could do that but then there would be no point in writing this section.  Ember has a special mechanism called <a href="http://emberjs.com/guides/object-model/computed-properties/" target="_blank">computed properties</a> that allow you to create functions that behave like normal properties.  Before going any further, let us update the code to create a computed property that is a combination of the **firstName** and **surname** properties of the Person object.  Below is the updated code:
-{% gist 5232333 %}
+{% codeblock cp.js %}
+window.App = Ember.Application.create();
+ 
+App.Person = Ember.Object.extend({
+    firstName: null,
+    surname: null,
+    
+    fullName: function(){
+        return this.get('firstName') + " " + this.get('surname');
+    }.property('firstName', 'surname')
+});
+ 
+App.person = App.Person.create({ firstName: 'Paul', surname: 'Cowan' });
+{% endcodeblock %}
 We are doing things a wee bit differently here than before:
-	
+
 - On **line 3** we are using **Object.extend** rather than **Object.create**.  This is the preferred route.  You can think of the objects you create with **Object.extend** as the classes from which you create instances of these classes from.  
 - On **line 11** we are creating an *instance* of the **Person** class and assigning it to an **App.person** variable which we will reference in our handlebars.
 - **Lines 7 -9** define the computed property.  This **fullName** computed property simply concatenates the **firstName **and  **surname** properties into a single output.
@@ -91,6 +110,3 @@ You can verify this below or at this <a href="http://jsfiddle.net/Jr4CB/23/" tar
 <iframe width="100%" height="300" src="http://jsfiddle.net/Jr4CB/23/embedded/result" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 ###Conclusion###
 Ember is brimming with a multitude of abstractions that might be different than anything you have come across in the past.  I believe it is better to try and take these concepts in one at a time rather than dive in and get blown away by the routing, controllers, itemControllers and the rest.  I believe it is important to grasp these core concepts first before progressing.  You will use them more than anything else.  Bindings and computed properties are powerful and much more powerful than the examples I have used but we need to get the basics right first.
-
-
-

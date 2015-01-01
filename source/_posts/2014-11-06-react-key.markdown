@@ -19,7 +19,20 @@ Each child in an array should have a unique "key" prop. Check the renderComponen
 {%img /images/om-error.png %}
 
 Here is the code I was using to render such a list:
-{% gist 807ede3b7490484c743e %}
+{% codeblock old.cljs %}
+(defn clips-view [{:keys [clips]} owner]
+  (reify
+    om/IRender
+    (render [this]
+      (html/html
+        [:div.well
+         [:table.table.table-bordered.table-hover.table-striped
+          [:tbody
+           (if (empty? clips)
+             [:tr
+              [:td.text-center {:colSpan "2"} "No Clips!"]]
+             (om/build-all clip-view clips))]]]))))
+{% endcodeblock %}
 Line 12 in the above is the villain of this piece as there is no way that I could find of passing a func that will set the <a href="http://facebook.github.io/react/docs/multiple-components.html#dynamic-children" target="_blank">key</a> property that react uses to identify each dynamic child.
 
 I have been trying to ignore this warning as it did not cause any code to stop executing but I kept seeing this question pop up on the irc channel and I could not find a good answer on the google.
@@ -29,8 +42,20 @@ It also turns out that not supplying a react key for each dynamic item could lea
 After consulting the <a href="https://github.com/swannodette/om/wiki/Documentation" target="_blank">om docs</a> I discovered that <a href="https://github.com/swannodette/om/wiki/Documentation#build" target="_blank">om/build</a> can take a third ```:opts``` argument and one of the allowed keys is a ```:react-key``` which is one of the solutions to the problem.
 
 Armed with this information, I refactored the above code to the following:
-{% gist ca110a14271797a1170f %}
-
+{% codeblock refactor.cljs %}
+(defn clips-view [{:keys [clips]} owner]
+  (reify
+    om/IRender
+    (render [this]
+      (html/html
+        [:div.well
+         [:table.table.table-bordered.table-hover.table-striped
+          [:tbody
+           (if (empty? clips)
+             [:tr
+              [:td.text-center {:colSpan "2"} "No Clips!"]]
+             (map-indexed #(om/build clip-view %2 {:react-key %1}) clips))]]]))))
+{% endcodeblock %}
 The only change is on line 12:
 {% codeblock %}
 (map-indexed #(om/build clip-view %2 {:react-key %1}) clips))
@@ -38,14 +63,14 @@ The only change is on line 12:
 
 I have used the simplest case of an index for the ```:react-key``` but if I was rendering from a list where each item had a unique identifier then I would use the ```:key``` option to specify an element property that would be bound as the react key and would look something like this:
 
-{% codeblock %}
+{% codeblock b.clj %}
 (map #(om/build clip-view % {:key :id}) clips))
 {% endcodeblock %}
 
 ** (thanks to Anna Pawlicka) for mentioning this in the comments below.**
 
 Or probably the best option of is to pass  an ```:opts``` map containing a ```:key``` option to ```om/build-all```:
-{% codeblock %}
+{% codeblock a.clj %}
 (om/build-all clip-view clips {:key :id})
 {% endcodeblock %}
 

@@ -12,7 +12,22 @@ Ember's routing is arguably the best feature of ember.  Recently while using ama
 
 ###The Problem
 While iterating over a list of similar model types, you can simply use the **link-to** helper to create links to each item in the list but what if the list contains two or more different types as is illustrated in the gist below where the route's model hook returns a combination of **user** and **contact** types.
-{% gist 8377078 %}
+{% codeblock index.js %}
+App.IndexRoute = Ember.Route.extend({
+  model: function(){
+    return Ember.RSVP.all([
+      this.store.find('user'), 
+      this.store.find('contact')
+    ]);
+  },
+  setupController: function(controller, model){
+    var combined = model[0].toArray()
+                  .concat(model[1].toArray());
+
+    controller.set('model', combined);
+  }
+});
+{% endcodeblock %}
 One approach would be to do something like this:
 {% gist 8377172 %}
 The **isUser** condition could compare the context's constructor but this approach is limited as every time you want to link to a different type,  need to update the template. I actually started down this unmaintainable path before souring on the idea as is illustrated in this <a href="http://jsbin.com/OnuCaCep/30/edit" target="_blank">jsbin</a>.
@@ -38,9 +53,50 @@ And the correct link will be rendered without any thought from me
 Here is a <a href="http://jsbin.com/OnuCaCep/34/edit" target="_blank">jsbin</a> of my finished **resource-link-to** helper.
 
 First of all I wanted to create an easy way of getting the corresponding route path from a **DS.Model** type.  I want to be able to get the corresponding route from the type.  If for example, I have an **App.Employee** type then I want to be able to get the string route to that resource which is **employee**. Below is a **humanize** method which does exactly that and is mixed into all **DS.Model** types:
-{% gist 8377614 %}
+{% codeblock humanize.js %}
+String.prototype.humanize = function() {
+  var str;
+  str = this.replace(/_id$/, "").replace(/_/g, ' ').replace(/([a-z\d]*)/gi, function(match) {
+    return match.toLowerCase();
+  });
+  return str.split('.').pop();
+};
+ 
+DS.Model.reopenClass({
+  humanize: function() {
+    return this.toString().humanize();
+  }
+});
+ 
+DS.Model.reopen({
+  humanize: function() {
+    return this.constructor.humanize();
+  }
+});
+{% endcodeblock %}
 Below is my **resource-link-to** helper that I finally ended up with after much coffee and profanity.  The premise is that I am simply creating a new argument list to pass to the **link-to** helper.
-{% gist 8377389 %}
+{% codeblock resource-link-to.js %}
+
+Ember.Handlebars.registerHelper('resource-link-to', function(name, options) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  var resource = this.get(name);
+  var resourceRoute = resource.humanize();
+  
+  if (!options.fn) {
+    options.types = ['STRING', 'STRING', 'ID'];
+    options.contexts = [this, this, this];
+    args.unshift(name);
+    args.unshift(resourceRoute);
+    args.unshift(resource.get('displayName'));
+  } else {
+    options.types = ['STRING', 'ID'];
+    options.contexts = [this, this];
+    args.unshift(name);
+    args.unshift(resourceRoute);
+  }
+  return Ember.Handlebars.helpers['link-to'].apply(this, args);
+});
+{% endcodeblock %}
 - On **line 3**. I am pulling the resource from the context via the **name** parameter that is defined in the argument list on **line 1**.
 - On **line 4** I am using the **humanize** extension function to get the name of the route.
 - **Line 6** contains an **if** expression where we branch depending on whether the **resource-link-to** helper is called in its block or non-block formats.  

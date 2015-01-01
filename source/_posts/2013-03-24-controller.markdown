@@ -22,7 +22,16 @@ In Ember.js, controllers allow you to decorate your models with display logic. I
 As always the best way to illustrate this is with some code.  Let us look at an example of what would happen if we did not have a controller.
 
 Let us say we had an ember-data Employee model class like this:
-{% gist 5257190 %}
+{% codeblock employee.js %}
+App.Employee = DS.Model.extend({
+    firstName: DS.attr('string'),
+    surname: DS.attr('string'),
+    age: DS.attr('number'),
+    fullName: function(){
+         return this.get('firstName') + " " + this.get('surname');   
+    }.property('firstName', 'surname')
+});
+{% endcodeblock %}
 The above model has 3 simple fields of **firstName**, **surname** and **age** and a computed property of **fullName**.
 
 Now let us say that we are working on an application that has one employee and we can change the status of this employee to retired or we can reinstate the retired employee.  A very specific and limited application you might say.  We might have a view like this to set an employees status to retired:
@@ -35,7 +44,17 @@ You will have to forgive the crude html but it is a jsfiddle that you can see in
 
 
 Now what if we wanted to capture the fact that we had selected the contact by checking the checkbox?  Part of the reason for using a client MV* framework is that we want to deal with nice abstractions to capture what is going on, we don't want to be mucking about the DOM to check if a checkbox is selected and then tie this back to our beautiful model.  We want to use our rich abstraction to capture this check, so we might add an **isChecked** property to our model as I have done on line 8 of the gist below.  
-{% gist 5257792 %} 
+{% codeblock checked.js %}
+App.Employee = DS.Model.extend({
+    firstName: DS.attr('string'),
+    surname: DS.attr('string'),
+    age: DS.attr('number'),
+    fullName: function(){
+         return this.get('firstName') + " " + this.get('surname');   
+    }.property('firstName', 'surname'),
+    isChecked: false
+});
+{% endcodeblock %}
 We could then set up a two way binding (refer to my last <a href="http://www.thesoftwaresimpleton.com/blog/2013/03/23/client-side-mvc/">post</a>) between the  **isChecked** property of the model and the checked attribute of the checkbox like this:
 {% gist 5257860 %}
 On line 3 of the above gist there is a **checkedBinding="isChecked"** declaration that will take care of changing the model's **isChecked** property without any DOM manipulation.
@@ -67,11 +86,37 @@ Controllers in ember act as proxies for their underlying model.  We can then dec
 As stated above, controllers in ember are proxies for their underlying template.  We can access the model's properties through the controller because the controller just acts as a pass-through for the model properties.  Ember has a number of different flavours of controller, there is the **ArrayProxy** when your model is a list of models or in this case, there is the **ObjectController** when you are dealing with a single object.  Templates are always connected to controllers and not models.  
 
 We will now use the **ObjectController** to solve this troubling situation.  Currently our router looks like this:
-{%gist 5260930 %}
+{% codeblock router.js %}
+App.Router.map(function () {
+    this.route('active');
+    this.route('retired');
+});
+ 
+ 
+App.ActiveRoute = Ember.Route.extend({
+    model: function(){
+         return App.Employee.find(1);   
+    }
+});
+ 
+App.RetiredRoute = Ember.Route.extend({
+    model: function(){
+         return App.Employee.find(1);   
+    }
+});
+{% endcodeblock %}
 We have one resource which is the **Employee** resource that we are dealing with and two routes that correspond to the two views with the checkboxes, **retired** and **active**.  Ember is simply brimming with conventions and each url or state change of the application involves a number of collaborating objects that follow the convention **xxxRoute**, **xxxController**, **xxxView** or they will be generated for you to eliminate a lot of the boilerplate code that used to exist.  When a url changes in the application or you enter the application at a particular url, ember tries to match the url fragment with a route handler.  Ember will then try and find a controller object and a view that match the naming convention or they will be generated for you. As we have not defined an **ActiveController** or a **RetiredController**, ember will generate these for us.  
 
 The route handler is the place where you set the underlying model for a controller as the route handler's job is to translate a specific url into a model object.  There are a number of hooks that serve this purpose and both routes in the above gist are using the **model** hook to specify which model is associated with each url.  In both cases, we are hardcoding which model is going to be associated with each url.  We are now going to change things by specifying a controller for each of these routes that will override the automagically generated controllers.  Following the convention of **xxxController**, we create the following two controllers:
-{% gist 5260990 %}
+{% codeblock controller.js %}
+App.ActiveController = Ember.ObjectController.extend({
+    isChecked: false 
+});
+ 
+App.RetiredController = Ember.ObjectController.extend({
+    isChecked: false
+});
+{% endcodeblock %}
 Our work here is done, take the same actions as before on the jsfiddle below:
 <iframe width="100%" height="300" src="http://jsfiddle.net/CFyVH/14/embedded/result" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 

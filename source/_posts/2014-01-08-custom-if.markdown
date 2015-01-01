@@ -18,7 +18,7 @@ The **if** helper can be used in a hanldebars template like so:
 &#123;&#123;/if&#125;&#125;
 {% endcodeblock %}
 The above code will test the property expression of the current context for a truthy value and if one is found it will execute the code between the **if** and the **else** or the closing **if**, if no alternative **else** was provided.  If the current context in the above code was a controller called **IndexController** then it would check the **isTrue** value of that controller:
-{% codeblock %}
+{% codeblock ind.js %}
 App.IndexController = Ember.ObjectController.extend({
 	isTrue: (function(){
 		return true;
@@ -68,7 +68,19 @@ Below is how the newly christened **ifIsLive** helper that is called from the ha
 All I am doing is passing in a property path to the model object from the context.
 
 And here is the implementation:
-{% gist 8320318 %}
+{% codeblock customif.js %}
+Ember.Handlebars.registerHelper('ifIsLive', function(property, options) {
+  var model = this.get(property),
+    _this = this;
+  
+  if (!this.hasOwnProperty('isLive')) {
+    Ember.defineProperty(this, 'isLive', Ember.computed('isNew', 'isDeleted', 'isLoading', function() {
+      return !model.get('isNew') && !model.get('isDeleted') && !model.get('isLoading');
+    }));
+  }
+  return Ember.Handlebars.helpers.boundIf.call(this, "isLive", options);
+});
+{% endcodeblock %}
 - On **line 2**, I retrieve the model from the context.
 - On **line 5**, I check to see if the custom property exists on the context.
 - If the property does not exist then I create the computed property using ember's slant on the EMAScript 5 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty" target="_blank">defineProperty</a> which takes an array of dependant keys to create a computed property from.

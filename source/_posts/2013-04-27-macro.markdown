@@ -16,7 +16,14 @@ The <a href="http://www.coderanch.com/t/489744/Ruby/Metaprogramming-essential-pa
 As the title of this post suggests, it is possible to write your own computed property macros in <a href="http://emberjs.com/" target="_blank">ember.js</a>.
 
 Below are some examples of the computed macros that come out of the box with ember:
-{% gist 5475983 %}
+{% codeblock cp.coffee %}
+App.MyController = Ember.ObjectController.extend
+ needs: ['users']
+ users: Ember.computed.alias 'controllers.users'
+ isPublic: Ember.computed.equal 'visibility', 'public'
+ isPrivate: Ember.computed.not 'isPublic'
+ hasLock: Ember.computed.bool 'lock'
+{% endcodeblock %}
 
 - On line 3 of the above gist we are creating a short hand alias to another property using **Ember.computed.alias**.
 - On line 4, **Ember.computed.equal** is used to check that a property equals a static value. 
@@ -27,28 +34,97 @@ It is worth remembering that computed properties update themselves when any of t
 
 ##Creating your own computed macro##
 Let me first illustrate a simple scenario, below is a gist of the ember-data domain model that I will use to illustrate this example:
-{% gist 5475989 %}
+{% codeblock contact.js %}
+App.Contact = DS.Model.extend({
+    firstName: DS.attr('string'),
+    surname: DS.attr('string'),
+    phoneNumbers: DS.hasMany('App.PhoneNumber'),
+    emailAddresses: DS.hasMany('App.EmailAddress')
+});
+ 
+App.PhoneNumber = DS.Model.extend({
+    name: DS.attr('string'),
+    value: DS.attr('string'),
+    isPrimary: DS.attr('boolean')
+});
+ 
+App.EmailAddress = DS.Model.extend({
+    name: DS.attr('string'),
+    value: DS.attr('string'),
+    isPrimary: DS.attr('boolean'),
+});
+{% endcodeblock %}
 
 The above gist contains a **Contact** model definition that has two **hasMany** relationships with **phoneNumbers** and **emailAddresses**. The **PhoneNumber** and **EmailAddress** models are identical and in any given collection of either, there can be only one item of the collection that  has **isPrimary** set to true.  
 
 Let us say that we wanted to create a computed property for each collection that selected the **isPrimary** value **and** observed any changes to which item had **isPrimary** set to true.
 
 A very bad way of doing this might be this might be this:
-
-{% gist 5476006 %}
+{% codeblock isPrimary.js %}
+App.Contact = DS.Model.extend({
+    firstName: DS.attr('string'),
+    surname: DS.attr('string'),
+    phoneNumbers: DS.hasMany('App.PhoneNumber'),
+    emailAddresses: DS.hasMany('App.EmailAddress'),
+    fullName: function(){
+        return this.get('firstName') + " " + this.get('surname');
+    }.property('firstName', 'surname'),
+    
+    primaryEmail: function(){
+        return this.get('emailAddresses').find(function(emailAddress){
+            return emailAddress.get('isPrimary');
+        });
+    }.property('emailAddresses.@each.isPrimary'),
+    
+    primaryPhoneNumber: function(){
+        return this.get('phoneNumbers').find(function(phoneNumber){
+            return phoneNumber.get('isPrimary');
+        });
+    }.property('phoneNumbers.@each.isPrimary'),
+});
+{% endcodeblock %}
 
 On lines 10 and 16 of the above gist, the same functionality is repeated twice.  You can see a working example of this on this <a href="http://jsfiddle.net/rG56F/6/" target="_blank">jsFiddle</a>.
 
 So how can we DRY this up?  By creating a computed macro of course.  Below is a listing of creating a **primary** macro that will transform the instruction set into basically the code above:
-{% gist 5476032 %}
+{% codeblock primarycp.js %}
+App.computed = {}
+ 
+App.computed.primary = function(hasMany){
+  var dependentKey = hasMany + ".@each.isPrimary";
+    
+  return Ember.computed(dependentKey, function(){
+      if(!this.get(hasMany).get('length')){
+        return;
+      }
+      
+      return this.get(hasMany).find(function(item){
+          return item.get('isPrimary');  
+      });
+  });
+}
+ 
+App.Contact = DS.Model.extend({
+    firstName: DS.attr('string'),
+    surname: DS.attr('string'),
+    phoneNumbers: DS.hasMany('App.PhoneNumber'),
+    emailAddresses: DS.hasMany('App.EmailAddress'),
+    fullName: function(){
+        return this.get('firstName') + " " + this.get('surname');
+    }.property('firstName', 'surname'),
+    
+    primaryEmail: App.computed.primary('emailAddresses'),
+    primaryPhoneNumber: App.computed.primary('phoneNumbers'),
+});
+{% endcodeblock %}
 
 We pass the following instructions into the macro:
-{% codeblock %}
+{% codeblock app.js %}
 primaryEmail: App.computed.primary('emailAddresses'),
 primaryPhoneNumber: App.computed.primary('phoneNumbers'),
 {% endcodeblock %}
 The macro will effectively create the two duplicated computed properties that were originally created.  All the macro really does is create the following dependent key:
-{% codeblock %}
+{% codeblock dep.js %}
 var dependentKey = hasMany + ".@each.isPrimary";
 {% endcodeblock %}
 This dependent key and a function are then passed passed as arguments to **Ember.computed** that does the clever stuff.
