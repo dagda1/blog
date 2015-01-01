@@ -9,7 +9,14 @@ I encountered an interesting scenario in my day job that initially had me scratc
 <br/>{%img /images/todos.png%}
 
 One of the requirements for this list is to display only the todos that have not been completed.  Ember does make this ridiculously easy and we could even bind our list to the new <a href="https://github.com/emberjs/ember.js/blob/v1.5.0/packages/ember-runtime/lib/mixins/enumerable.js#L384" target="_blank">filterBy</a> computed property like this:
-{% gist 11193486 %} Here is a working <a href="http://jsbin.com/lomix/2/edit" target="_blank">jsbin</a> that shows how easy this is.
+{% codeblock filterBy.js %}
+App.TodosController = Ember.ArrayController.extend({
+  active: Ember.computed.filterBy('@this', 'isCompleted', false);  
+});
+
+// {{#each active}}
+{% endcodeblock %}
+Here is a working <a href="http://jsbin.com/lomix/2/edit" target="_blank">jsbin</a> that shows how easy this is.
 
 The problem with the approach outlined in the <a href="http://jsbin.com/lomix/2/edit" target="_blank">jsbin</a> is that, when the checkbox is checked and the bindings are flushed, the view that has been rendered for that particular todo gets instantly destroyed.  There are currently no hooks that allow for animations in ember and this is particularly true when it comes to removing items from a bound list or indeed destroying views.  This leaves you as the developer to resort to some sort of trickery.  I would personally like to see an extra runloop queue or a view lifecycle event that returned a promise.  Only when the promise has been resolved would the view's destroy method be called.  There was some discussion about this before ember 1.0 was released but we are heading towards ember 1.6 and I think we need to discuss this again.
 
@@ -31,22 +38,68 @@ The first thing to notice is that I am using **render** instead of a component t
 {% gist 11209236 %}
 
 In the **TodoController**, I observe the **isFinished** property for changes in the following handler:
-{% gist 11209443 %}
+{% codeblock isFinished.js %}
+isFinishedDidChange: (function(){
+  var self = this;
 
+  if (this.get('isFinished') && this.get('hasBufferedChanges')) {
+    var notifyView = function() {
+                       self.trigger('animateFinish');
+                       return clearInterval(timer);
+                     };
+
+    timer = setInterval(notifyView, 2000);
+
+    this.set('timer', timer);
+  } else {
+    if (this.get('timer')) {
+      clearInterval(this.get('timer'));
+    }
+
+    if (this.get("hasBufferedChanges")) {
+      this.send('completeFinish');
+    }
+  }
+}).observes('isFinished')
+{% endcodeblock %}
 - On **line 4** I am checking if the todo **isFinished** and the **hasBufferedChanges** property lets me know that there are changes in the **BufferedProxy** that are ready to be applied.
 - On **line 5**, I create an inline function that will be called after a delay.  The delay is to give the user the opportunity to change their mind and cancel the change.
 - The inline function on **line 5** will raise an event on **line 6** to the **TodoView** that is listening for these events and will give the view the opportunity to animate the delete.  The timer is cancelled on **line 7**.
 - On **line 14** we handle the case where the user has changed their mind.  We clear the timer and then persist the change if the **BufferedProxy** has changes.
 
 Below is the **TodoView** that handles the **animateFinish** event that is triggered by the **TodoController** on **line 6** of the above gist.
-{% gist 11209896 %}
+{% codeblock todoview.js %}
+App.TodoView = Ember.View.extend({
+  tagName: 'tr',
+  didInsertElement: function(){
+    this._super.apply(this, arguments);
+    this.get('controller').on('animateFinish', this, 'onAnimateFinish');
+  },
+  onAnimateFinish: function(){
+    var controller = this.get('controller');
 
+    this.$().fadeOut('slow', function(){
+      controller.send('completeFinish');
+    });
+  }
+});
+{% endcodeblock %}
 - **line 5** sets up the event handler for **animateFinsh** events that are raised by the **TodoController**.
 - **lines 10 and 11** uses jQuery's **fadeOut** for some basic animation which calls a controller action to persist the changes when the animation has finished.
 
 All that remains is to show the **completeFinish** action that is called in the above gists:
-{% gist 11210132 %}
+{% codeblock completeFinish.js %}
+App.TodoController = Ember.ObjectController.extend(Ember.Evented, BufferedProxy, {
+  actions:{
+    completeFinish: function(){
+      this.applyBufferedChanges();
 
+      this.get('model').save().then(function(todo){
+        console.log(todo.get('description') + " is completed");
+      });
+    }
+  },
+{% endcodeblock %}
 - On **line 4** of the above gist, I apply the changes from the **BufferedProxy** by calling the **applyBufferedChanges** method which will transfer the changes from the buffer to the model.
 - On **line 6**, I persist the model.
 
