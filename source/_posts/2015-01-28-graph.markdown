@@ -1,0 +1,88 @@
+---
+layout: post
+title: "Connected Graph with Clojure"
+date: 2015-01-28 20:30:52 +0000
+comments: true
+categories:  clojure
+---
+I've fallen in love with clojure and as part of my learning, I've set myself the goal of solving all the problems on the excellent <a href="http://www.4clojure.com/" target="_blank">4clojure</a> site.  I was a painter and decorater by profession up until the age of 30 so I have no background in computer science or in depth mathematics but part of my fascination with ```4clojure``` is that some of the harder problems introduce concepts that are completely foreign to me like <a href="http://en.wikipedia.org/wiki/Graph_theory">graph theory</a>.  I get a kick out of digging into the theory behind the problem before trying to code my solution.
+
+<a href="http://www.4clojure.com/problem/91" target="_blank">Problem 91</a> states:
+{% blockquote %}
+Given a graph, determine whether the graph is connected. A connected graph is such that a path exists between any two given nodes.
+
+-Your function must return true if the graph is connected and false otherwise.
+
+-You will be given a set of tuples representing the edges of a graph. Each member of a tuple being a vertex/node in the graph.
+
+-Each edge is undirected (can be traversed either direction).
+{% endblockquote %}
+
+You are then presented with a list of input and outputs that require a common function to balance both sides of the argument, e.g.
+{% codeblock %}
+(= true (__ #{[:a :b] [:b :c] [:c :d] [:x :y]
+              [:d :a] [:b :e] [:x :a]}))
+{% endcodeblock %}
+The job of the user is to provide a function that will replace the ```__``` characters to complete the expression.
+
+The elements of the above set represents the edges of a graph.  A graph edge can be thought of as a line or path that connects two graph nodes or ```vertices``` as they are known in graph speak.  Each element of the set contains a vector with two ```vertices``` that have a path between them.  We could visualise the above graph in the image below:
+<div>
+{% img /images/graph/connected.png %}
+</div>
+The problem stated that the function must return true if a path exists between any two nodes.  You can see from the above diagram that each node is acccessible from each other.
+
+Another of the expressions in the <a href="http://www.4clojure.com/problem/91" target="_blank">problem</a> provides a set of edges that are not connected:
+{% codeblock %}
+(= false (__ #{[:a :b] [:b :c] [:c :d]
+               [:x :y] [:d :a] [:b :e]}))
+{% endcodeblock %}
+
+You can visualise the unconnected graph below:
+<div>
+{% img /images/graph/unconnected.png %}
+</div>
+
+Another way to view the above graph is to say that it is made up of two ```components```.  We are dealing with <a href="http://en.wikipedia.org/wiki/Graph_(mathematics)#Undirected_graph" target="_blank">undirected graphs</a> which means that the edges can be travelled in either direction or more specifically, the edges do not point in any direction.  A ```component``` of an undirected graph is a subgraph in which any two vertices are connected.  In the above diagram, there are two components, the one on the right with the ```x``` and ```y``` vertices and the other component which is made up of the remaining vertices.  The connected example can be thought of as one component.
+
+###Show Me the Code
+If we are to use this concept of ```components``` as is outlined above, then we could say that if we can get the number of components in a graph and if that number is equal to one then the graph is connected.  If we have more than one component then quite obviously the graph is disconnected.
+
+After consulting the book of knowledge, a.k.a. wikipedia,  I found this <a href="http://en.wikipedia.org/wiki/Connected_component_%28graph_theory%29" target="_blank">entry</a> that gave me an outline of an algorithm that I could use to tell whether I had one connected component or not:
+{% blockquote %}
+A search that begins at some particular vertex ```v``` will find the entire connected component containing ```v``` (and no more) before returning.  To find all the connected components of a graph loop through its vertices , starting a new breadth first search whenever the loop reaches a vertex that has not already been included in a previously found connected component.
+{% endblockquote %}
+
+Armed with the above algorithm, I was able to construct the code to solve the problem:
+
+{% codeblock connected.clj %}
+(= true (
+    (fn [g]
+      (letfn [(connected? [g]
+          (loop [q (conj [] (ffirst g)) visited #{}]
+              (if (empty? q)
+                  (let [rem (filter #(not (contains? visited %)) (flatten (for [e g] e)))]
+                  (= empty? rem))
+              (let [v1 (peek q)
+                  edges (filter (partial some #{v1}) g)
+                  vertices (filter (partial not= v1) (flatten edges))
+                  unvisited (filter #(not (contains? visited %)) vertices)]
+                (recur (into (rest q) unvisited) (into (conj visited v1) unvisited))))))]
+     (connected? g)))
+#{[:a :b] [:b :c] [:c :d]
+              [:x :y] [:d :a] [:b :e] [:x :a]}))
+{% endcodeblock %}
+
+- ```On line 3```, is a function ```connected?``` that does the actual work.
+- ```Line 4``` starts a ```loop``` ```recur``` sequence with some intial bindings. I am selecting the first vertex of the graph which is the first element of the set and the first element from the first vector of that set.  I am also initialising a map that will keep track of which vertices of the graph have been visited.  In the above algorithm, this the particular vertex where the search begins.  This vertex is added to a vector that we will use to process vertices that we have not yet visited.
+- ```line 5``` checks that we have any unvisited vertices left to process.
+- If not, ```line 8``` selects the first element from the unvisited vector and binds it to the ```v1``` symbol.
+- ```line 9``` selects any ```edges``` or connected vertices that contain ```v1``` vertice that we are searching on.
+- ```line 10``` selects the vertices from the edges that are not equal to ```v1```.
+- ```line 11``` filters out any vertices that we have already processessed before calling ```recur``` on ```line 12```.
+- The ```recur``` on ```line 12``` will add the unvisited nodes to the processing queue and also record what we have visited.
+- The code will continue until there are no vertices left to process at which point the ```(if (empty? q)``` statement on ```line 5``` will be true.
+- If the graph is connected or only contains 1 component then the visited map that we have been building up will contain all the vertices of the graph or the flattened elements of the vectors that make up the set.
+
+I'm still new to clojure and there is definitely better ways of doing this.  One problem is that this function is in no way lazy.
+
+I found this a hugely enjoyable problem to solve.
