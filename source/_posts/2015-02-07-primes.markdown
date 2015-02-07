@@ -1,0 +1,241 @@
+---
+layout: post
+title: "Failure and Self Loathing with Fast Prime Number Generation in Clojure"
+date: 2015-02-07 07:06:18 +0000
+comments: true
+categories: clojure
+---
+I've tried to stay away from building anything meaningful while I have been learning clojure and instead I have been solving problems on the various problem sites such as <a href="http://www.4clojure.com/" target="_blank">4Clojure</a>.  I want to concentrate on learning the language as much as possible before getting bogged down with the practicalities that accompany building something.  I came across the <a href="https://www.hackerrank.com" target="_blank">Hackerrank</a> site which has a <a href="https://projecteuler.net/" target="_blank">project euler</a> contest.  In this contest, I came across a problem which was one of the first problems I solved on 4clojure, the problem states:
+{% blockquote %}
+By listing the first six prime numbers: 2,3,5,7,11 and 13, we can see that the 6th prime is 13. 
+What is the N'th prime number?
+
+Input Format 
+First line contains T that denotes the number of test cases. This is followed by T lines, each containing an integer, N.
+
+Output Format 
+Print the required answer for each test case.
+
+Constraints 
+1≤T≤103 
+1≤N≤104
+{% endblockquote %}
+
+I had a quick look at my original <a href="www.4clojure.com" target="_blank">4clojure</a> code that solved this problem that I wrote months ago and I was disgusted by what I saw, I was totally convinced that I could do much better and this problem would be toast in no time.  I quickly rustled up the following solution:
+
+{% codeblock second.clj %}
+(ns scratch.core
+  (require [clojure.string :as str :only (split-lines join)]))
+
+(defn is-prime? [n]
+  (empty? (filter #(= 0 (mod n  %)) (range 2 n))))
+
+(defn nth-prime [n]
+  (last (take n (filter #(is-prime? %) (iterate inc 2)))))
+
+(defn print-primes [[x & xs]]
+  (prn x)
+  (if (seq xs)
+    (recur xs)))
+
+(let [input "1\n10001"
+      ranks (rest (map read-string (str/split-lines input)))
+      primes (map nth-prime ranks)]
+  (time (print-primes primes))) ; Elapsed time: 103534.576 msecs
+  {% endcodeblock %}
+
+
+The ```input``` variable on ```line 15``` simulates how the hackerrank checker gets input into the solution checking program which is in reality via ```STDIN``` but I have stubbed it here with one test case of ```100001```.  The checking program checks the results by reading input from ```STDOUT``` which is the whole point of the ```print-primes``` function on ```line 10```.  Hacker rank supplies a number of unknown inputs or tests into your program which you actually never find out what they are but I am simply supplying ```100001``` as a significantly big number to test against.
+
+I was feeling pretty chuffed with myself after writing this as the code is seriously concise and I was using some techniques that I perceived to be **cool** techniques such as an infinite lazy sequence in the form of ```(iterate inc 2)``` on ```line 8``` which will iterate infinitely unless a constraint is put on the ever expanding sequence.  The constraint in this instance is the ```take n``` expression on the same line which is further constrained to only  prime numbers returned from the lazy sequence via the ```(filter #(is-prime? %))``` expression.
+
+Imagine my horror to discover that this was ***infinitely*** slower than my original 4clojure code, coming in at a diet bursting ```103534.576 msecs```.  At this point, I started to have suspicions about the costs of lazy sequences.
+
+I did some research to see if I could improve the algorithm and made a couple of common sense refactorings that are listed below:
+
+{% codeblock third.clj %}
+(ns scratch.core
+  (require [clojure.string :as str :only (split-lines join)]))
+
+(defn is-prime? [n]
+  (or (= 2 n)
+   (not-any? #(= 0 (mod n %)) (range 3 (inc (Math/sqrt n)) 2))))
+
+(defn nth-prime [n]
+  (last (take n (filter #(is-prime? %) (cons 2 (iterate (partial + 2) 3))))))
+
+(defn print-primes [[x & xs]]
+  (prn x)
+  (if (seq xs)
+    (recur xs)))
+
+(let [input "1\n10001"
+      ranks (rest (map read-string (str/split-lines input)))
+      primes (map nth-prime ranks)]
+(time (print-primes primes))) ; Elapsed time: 500.085 msecs
+{% endcodeblock %}
+This executes in a significantly faster ```500.085 msecs```.  I will quickly outline the refactorings:
+
+The orignal ```is-prime?``` function looked like this:
+
+{% codeblock isprime.clj %}
+(defn is-prime? [n]
+    (empty? (filter #(= 0 (mod n  %)) (range 2 n))))
+{% endcodeblock %}
+
+The first problem with the above is that it will expand out the whole sequence and then check the count to verify that it does not contain any non-prime numbers.  What I needed was a way to short circuit this function the first time a non-prime is encountered, as it turns out there is ```not-any?``` which will return ```false``` the first time it encounters a logical true.
+
+The next problem with ```is-prime?``` is that the sequence that I am feeding into the ```filter``` function above, which is ```(range 2 n)```.  The point of this ```range``` function is to ineffeciently pull out all the divisors of the number that we are checking ```is-prime?``` against.  If one of the divisors is divisable by anything other than itself and one then it is a prime number.  It turns out that there is a common algorithm to make this more efficient which states that you only need to test the numbers that are equal to or less than the square root of that number.  This is because we can always find the divisors of a number in pairs.  One member of the pair will be less than the square root and the other will be more.
+
+For example, here are the pairs of divisors of 100:
+
+{% blockquote %}
+    1 and 100 (because 1 X 100)
+    2 and 50  (because 2 X 50)
+    4 and 25  (because 4 X 25)
+    5 and 20  (because 10 X 20)
+    10 and 10 (because 10 X 10)
+{% endblockquote %}
+
+Each number on the left is less than the square root, and each number on the right is more than the square root.  Therefore when we look for the divisors of a number, it necessary to look only up to the square root.
+
+The point is:
+
+{% blockquote %}
+When we look for divisors of a number,
+it is necessary to look only up to its square root.
+{% endblockquote %}
+
+So if we call ```(range 2 100)``` it expands out to ```(2 3 4 5 6 7 8 9 10 11 12 13 14.....etc...99)```, but we only need to do is expand out to the square root of 100.
+
+We can refactor the ```range``` call to ```(range 2 (inc (Math/sqrt 100)))``` which will expand out to a much more efficient ```(2 3 4 5 6 7 8 9 10)```.
+
+We can also take it further than that because we can also exclude any number that is greater than 2 and is even or divisable by 2 because it is quite obvioiusly a non prime number.  We can refactor the range function to ```(range 3 (inc (Math/sqrt 100)) 2)``` which yields ```(3 5 7 9)```.
+
+Below is the refactored ```is-prime?``` function:
+{% codeblock refactoredisprime.clj %}
+(defn is-prime? [n]
+  (or (= 2 n)
+   (not-any? #(= 0 (mod n %)) (cons 2 (range 3 (inc (Math/sqrt n)) 2)))))
+{% endcodeblock %}
+
+My original ```nth-prime``` function also dealt with even numbers:
+
+{% codeblock orig.clj %}
+(defn nth-prime [n]
+  (last (take n (filter #(is-prime? %) (iterate inc 2)))))
+{% endcodeblock %}
+
+I refactored it ```nth-prime``` to only include 2 and the subsequent odd numbers:
+
+{% codeblock refactored.clj %}
+(defn nth-prime [n]
+  (last (take n (filter #(is-prime? %) (cons 2 (iterate (partial + 2) 3))))))
+{% endcodeblock %}
+
+I entered my code into hackerank and......the same thing happened, the first 2 tests passed and the remaining tests timed out.  I was depressed by these results as I really thought that I could get on with my life afer this.
+
+My next hack was to remove everything lazy and see what the time difference was.  The algorithms stayed the same but everything lazy went:
+
+{% codeblock nonlazy.clj %}
+(ns scratch.core
+  (require [clojure.string :as str :only (split-lines join)]))
+
+(defn is-prime? [n]
+  (if (= n 2)
+    true
+    (let [root (Math/floor (int (Math/sqrt n)))]
+      (loop [i 3]
+        (if (> i root) true
+            (if (= 0 (mod n i)) false
+                (recur (+ i 2))))))))
+
+(defn n-primes [n]
+  (loop [curr 3 acc [2]]
+    (if (= (count acc) n)
+      acc
+      (recur (+ 2 curr) (if (is-prime? curr)
+                          (conj acc curr)
+                          acc)))))
+
+(defn nth-prime [n]
+  (last (n-primes n)))
+
+(defn print-primes [[x & xs]]
+  (prn x)
+  (if (seq xs)
+    (recur xs)))
+
+(let [input "1\n10001"
+      ranks (rest (map read-string (str/split-lines input)))
+      primes (map nth-prime ranks)]
+  (time (print-primes  primes)))  ; Elapsed time: 178.132
+{% endcodeblock %}
+
+
+This came in at a much quicker ```178.132 msecs``` and reafirrmed my suspicions that there is indeed a cost to lazyness. The above passed 3 of the 5 hackerrank tests so I guess this was progress but still no cigar.
+
+Back to the drawing board, this was getting personal and I was not going to give up lightly.
+
+My final throw of the dice involved me getting to grips with something that I was avoiding up unitil now, namely the <a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes" target="_blank">Sieve of Eratosthenes</a>.  This is a reknowned alogrithm for marking multiples off any given limit starting with multiples of 2.
+
+My first problem is that all the examples that I could find were using the sieve with numbers up to a certain number or a limit and not the ```nth``` number.  I hit wikipidea again and found that there is an algorithm for estimating the limit that the nth number would equate to:
+{% codeblock %}
+a(n) = n*(log n + log (log n))
+{% endcodeblock %}
+
+Below is my code that uses the estimation technique (```calc-limit```) and the now infamous sieve of Eratosthenes:
+
+{% codeblock solongandthanksforallthefish.clj %}
+(ns scratch.core
+  (require [clojure.string :as str :only (split-lines join)]))
+
+(defn calc-limit [n]
+  (let [log (Math/log n)
+        loglog (Math/log log)
+        logsum (+ log loglog)]
+    (-> n (* logsum) int (+ 3))))
+
+(defn primes [n]
+  (let [root (-> n (Math/sqrt) inc int)
+        sieve (boolean-array n true)]
+    (loop [i 2]
+      (when (< i (Math/sqrt n))
+        (when (aget sieve i)
+          (loop [j (* i 2)]
+            (when (< j n)
+              (aset sieve j false)
+              (recur (+ j i)))))
+        (recur (inc i))))
+    (filter #(aget sieve %) (range 2 n))))
+
+(defn nth-prime [n]
+  (cond
+    (= n 1) 2
+    (= n 2) 3
+    :else (last (take n (primes (calc-limit n))))))
+
+(defn print-primes [[x & xs]]
+  (prn x)
+  (if (seq xs)
+    (recur xs)))
+
+(let [input "1\n10001"
+      ranks (rest (map read-string (str/split-lines input)))
+      primes (map nth-prime ranks)]
+  (time (print-primes  primes)))  ; Elapsed time: 52.271 msecs
+{% endcodeblock %}
+
+The sieve eleimates the non primes by:
+
+1.  Crossing off multiples of ```x```, only at ```x²``` and not ```2 * x```.
+2.  Eliminate even numbers from the sieve.
+3.  Elmintate further small numbers from the sieve.
+
+This comes in at a very impressive```52.271 msecs```, I think this is fast but alas it was not fast enough for hackerrank and only 4 of the 5 tests passed.
+
+At this point, I am giving up and moving on with my life.  I now know things about prime numbers that I really have no business knowing.
+
+Please feel free to offer a solution to this problem in the comments below.  People have solved this hackerrank problem in the time allowed so it is possible but just not by me.
+
+I am defeated on this and it does not feel good.

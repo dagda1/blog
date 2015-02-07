@@ -27,7 +27,7 @@ The job of the user is to provide a function that will replace the ```__``` char
 
 The elements of the above set represents the edges of a graph.  A graph edge can be thought of as a line or path that connects two graph nodes or ```vertices``` as they are known in graph speak.  Each element of the set contains a vector with two ```vertices``` that have a path between them.  We could visualise the above graph in the image below:
 <div>
-{% img /images/graph/connected.png %}
+{% img /images/graph/connected1.png %}
 </div>
 The problem stated that the function must return true if a path exists between any two nodes.  You can see from the above diagram that each node is acccessible from each other.
 
