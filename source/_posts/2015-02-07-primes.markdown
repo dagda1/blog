@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Failure and Self Loathing with Fast Prime Number Generation in Clojure"
+title: "Fast Prime Number Generation in Clojure"
 date: 2015-02-07 07:06:18 +0000
 comments: true
 categories: clojure

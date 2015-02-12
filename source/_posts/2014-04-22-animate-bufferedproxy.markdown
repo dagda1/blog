@@ -16,9 +16,9 @@ App.TodosController = Ember.ArrayController.extend({
 
 // {{#each active}}
 {% endcodeblock %}
-Here is a working <a href="http://jsbin.com/lomix/2/edit" target="_blank">jsbin</a> that shows how easy this is.
+Here is a working <a href="http://jsbin.com/lomix/3/edit" target="_blank">jsbin</a> that shows how easy this is.
 
-The problem with the approach outlined in the <a href="http://jsbin.com/lomix/2/edit" target="_blank">jsbin</a> is that, when the checkbox is checked and the bindings are flushed, the view that has been rendered for that particular todo gets instantly destroyed.  There are currently no hooks that allow for animations in ember and this is particularly true when it comes to removing items from a bound list or indeed destroying views.  This leaves you as the developer to resort to some sort of trickery.  I would personally like to see an extra runloop queue or a view lifecycle event that returned a promise.  Only when the promise has been resolved would the view's destroy method be called.  There was some discussion about this before ember 1.0 was released but we are heading towards ember 1.6 and I think we need to discuss this again.
+The problem with the approach outlined in the <a href="http://jsbin.com/lomix/3/edit" target="_blank">jsbin</a> is that, when the checkbox is checked and the bindings are flushed, the view that has been rendered for that particular todo gets instantly destroyed.  There are currently no hooks that allow for animations in ember and this is particularly true when it comes to removing items from a bound list or indeed destroying views.  This leaves you as the developer to resort to some sort of trickery.  I would personally like to see an extra runloop queue or a view lifecycle event that returned a promise.  Only when the promise has been resolved would the view's destroy method be called.  There was some discussion about this before ember 1.0 was released but we are heading towards ember 1.6 and I think we need to discuss this again.
 
 My requirements for this todo list are even more convulted because I want to visually indicate that the todo has been checked and also give the user a 4 second chance to change their mind and uncheck the todo before the todo disappears from the list.  As you can see from the jsbin, the moment the checkbox is checked, the todo just vanishes instantly.  So, what can be done?
 
@@ -32,7 +32,7 @@ The **BufferedProxy** is ideal for my requirements which are:
 1. I want to delay setting **isFinished** on the model so that the user has a few seconds to change their mind and undo the change.
 2. I want to animate the deletion of the todo view to make it look a bit more polished than it is in the original bin where it instantly disappears.
 
-Here is a a working <a href="http://jsbin.com/gufil/9/edit" target="_blank">jsbin</a> of what I ended up with.  There is a delay in persisting the change that gives the user an opportunity to cancel and the delete has a basic animation.  If you re-check a todo, then it will not be removed or if you leave it checked, a basic animation will kick in and the todo will be removed when the animation is completed.
+Here is a a working <a href="http://jsbin.com/gufil/10/edit" target="_blank">jsbin</a> of what I ended up with.  There is a delay in persisting the change that gives the user an opportunity to cancel and the delete has a basic animation.  If you re-check a todo, then it will not be removed or if you leave it checked, a basic animation will kick in and the todo will be removed when the animation is completed.
 
 The first thing to notice is that I am using **render** instead of a component to render my todos which gives me a clean separation between controller and view which I think is better for this situation because I want to **mix in** the **BufferedProxy** into the controller and not the component even though I am pretty sure it would work with a component:
 {% gist 11209236 %}
