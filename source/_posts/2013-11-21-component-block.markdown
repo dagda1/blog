@@ -17,7 +17,7 @@ The component is declared using the hyphonated convention like this:
 &#123;&#123;auto-suggest source=controller destination=tags&#125;&#125;
 {% endcodeblock %}
 
-This all works great but what if I wanted give users of the component the ability to add their own content to the results?  
+This all works great but what if I wanted give users of the component the ability to add their own content to the results?
 
 An example of this might be if you wanted to use the component to add mail recipients to an email form and you wanted to add an avatar to each possible suggestion and selection:
 
