@@ -1,4 +1,4 @@
----
+--
 layout: post
 title: "emberjs - arrayComputed"
 date: 2014-02-4 08:40:38 +0000
@@ -33,7 +33,7 @@ dealTotals: Ember.arrayComputed('deals' {
 });
 {% endcodeblock %}
 
-The best way to illustrate this is with an example, I am going to start with a simple example that works great for a throwaway **jsbin** or very small amounts of data but is pretty impractical in a real world application.  Here is such a working <a href="http://jsbin.com/ilosel/39/edit" target="_blank">jsbin</a> and here is an **arrayComputed** definition that will take advantage of the new construct's hooks to further group the data and provide totals for the grouped data:
+The best way to illustrate this is with an example, I am going to start with a simple example that works great for a throwaway **jsbin** or very small amounts of data but is pretty impractical in a real world application.  Here is such a working <a href="http://jsbin.com/ilosel/68/edit" target="_blank">jsbin</a> and here is an **arrayComputed** definition that will take advantage of the new construct's hooks to further group the data and provide totals for the grouped data:
 {% codeblock group.js %}
 App.computed.groupable = function(dependentKey, groupBy){
   var options = {
