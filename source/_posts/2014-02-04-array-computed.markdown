@@ -1,4 +1,4 @@
---
+---
 layout: post
 title: "emberjs - arrayComputed"
 date: 2014-02-4 08:40:38 +0000
