@@ -5,7 +5,7 @@ date: 2013-11-21 11:30
 comments: true
 categories: JavaScript Ember
 ---
-**UPDATE:** As of ember 1.10.0, this problem is now solved.  This <a href="http://www.thesoftwaresimpleton.com/blog/2015/04/09/block-params/">post</a> expains how.
+**UPDATE:** As of ember 1.10.0, this problem is now solved.  This <a href="http://www.thesoftwaresimpleton.com/blog/2015/04/09/block-params/">post</a> explains how.
 
 I have created <a href="https://github.com/dagda1/ember-autosuggest" target-"_blank">this</a> ember.js <a href="http://emberjs.com/guides/components/" target="_blank">component</a> that allows a user to hook up a data source that can be filtered via user input and then added to a destination:
 

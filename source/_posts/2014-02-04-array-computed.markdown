@@ -5,6 +5,8 @@ date: 2014-02-4 08:40:38 +0000
 comments: true
 categories:  JavaScript Ember
 ---
+**UPDATE:** ```ArrayComputed``` willl soon be deprectated, this <a href="http://www.thesoftwaresimpleton.com/blog/2015/04/18/arraycomputed-refactor/">post</a> expains how to refactor existing ```ArrayComputed``` code.
+
 I'm not entirely sure when this dropped but I am currently on version 1.3.1 of ember and there is a new computed property macro named unsurprisingly **arrayComputed** that is especially designed for working with arrays.  
 
 The basic premise is that you can observe an array and intercept any additions or removals from the array via some useful hooks that gives the developer the opportunity to further mould the data to their needs.

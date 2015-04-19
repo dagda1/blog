@@ -33,6 +33,6 @@ The solution was to call out to the handlebars ```bind``` helper after updating 
     return Ember.Handlebars.helpers.bind.call(context, property.binding, options);
   }
 {% endcodeblock %}
-Here is an updated <a href="http://jsbin.com/fitale/16/edit" target="new">jsbin</a> with a full working example.
+Here is an updated <a href="http://jsbin.com/fitale/27/edit" target="new">jsbin</a> with a full working example.
 
 I am not sure if this is relevant for life after ```ember 1.7.1``` but these techniques have worked well for me thus far.

@@ -105,6 +105,6 @@ Ember.Handlebars.registerHelper('renderComponent', function(contextPath, propert
 });
 {% endcodeblock %}
 
-Here is a working <a href="http://jsbin.com/fitale/14/edit" target="new">jsbin</a>.
+Here is a working <a href="http://jsbin.com/fitale/21/edit" target="new">jsbin</a>.
 
 That is all I have to say on the matter but I would love to hear an alternative or better approach to the above.
