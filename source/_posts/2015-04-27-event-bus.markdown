@@ -1,0 +1,75 @@
+---
+layout: post
+title: "Emberjs - Simple Global Event Bus"
+date: 2015-04-27 11:10:09 +0100
+comments: true
+categories: Ember, JavaScript
+---
+Following on from my last post about <a href="http://www.thesoftwaresimpleton.com/blog/2015/04/26/inter-component/" target="_blank">Communication Between Components</a>, somebody rightly pointed out in the comments that another way of doing this is to create a global event bus as a service and inject it into any components that need it.
+
+I mentioned in my last post that the requirements are for the publisher and subscriber of events to know nothing about each other.  A global event bus fits this bill.  A global event bus, allows publish/subscribe communication between components without requiring the components to explicitly register with one another (and thus be aware of each other).
+
+I think this will give us the quickest win for the stated requirements and we can quickly cobble together an **Ember.Service** that will act as an event bus using **Ember.Evented**:
+{% codeblock event_bus.js %}
+App.EventBus = Ember.Service.extend(Ember.Evented, {
+  publish: function() {
+    return this.trigger.apply(this, arguments);
+  },
+  subscribe: function() {
+    return this.on.apply(this, arguments);
+  },
+  unsubscribe: function() {
+    return this.off.apply(this, arguments);
+  }
+});
+{% endcodeblock %}
+An initializer is created to inject the event bus as a singleton into anything that might use it:
+{% codeblock initializer.js %}
+Ember.Application.initializer({
+  name: 'load-services',
+  initialize: function(container, application) {
+    var eventBus = App.EventBus.create();
+
+    application.register('event-bus:current', eventBus, {
+      instantiate: false
+    });
+
+    application.inject('component', 'EventBus', 'event-bus:current');
+    application.inject('controller', 'EventBus', 'event-bus:current');
+  }
+});
+{% endcodeblock %}
+
+Now a parent component can pubish events using the injected ```EventBus```
+{% codeblock publish.js %}
+App.XPeopleComponent = Ember.Component.extend( {
+  actions: {
+    callChildren: function() {
+      this.EventBus.publish('parentCalling');
+    }
+  }
+});
+{% endcodeblock %}
+
+Child components can now subscribe and unsubscribe to these events without referencing the parent component:
+{% codeblock subscribe.js %}
+App.XPersonComponent = Ember.Component.extend({
+  _initialize: Ember.on('init', function(){
+    this.EventBus.subscribe('parentCalling', this, 'onParentCalling');
+  }),
+
+  onParentCalling: function() {
+    alert('parent called for ' + this.get('person.name'));
+  },
+
+  _teardown: Ember.on('willDestroyElement', function(){
+    this.get('EventBus').unsubscribe('parentCalling');
+  })
+});
+{% endcodeblock %}
+
+I think this is the quickest path to market right now as it requires little effort.  Subscribing to events based on a string literal is less than ideal but this fits my purpose of being outside the bounds of **data down and actions up** where no data has changed and the publisher and subscriber don't know anything about each other.
+
+Here is a <a href="http://emberjs.jsbin.com/kagasu/2/edit?html,js,output" target="_blank">jsbin</a> that puts it all together.
+
+I am very open to somebody pointing out a better way.
