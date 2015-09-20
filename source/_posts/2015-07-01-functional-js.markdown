@@ -195,7 +195,7 @@ const and = (f, g) => {
 
 isPositiveAndEven = and(isPositive, isEven);
 
-console.log(isPositiveAndEven(5)); // => true
+console.log(isPositiveAndEven(6)); // => true
 console.log(isPositiveAndEven(-4)); // => false
 {% endcodeblock %}
 

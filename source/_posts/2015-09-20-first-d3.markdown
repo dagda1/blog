@@ -1,0 +1,185 @@
+---
+layout: post
+title: "Grid lines and the equation of a line with d3.js"
+date: 2015-09-20 08:12:12 +0100
+comments: true
+categories: JavaScript d3.js
+---
+I've recently gone back to college to do a higher maths class at night and I want to use some of the concepts I am learning in my programming to enforce what I have learned so far.  I've been meaning to learn <a href="http://d3js.org/" target="_blank">d3</a> for some time so this seems like a perfect opportunity to kill two birds with one stone.  I thought I would start with something simple and have a draggble line that shows the <a href="http://www.cut-the-knot.org/Curriculum/Calculus/StraightLine.shtml" target="_blank">equation of a straight line</a> with respect to the two coordinates at the end of each line.  The equation of a line may still exist in the memories of your shool days.
+
+Here is a <a href="http://jsbin.com/xakemi/edit?js,output" target="_blank">jsbin</a> with the product of my fumblings.  You can drag the line by either of the red circles at each end and the calculations will recalculate.
+
+Below is the end result
+{% img /images/graph.png %}
+
+I will now breakdown the code:
+
+The first code blocks create an x and a y scale that will scale from 0 to 20 units in each axis which is preferable to using the much more granular pixels.  These scales are used to create the labels on the x and y axis and also make positioning elements much, much easier.
+
+{% codeblock scale.js %}
+var margin = {top: 20, right: 100, bottom: 30, left: 100},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var xScale = d3.scale.linear()
+    .domain([0, 20])
+    .range([0, width]);
+
+var yScale = d3.scale.linear()
+    .domain([0, 20])
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom")
+    .innerTickSize(-height)
+    .outerTickSize(0)
+    .tickPadding(10);
+
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient("left")
+    .innerTickSize(-width)
+    .outerTickSize(0)
+    .tickPadding(10);
+{% endcodeblock %}
+
+- Lines 1 to 3 simply define some dimensions for the document and a margin.
+- Line 5 - 7 and lines 8 - 11 create an x axis and y axis respectively which will use the available width and height to spread out the 20 units of scale across each axis.
+
+##Scales
+The definition of a scale from the <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales">d3 wiki</a> is:
+{% blockquote %}
+Scales are functions that map from an input domain to an output range.
+{% endblockquote %}
+Scales transform a number in a certain interval (called the domain) into a number in another interval called the range. If we look at the code used to create the x axis scale:
+{% codeblock x-scale.js %}
+var xScale = d3.scale.linear()
+    .domain([0, 20])
+    .range([0, width]);
+{% endcodeblock %}
+The code above returns a converter function and binds it to the variable ```xScale```.  We will use this function a lot to **convert** the ```x``` coordinate of a point from the real pixel value into the ```0 - 20``` output range scale we have specified.  The code specifies that the scale is linear and that it has a minum value of 0 and a maximum value of 20.  This is achieved by passing the array ```[0, 20]``` as an argument to the ```domain``` function on line 2 of the above.  The code on line 2 then specifies the ```range``` that is used to equally space out the 0 to 20 units.  In this example we are using the available width of the svg document.
+
+The exact same logic is used to create a converter function for the y scale but this time, the height of the svg document is used as the ```range```.
+{% codeblock y-scale.js %}
+var yScale = d3.scale.linear()
+    .domain([0, 20])
+    .range([height, 0]);
+{% endcodeblock %}
+
+The next step is to draw the x and y axis complete with graduated labels.  The following code creates the x axis:
+
+The x-axis looks like this:
+{% img /images/x-axis.png %}
+
+{% codeblock x-axis.js %}
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom")
+    .innerTickSize(-height)
+    .outerTickSize(0)
+    .tickPadding(10);
+{% endcodeblock %}
+
+- The call to ```d3.svg.axis``` on line 1 unsurprisingly returns an instance of the axis object.
+- Line 2 makes a call to the scale function and passes in our ```xScale``` converter reference we created earlier.  The labels or ticks as they are known as in d3 speak will be graduated with respect to the ```[0, 20]``` domain array of min and max values we specified.
+- Line 3 positions the axis at the bottom of the document.
+- On line 4 the ```innerTickSize``` function of the axis object is called to create the horizontal lines that are vertically aligned from each label or tick.  I struggled with a good way of creating the gridlines for a long time and it turns out you need to pass in  a negarive argument like ```-height``` in line 2 of the above because we want the lines to fill the full document and if we do not pass a negative value then grid lines flow down from the labels and not up.  You can see this by adding and removing the line from the <a href="http://jsbin.com/xakemi/edit?js,output" target="_blank">jsbin</a>.
+
+The yAxis is created in a similar fashion only the horizontal grid lines are creating by passing in ```-width``` into ```innerTickSize``` to create the horizontal lines.
+
+Positioning the line and circles was very easy after I had my grid created and my scales set up.  The line is created below:
+{% codeblock line.js %}
+var line = {
+    start: {x: 2, y: 3, type: 'start'},
+    finish: {x: 14, y: 6, type: 'finish'} 
+  };
+
+var g = svg.append('g');
+
+g.append('line')
+    .style('stroke', 'blue')
+    .attr('class', 'line')
+    .attr('x1', xScale(line.start.x))
+    .attr('y1', yScale(line.start.y))
+    .attr('x2', xScale(line.finish.x))
+    .attr('y2', yScale(line.finish.y));
+{% endcodeblock %}
+- Line 6 creates an svg <a href="http://www.w3.org/TR/SVG/struct.html#Groups" target="_blank">g element</a> or container that can be used to group shapes together.
+- Lines 11 to 14 specify the start and end points of the line.  What is important about this is that the ```xScale``` and ```yScale``` converter functions are used to place the line on the 0..20 scale.
+
+The circle and text label objects that specify the coordinates of the end points follow a similar approach:
+{% codeblock circle.js %}
+var lineData = [line.start, line.finish];
+
+var circles = g
+     .selectAll('circle')
+     .data(lineData)
+     .enter().append("circle")
+     .attr('class', function(d){ return "circle " + d.type;})
+     .attr('cx', function(d){return xScale(d.x);})
+     .attr('cy', function(d){return yScale(d.y);})
+     .attr('r', 10)
+     .style('fill', 'red')
+     .call(drag);
+
+var text = g
+     .selectAll('text')
+     .data(lineData)
+     .enter().append('text')
+     .attr("x", function(d){return xScale(d.x);})
+     .attr("y", function(d){return yScale(d.y + 1);})
+     .attr('class', function(d) {return "text" + d.type;})
+     .text( function (d) { return "( " + d.x  + ", " + d.y +" )"; })
+     .attr("font-family", "sans-serif")
+     .attr("font-size", "14px")
+     .attr("fill", "red");
+{% endcodeblock %}
+What is interesting about the above code is the ```data``` function call on lines 5 and 16.  I liken this to data binding and a circle or text object is created for each element in the ```lineData``` array on line 1.
+
+What I found confusing about the above code when I first encountered it is that ```selectAll``` works on elements that you are going to create rather than what you have created. The ```enter``` function on lines 6 and 17 is used to add the new elements to the document as the data changes.
+
+All that is left is to display the code that handles the drag events:
+{% codeblock drag.js %}
+var drag = d3.behavior
+     .drag()
+     .on("drag", function(d) {
+        var circle = d3.select(this),
+            line = d3.select('.line'),
+            isStart = circle.classed('start'),
+            textClass = isStart ? ".textstart" : ".textfinish",
+            lineX = isStart ? 'x1' : 'x2',
+            lineY = isStart ? 'y1' : 'y2',
+            text = d3.select(textClass),
+            title = d3.select('.title'),
+            xStart = d3.format(",.0f")(xScale.invert(line.attr('x1'))),
+            yStart = d3.format(",.0f")(yScale.invert(line.attr('y1'))),
+            xFinish = d3.format(",.0f")(xScale.invert(line.attr('x2'))),
+            yFinish = d3.format(",.0f")(yScale.invert(line.attr('y2')));
+
+        text.text( function (d) { return "( " + d3.format(",.0f")(xScale.invert(d.x))  + ", " + d3.format(",.0f")(yScale.invert(d.y)) +" )"; });
+
+        line.attr(lineX, d3.event.x).attr(lineY, d3.event.y);
+        text.attr('x', d3.event.x).attr('y', d3.event.y - 20);
+        circle.attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+
+        title.text(equationOfLine({x: xStart, y: yStart}, {x: xFinish, y: yFinish}));
+     });
+{% endcodeblock %}
+The above code creates a drag function that I can attach to elements of the document.
+
+I struggled for a while with getting the correct text for labels of the coordinates of the end points of the line and the main header label.  The drag event handler on line 3 gets passed a ```d``` argument which is a d3 behaviour object that has the x and y mouse cooridinates of where the mouse was dragged to.  I had to use ```xScale.invert``` and ```yScale.invert``` to get the correct scaled cooridinates for the text labels.  The invert function returns the inverse mapping of range to domain.  The rest of the code just positions the elements to the new mouse positions.
+
+The drag function is then attached to each circle as it is created on the last line of the code below;
+{% codeblock circle.js %}
+var circles = g
+     .selectAll('circle')
+     .data(lineData)
+     .enter().append("circle")
+     .attr('class', function(d){ return "circle " + d.type;})
+     .attr('cx', function(d){return xScale(d.x);})
+     .attr('cy', function(d){return yScale(d.y);})
+     .attr('r', 10)
+     .style('fill', 'red')
+     .call(drag);
+{% endcodeblock %}
