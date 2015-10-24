@@ -1,0 +1,205 @@
+---
+layout: post
+title: "Altitude of a triangle with d3.js"
+date: 2015-10-24 20:04:36 +0100
+comments: true
+categories: JavaScript d3.js
+---
+I'm back at college learning the maths that I should have learned a long time ago.  I am also trying to kill 2 birds with one stone by using what I've learned to help me learn <a href="http://d3js.org/" target="_blank">d3.js</a> at the same time.  The task I set myself this week was to draw the altitude of a triangle through a point.
+
+In geometry, an altitude of a triangle is a line segment through a vertex (point) and perpendicular (i.e. forming a right angle with) a line containing the base (the opposite side of the triangle).  This line containing the opposite side is called the extended base of the altitude.
+
+My first steps are to create a scale that is of much lower resolution than the finely grained pixels and below is the code that creates both the scale and the axis.  I blogged about scales in more detail in my last <a href="http://www.thesoftwaresimpleton.com/blog/2015/09/20/first-d3/" target="_blank">blog post</a>:
+
+{% codeblock scale.js %}
+var margin = {top: 20, right: 100, bottom: 30, left: 100},
+    width = 660 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var xScale = d3.scale.linear()
+    .domain([0, 20])
+    .range([0, width]);
+
+var yScale = d3.scale.linear()
+    .domain([0, 20])
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient("left");
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+svg.append('g')
+    .attr('class', 'x axis')
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+svg.append('g')
+    .attr('class', 'y axis')
+    .call(yAxis);
+{% endcodeblock %}
+
+I then created 3 arbitrary vertices for my triangle that would fill the x and y axis as much as possible:
+
+{% codeblock points.js %}
+var a = {x: xScale(1), y: yScale(1)},
+    b = {x: xScale(6), y: yScale(18)},
+    c = {x: xScale(14), y: yScale(6)};
+{% endcodeblock %}
+
+My next task was to then try and draw a triangle from these points.  Below is what I ended up with before I explain the solution:
+
+{% img /images/triangle.png %}
+
+After a bit of trial and error by first of all trying to draw lines with the line function, I came across d3's <a href="https://www.dashingd3js.com/svg-paths-and-d3js">path function</a>:
+{% codeblock path.js %}
+svg.append('path')
+    .attr('d', function(d) {
+      return 'M ' + a.x +' '+ a.y +
+             ' L' + b.x + ' ' + b.y +
+             ' L' + c.x + ' ' + c.y +
+             ' z';
+    })
+    .style('stroke', 'blue');
+{% endcodeblock %}
+
+This is effectively a DSL or mini-language for drawing shapes.
+
+I'll add a translation for each line:
+
+- ```'M ' + a.x +' '+ a.y +``` - This means place a point at the x and y coordinates of the point I previously created with ```var a = {x: xScale(1), y: yScale(1)}```.  This is analgous to the starting point where you might place your pen.
+- ```' L' + b.x + ' ' + b.y +``` - This means draw a line created from the point created above to the point ```b``` that was declared like this ```b = {x: xScale(6), y: yScale(18)}```.  Because we are using <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales" target="_blanl">scales</a>, we can pick nice friendly points like (6,18) rather than the harshness of pixels.
+- ```' L' + c.x + ' ' + c.y +``` - draw a line to the c point
+- the ```z``` command closes the path.
+
+I really like the path function as it is how a human would draw a triangle with pen and paper and is very easy to grok.
+
+With the easy bit done, I now wanted to draw the altitude through point A that would be perpendicular to line BC.
+
+If I was doing this with pen and paper, I would perform the following steps:
+
+1.  I would find the gradient (or slope for those of you from the US) of the line ```BC```.
+2.  I would use this gradient/slope to create the <a href="https://www.mathsisfun.com/equation_of_line.html" target="_blank">equation of the line</a> in ```y = mx + c``` format.
+3.  I would find the perpendicular gradient/slope of ```BC```that I can use to create an equation of the line that will go through point ```A``` and will be perpendicular to point ```C``` in ```y = mx + c``` format.
+4.  I would then solve these simultaneously to find the point of intersection from point ```A``` to the point on ```BC``` that was perpendicular to point ```A```.
+
+What I quickly found out was that transfering pen to paper calculations to machine instructions or javascript was extremelly difficult and different.  Here are the steps I took:
+
+Like in the pen and paper version, I found the grandient of ```BC``` and created this function:
+
+{% codeblock gradient.js %}
+var gradient = function(a, b) {
+  return (b.y - a.y) / (b.x - a.x);
+};
+{% endcodeblock %}
+
+I then created a function to find the perpendicular gradient using the graident found in point 1:
+
+{% codeblock perpendicular.js %}
+var perpendicularGradient = function (a, b) {
+  return -1 / gradient(a, b);
+};
+{% endcodeblock %}
+
+In order to get both line equations into ```y = mx + c```, I needed a function that would take a point and a gradient and give me the ```y-intercept``` or the point where the line cuts the y-axis:
+
+{% codeblock y-intercept.js %}
+function getYIntercept(vertex, slope) {
+  return vertex.y - (slope * vertex.x);
+}
+{% endcodeblock %}
+
+I could then get the y, mx and c values of ```y + mx = c``` for both lines so I could solve the equations simultaneously.
+
+{% codeblock points.js %}
+  var slope = gradient(a, b),
+      x1 = - slope,
+      y1 = 1,
+      c1 = getYIntercept(a, slope),
+      perpendicularSlope = perpendicularGradient(a, b),
+      x2 = - perpendicularSlope,
+      y2 = 1,
+      c2 = getYIntercept(vertex, perpendicularSlope);
+{% endcodeblock %}
+
+I would use the substitution method or the addition method to solve a series of equations with pen in paper but writing it in code was a different matter and matrices seemed like the obvious fit.  Please write a comment below if there is a more efficient way.  There is <a href="http://www.chilimath.com/algebra/advanced/cramers/2x2.html" target="_blank">cramer's law</a> which seemed ideal for my needs.  I needed to get my vars into the following format:
+
+{% codeblock matrix.js %}
+[x1, y1] [x]  = [c1]
+[x2, y2] [y]  = [c2]
+{% endcodeblock %}
+
+Below is my altitude function that gets the values into matrices before passing to a function that will use cramer's law to find the point of intersection.
+
+{% codeblock altitude.js %}
+function altitude(vertex, a, b) {
+  var slope = gradient(a, b),
+      x1 = - slope,
+      y1 = 1,
+      c1 = getYIntercept(a, slope),
+      perpendicularSlope = perpendicularGradient(a, b),
+      x2 = - perpendicularSlope,
+      y2 = 1,
+      c2 = getYIntercept(vertex, perpendicularSlope);
+
+  var matrix = [
+    [x1, y1],
+    [x2, y2]
+  ];
+
+  var result = solveMatrix(matrix, [c1, c2]);
+{% endcodeblock %}
+
+Below is the function I used to first of all find the determinant of the matrix before applying cramer's law:
+
+{% codeblock cramer.js %}
+function det(matrix) {
+  return (matrix[0][0]*matrix[1][1])-(matrix[0][1]*matrix[1][0]);
+}
+
+function solveMatrix(matrix, r) {
+   var determinant = det(matrix);
+   var x = det([
+      [r[0], matrix[0][1]],
+      [r[1], matrix[1][1]]
+    ]) / determinant;
+
+   var y = det([
+     [matrix[0][0], r[0]],
+     [matrix[1][0], r[1]]
+   ]) / determinant;
+
+  return {x: Math.approx(x), y: Math.approx(y)};
+}
+{% endcodeblock %}
+
+The above returns a point that I can then use to join point ```A``` to the point of intersection returned from the ```solveMatrix``` function.
+
+{% codeblock line.js %}
+  g.append('line')
+    .style('stroke', 'red')
+    .attr('class', 'line')
+    .attr('x1', xScale(vertex.x))
+    .attr('y1', yScale(vertex.y))
+    .attr('x2', xScale(result.x))
+    .attr('y2', yScale(result.y));
+{% endcodeblock %}
+
+I want to add drag and drop to rotate the triangle so I'll probably need to put checks in for vertical and horizontal values for x and y but this will do for now.
+
+Below is the end result of my troubles with the altitudes of all three vertices shown.
+
+{% img /images/altitude2.png %}
+
+The hardest part was to solve the simultaneous equations and I belive there is a better and more efficient way that uses vectors to work this out but I have not covered this with my course as yet.
+
+Here is a working <a href="http://jsbin.com/qasutim/edit?js,output" target="_blank">jsbin</a> of my efforts.
