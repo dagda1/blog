@@ -5,7 +5,7 @@ date: 2015-11-16 13:25:56 +0000
 comments: true
 categories: JavaScript d3.js
 ---
-I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly:
+I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
 
 Following on from my last two posts, <a href="http://www.thesoftwaresimpleton.com/blog/2015/10/31/perpendicular/" target="_blank">Perpendicular Bisectors of a Triangle With d3.js</a> and <a href="http://www.thesoftwaresimpleton.com/blog/2015/10/24/altitude/" target="_blank">Altitude of a Triangle With d3.js</a>, I want to document how I ensured that my svg tranformation is resized to scale during a resize event or if the user selection can change.
 
@@ -13,11 +13,11 @@ Below is the end result of the last two blog posts:
 
 {% img /images/triangle.png %}
 
-You can see the result at this <a href="http://46.101.17.251/" target="_blank">url</a>.
+You can see the result at this <a href="http://46.101.17.251/triangles" target="_blank">url</a>.
 
 You can change the current triangle effects by changing the radio buttons at the top.  You can also drag and drop the triangle vertices by dragging the red circles at each triangle endpoint or vertex. This led to an interesting problem, which was how to how to maintain the current state or coordinates of all the shapes when the user selects a new effect from the radio buttons.
 
-Another, more challening problem was to make sure that everything resized to the current ratio or scale if the browser window was resized.  If you go to this <a href="http://46.101.17.251/" target="_blank">url</a> and resize the browser, you can see that everything re-renders nicely to scale.  This does not happen out of the box.  You need to code for this eventuality.
+Another, more challening problem was to make sure that everything resized to the current ratio or scale if the browser window is resized.  If you go to this <a href="http://46.101.17.251/" target="_blank">url</a> and resize the browser, you can see that everything re-renders nicely to scale.  This does not happen out of the box.  You need to code for this eventuality.
 
 The bulk of the work takes place in the render method below:
 
@@ -177,13 +177,13 @@ Below is the end of the render function that creates a hash that will keep track
   window.addEventListener("resize", area.resizeFunc);
 {% endcodeblock %}
 
-Lines 1 to 3 create a the hash and assign the ```xScale``` and ```yScale``` <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales" target="_blank">d3 scale objects</a> that allow you, the developer to deal with a finer granuated scale than pixels.  The x and y axis in the documment were created using these scale objects and you can think in terms of placing these objects at coordinates on these scales, e.g. ```(1, 1)```.
+Lines 1 to 3 create a the hash and assign the ```xScale``` and ```yScale``` <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales" target="_blank">d3 scale objects</a> that allow you to deal with a finer granuated scale than pixels.  The x and y axis in the documment were created using these scale objects and you can think in terms of placing these objects at coordinates on these scales, e.g. ```(1, 1)```.
 
 Lines 6 to 29 assign properties to this ```area``` hash such as the vertices of the triangle that will be used to read and write to when drawing the shapes.  I pass this structure into most functions.
 
-Line 31 uses the lesser known partial application properties of the <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_objects/Function/bind" target="_blank">bind function</a> to create a new version of the render function.  This new version when called, will always be called with the ```area``` hash as an argument, that contains all the information we need to reconstruct the document.  Line 33 adds this function to the hash, we will use this to remove the event listener each time it is called or else there will be a memory leak.  LIne 35 creates an event listener for the resize event and assigns the new version of render to this event.
+Line 31 uses the lesser known partial application properties of the <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_objects/Function/bind" target="_blank">bind function</a> to create a new version of the render function.  This partial function when called, will always be called with the ```area``` hash as an argument, that contains all the information we need to reconstruct the document.  Line 33 adds this function to the hash, we will use this to remove the event listener each time it is called or else there will be a memory leak.  LIne 35 creates an event listener for the resize event and assigns the new version of render to this event.
 
-The beginning of the ```render``` function below uses the new es6 default paramaters to allow for the fact when render is first called with no arguments.  If it is called in response to a resize event then there will be a state argument.  Lines 2 to 5 remove the event listener each time it is called.
+The beginning of the ```render``` function below uses the new es6 default paramaters feature to allow render to be called with no arguments or called from the resize event with an argument.  If it is called in response to a resize event then there will be a state argument.  Lines 2 to 5 remove the event listener each time it is called.
 
 {% codeblock render3.js %}
 function render(state = {}) {
@@ -278,4 +278,4 @@ After all this, I take great pleasure in resizing the window and watching everyt
 
 You can checkout the <a href="https://github.com/dagda1/d3-geometry" target="_blank">github repo</a> that contains all the code for this.
 
-I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly:
+I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
