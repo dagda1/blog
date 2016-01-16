@@ -7,7 +7,7 @@ categories: JavaScript d3.js
 ---
 I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
 
-Up until now when I have been dealing with <a href="http://d3js.org/" target="_blank">d3.js's</a>  axis components, I have always kept the axes positive, i.e. both the x and y axes where showing values greater than 0.
+Up until now when I have been dealing with <a href="http://d3js.org/" target="_blank">d3.js's</a>  axes components, I have always kept the axes positive, i.e. both the x and y axes where showing values greater than 0.
 
 I have been hacking around with <a href="http://www.d3geometry.com/functions" target="_blank">this</a> fun side project that takes the input of an algebraic expression and plots a graph for a sample range of values for x.  You can checkout the source code <a href="https://github.com/dagda1/d3-geometry" target="_blank">here</a> if you are interested.
 
@@ -17,7 +17,7 @@ Below is a screenshot of the end result:
 
 It quickly became apparent that in order to show the curve of the expression properly, I would need to construct negative and positive x and y axes.
 
-I have the following function below that constructs the data of x and y coordinates to plot the curve against which uses the excellent <a href="http://mathjs.org/" target="_blank">mathjs</a> library to transform the string algebraic expression into a javascript function (line 2).  I then create a sample range for ```x``` of values ranging from ```-10``` to ```11``` and evaluate the ```y``` coordinate for each item in the range by applying the function on line 5 to each item:
+I have the following function below that constructs the data of x and y coordinates to plot the curve against which uses the excellent <a href="http://mathjs.org/" target="_blank">mathjs</a> library to transform the string algebraic expression into a javascript function (line 2).  I then create a sample range for ```x``` values ranging from ```-10``` to ```11``` and evaluate the ```y``` coordinate for each item in the range by applying the function on line 5 to each item:
 
 {% codeblock expression.js %}
   getDataFromProps(expr) {
@@ -28,7 +28,7 @@ I have the following function below that constructs the data of x and y coordina
       return expression.eval({x: x});
     };
 
-    return d3.range(-10, 11).map(function (d) {
+    return d3.range(-10, 11).map( (d) => {
       return {x:d, y:fn(d)};
     });
   }
@@ -60,11 +60,10 @@ The ```domain``` function of ```d3``` allows you to specify a minimum and maximu
 
 Below I am using d3's ```extent``` function that returns the minum and maximum values of an array and is equivalent to calling ```d3.min``` and ```d3.max``` simultaneously.
 
-As I am supplying the values for the range of ```x``` values in the code above, I know that I will always have negative ```x``` values and positive ```x``` values.
-
 {% codeblock extent.js %}
 this.xScale.domain(d3.extent(data, function (d) {return d.x;}));
 {% endcodeblock %}
+As I am supplying the values for the range of ```x``` values in the code above, I know that I will always have negative ```x``` values and positive ```x``` values.
 
 The y coordinates are different depending on the function generated from the algebraic expression.  Depending on the expression, there are basically 3 conditions I want to capture when displaying a curve.
 
@@ -92,9 +91,9 @@ const positiveAndNegativeAxis = minY < 0 && maxY > 0;
 let yScaleDomain, xAxisPosition;
 
 if(nonNegativeAxis) {
-  yScaleDomain = [0, d3.max(data, function (d) {return d.y;})];
+  yScaleDomain = [0, d3.max(data, (d) => {return d.y;})];
 }  else {
-  yScaleDomain = d3.extent(data, function (d) {return d.y;});
+  yScaleDomain = d3.extent(data, (d) => {return d.y;});
 }
 
 this.yScale.domain(yScaleDomain);
@@ -112,14 +111,14 @@ The last problem to solve was to position the x axis.  In the 3 code samples bel
 This is easy if I only have negative or positive values for ```y```. I can simply place the ```x``` axis at the bottom for only positive values:
 
 {% codeblock pos.js %}
-yScaleDomain = [0, d3.max(data, function (d) {return d.y;})];
+yScaleDomain = [0, d3.max(data, (d) => {return d.y;})];
 xAxisPosition = dimensions.height;
 {% endcodeblock %}
 
 When I have only negative values, then I can place the x axis at the top of the document:
 
 {% codeblock neg.js%}
-yScaleDomain = d3.extent(data, function (d) {return d.y;});
+yScaleDomain = d3.extent(data, (d) => {return d.y;});
 xAxisPosition = 0;
 {% endcodeblock %}
 
@@ -139,7 +138,7 @@ xAxisPosition = this.svg.selectAll(".tick").filter((data) => {
 
 In the code above, I filter out all the other ticks apart from the ```0``` label. The zero tick is then passed into the ```map``` function which selects the transform attribute of the tick which might look something like this ```translate(0,280)```.  The second value of translate, ```280``` in this instance gives me the position of the ```0``` label in the y axis.  I can use this value to position my x axis.
 
-Once I have the position of 0 in the y axis, I can position add the axis to the document:
+Once I have the position of 0 in the y axis, I can position the axis to the document:
 
 {% codeblock xaxis.js %}
 this.svg.append('g')
@@ -148,6 +147,12 @@ this.svg.append('g')
     .call(xAxis);
 {% endcodeblock %}
 
-All in all this was a great deal of fun for me.
+When it comes to positioning the y axis, I simply divide the width by 2 and position it there:
+{% codeblock ypos.js %}
+this.svg.append('g')
+  .attr('class', 'axis')
+  .attr('transform', 'translate(' + dimensions.width/2 + ',0)')
+  .call(yAxis);
+{% endcodeblock %}
 
 I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
