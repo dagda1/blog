@@ -1,0 +1,153 @@
+---
+layout: post
+title: "Negative Axes and Axes positioning with d3.js"
+date: 2016-01-16 07:20:06 +0000
+comments: true
+categories: JavaScript d3.js
+---
+I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
+
+Up until now when I have been dealing with <a href="http://d3js.org/" target="_blank">d3.js's</a>  axis components, I have always kept the axes positive, i.e. both the x and y axes where showing values greater than 0.
+
+I have been hacking around with <a href="http://www.d3geometry.com/functions" target="_blank">this</a> fun side project that takes the input of an algebraic expression and plots a graph for a sample range of values for x.  You can checkout the source code <a href="https://github.com/dagda1/d3-geometry" target="_blank">here</a> if you are interested.
+
+Below is a screenshot of the end result:
+
+{% img /images/x2.png %}
+
+It quickly became apparent that in order to show the curve of the expression properly, I would need to construct negative and positive x and y axes.
+
+I have the following function below that constructs the data of x and y coordinates to plot the curve against which uses the excellent <a href="http://mathjs.org/" target="_blank">mathjs</a> library to transform the string algebraic expression into a javascript function (line 2).  I then create a sample range for ```x``` of values ranging from ```-10``` to ```11``` and evaluate the ```y``` coordinate for each item in the range by applying the function on line 5 to each item:
+
+{% codeblock expression.js %}
+  getDataFromProps(expr) {
+    const expression = math.parse(expr);
+
+
+    const fn = (x) => {
+      return expression.eval({x: x});
+    };
+
+    return d3.range(-10, 11).map(function (d) {
+      return {x:d, y:fn(d)};
+    });
+  }
+{% endcodeblock %}
+
+Armed with this data, I can now construct my axes.
+
+I first create the axis against a scale that is in proportion with the viewport dimensions.
+
+{% codeblock axes.js %}
+    const dimensions = this.getDimensions();
+
+    xScale = d3.scale.linear()
+          .range([0, dimensions.width]);
+
+    yScale = d3.scale.linear()
+          .range([dimensions.height, 0]);
+
+    const xAxis = d3.svg.axis()
+            .scale(xScale);
+
+    const yAxis = d3.svg.axis()
+            .orient('left')
+            .scale(yScale);
+
+{% endcodeblock %}
+
+The ```domain``` function of ```d3``` allows you to specify a minimum and maximum value as the range of values that we can use for a particular axis.
+
+Below I am using d3's ```extent``` function that returns the minum and maximum values of an array and is equivalent to calling ```d3.min``` and ```d3.max``` simultaneously.
+
+As I am supplying the values for the range of ```x``` values in the code above, I know that I will always have negative ```x``` values and positive ```x``` values.
+
+{% codeblock extent.js %}
+this.xScale.domain(d3.extent(data, function (d) {return d.x;}));
+{% endcodeblock %}
+
+The y coordinates are different depending on the function generated from the algebraic expression.  Depending on the expression, there are basically 3 conditions I want to capture when displaying a curve.
+
+The first case is when there are only positive y values:
+
+{% img /images/posyvalues.png %}
+
+The next case is when there are both negative and positive y values;
+
+{% img /images/posandnegyvalues.png %}
+
+Lastly, only negative y values:
+
+{% img /images/negyvalues.png %}
+
+With this in mind, the code below creates a domain based on the minimum values of y and the maximum values of y:
+
+{% codeblock minimamaxima.js %}
+const minY = d3.min(data, (d) => { return d.y; });
+const maxY = d3.max(data, (d) => { return d.y; });
+
+const nonNegativeAxis = minY >= 0 && maxY >= 0;
+const positiveAndNegativeAxis = minY < 0 && maxY > 0;
+
+let yScaleDomain, xAxisPosition;
+
+if(nonNegativeAxis) {
+  yScaleDomain = [0, d3.max(data, function (d) {return d.y;})];
+}  else {
+  yScaleDomain = d3.extent(data, function (d) {return d.y;});
+}
+
+this.yScale.domain(yScaleDomain);
+
+this.svg.append('g')
+  .attr('class', 'axis')
+  .attr('transform', 'translate(' + dimensions.width/2 + ',0)')
+  .call(yAxis);
+{% endcodeblock %}
+
+I either start my domain at ```0``` or use ```d3.extent``` again to get the maximum and minimum values for y like I did before for x.
+
+The last problem to solve was to position the x axis.  In the 3 code samples below, I am capturing the domain for y and the x axis position for each condition.
+
+This is easy if I only have negative or positive values for ```y```. I can simply place the ```x``` axis at the bottom for only positive values:
+
+{% codeblock pos.js %}
+yScaleDomain = [0, d3.max(data, function (d) {return d.y;})];
+xAxisPosition = dimensions.height;
+{% endcodeblock %}
+
+When I have only negative values, then I can place the x axis at the top of the document:
+
+{% codeblock neg.js%}
+yScaleDomain = d3.extent(data, function (d) {return d.y;});
+xAxisPosition = 0;
+{% endcodeblock %}
+
+The interesting case was when I have both positive and negative values for ```y```.
+
+What I ended up doing was selecting all the ticks or labels from the y axis and finding the label that had ```0``` against it and from that I could use d3 to to select its position and then use that for my x axis position.
+
+Below is the code that does that:
+
+{% codeblock both.js %}
+xAxisPosition = this.svg.selectAll(".tick").filter((data) => {
+    return data === 0;
+}).map((tick) => {
+    return d3.transform(d3.select(tick[0]).attr('transform')).translate[1];
+});
+{% endcodeblock %}
+
+In the code above, I filter out all the other ticks apart from the ```0``` label. The zero tick is then passed into the ```map``` function which selects the transform attribute of the tick which might look something like this ```translate(0,280)```.  The second value of translate, ```280``` in this instance gives me the position of the ```0``` label in the y axis.  I can use this value to position my x axis.
+
+Once I have the position of 0 in the y axis, I can position add the axis to the document:
+
+{% codeblock xaxis.js %}
+this.svg.append('g')
+    .attr('class', 'axis')
+    .attr('transform', 'translate(0,' + xAxisPosition + ')')
+    .call(xAxis);
+{% endcodeblock %}
+
+All in all this was a great deal of fun for me.
+
+I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
