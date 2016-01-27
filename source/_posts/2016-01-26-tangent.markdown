@@ -1,0 +1,211 @@
+---
+layout: post
+title: "Tangent to a Curve on mousemove with d3.js and math.js"
+date: 2016-01-26 07:05:17 +0000
+comments: true
+categories: JavaScript d3.js math.js
+---
+I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
+
+Following on from my <a href="http://www.thesoftwaresimpleton.com/blog/2016/01/16/d3-axis/" target="_blank">last post</a> on axes positioning, I have added the functionality to add a tangent to the curve on ```mousemove```.  You can see a working example <a href="http://www.d3geometry.com/functions?uid=8888" target="_blank">here</a> by dragging the mouse over the svg document.
+
+Below is a screenshot of the end result:
+
+{% img /images/tangent.png %}
+
+
+The first steps are to create the elements that I will use to display the tangent indicator and also to hook up an event listener for ```mousemove``` on the svg document:
+{% codeblock listener.js %}
+    g.append('circle')
+      .attr('class', 'diff')
+      .attr('cx', 0)
+      .attr('cy', 0)
+      .attr('r', 7)
+      .style('fill', 'red');
+
+    g.append('text')
+      .attr('class', 'difflabel');
+
+    g.append('line')
+      .style('stroke', 'red')
+      .attr('class', 'tangent')
+      .attr('x1', xScale(0))
+      .attr('y1', yScale(0))
+      .attr('x2', xScale(0))
+      .attr('y2', yScale(0));
+
+d3.select('svg').on('mousemove', mouseMove);
+{% endcodeblock %}
+
+The above creates a circle to indicate where on the curve the mouse is relative to the x axis. A label is created to display the coordinate that the mouse is currently on with respect to the curve and lastly I create a line that will display the tangent.
+
+Line 19 adds a ```mousemove``` handler to the ```svg``` element that has been previously created with the code below:
+{% codeblock svg.js %}
+componentDidMount() {
+  const el = this.refs.curve;
+
+  const dimensions = this.getDimensions();
+
+  this.svg = d3.select(el).append("svg")
+        .attr("width", dimensions.width + dimensions.margin.left + dimensions.margin.right)
+        .attr("height", dimensions.height + dimensions.margin.top + dimensions.margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + dimensions.margin.left + "," + dimensions.margin.top + ")");
+{% endcodeblock %}
+The goal of the ```mousemove``` handler is to draw the tangent of the curve with respect to the x axis as the mouse moves over the svg document.
+
+In geometry, the tangent line to a plane curve at a given point is the straight line that just touches the curve at that point.
+
+I can get the ```x``` for the tangent line from the mouse coordinates of the ```mousemove``` function:
+
+{% codeblock xcoordinate.js %}
+const mouseMove = function() {
+  const m = d3.mouse(d3.select('.curve').node());
+
+  let x = m[0];
+{% endcodeblock %}
+
+With this, I can use mathematical differential calculus to work out the tangent line.  If I was to perform these steps with pen and paper, I would take the following steps:
+
+-  Find the derivative of the curve
+-  Substitute the ```x``` retreived from the ```mousemove``` event into the derivative to calculate the gradient (or slope for the US listeners) of the line.
+-  Substitute the gradient of the tangent and the coordinates of the given point into the equation of the line in the format ```y = mx + c```.
+-  Solve the equation of the line for y.
+
+What was surprising and enjoyable for me was that the steps on paper transferred into machine instructions quite well which is not always the case.
+
+Before I plot the line, I want to position my circle and label onto the curve.  I am already using the excellent <a href="http://mathjs.org/" target="_blank">mathjs</a> library to get the coordinates to draw the curve:
+
+{% codeblock data.js %}
+getDataFromProps(expr) {
+  const expression = math.parse(expr);
+
+
+  const fn = (x) => {
+    return expression.eval({x: x});
+  };
+
+  return d3.range(-10, 11).map( (d) => {
+    return {x:d, y:fn(d)};
+  });
+}
+
+drawCurve(data) {
+  const xScale = this.xScale;
+  const yScale = this.yScale;
+  const svg = this.svg;
+
+  const line = d3.svg.line()
+          .interpolate('basis')
+          .x( (d) => {return xScale(d.x);})
+          .y( (d) => {return yScale(d.y);});
+{% endcodeblock %}
+
+Line 2 of the above code uses ```mathjs```'s parse function to create an expression from the string input of the form:
+
+{% img /images/expr.png%}
+
+Once I have the expression, I can evaluate it with different values. Lines 5 and line 9 evaluates the expression for each ```x``` value in a predetermined range of values.  Line 19 plots the line.
+
+As I know what ```x``` is from the mouse event, I can use mathjs to parse my expression with respect to x and get the ```y``` coordinate to position my label on the curve:
+
+{% codeblock ycoordinate.js %}
+const mouseMove = function() {
+  const m = d3.mouse(d3.select('.curve').node());
+
+  let x = m[0];
+
+  let y = yScale(math.parse(me.props.expression).eval({
+    x: xScale.invert(x)
+  }));
+
+  const point = {
+    x: xScale.invert(x),
+    y: yScale.invert(y)
+  };
+
+  if(point.x > maxX) {
+    point.x = maxX;
+    point.y = maxY;
+
+    x = xScale(maxX);
+    y = yScale(maxY);
+  }
+
+  g.select('.diff')
+    .attr('cx', x)
+    .attr('cy', y);
+
+  g.select('.difflabel')
+    .text( function() {
+      const xLabel = Math.round(point.x);
+      const yLabel = Math.round(point.y);
+
+      return `(${xLabel}, ${yLabel})`;
+    })
+    .attr('dx', x + 10)
+    .attr('dy', y + 8);
+{% endcodeblock %}
+
+Lines 2 and 4 retrive ```x``` from the mouse event and line 6 evaluates ```y``` by parsing and evaluating the equation of the curve with respect to x.  I then use the ```x``` and ```y``` coordinates to position my label elements.
+
+Mathjs does not come with its own differentiation module to work out the derivative of the user entered expression but I found <a href="https://github.com/hausen/math.diff.js" target="_blank">this</a> plugin that seems to work out well for this task.
+
+Armed with this module, it was plain sailing to create an equation for the tangent line that I could use to find out ```y``` values for the tangent.
+
+{% codeblock tangent.js %}
+const derivative = math.diff(math.parse(me.props.expression), "x");
+
+const gradient = derivative.eval({x: point.x});
+
+const yIntercept = getYIntercept(point, gradient);
+
+const lineEquation = math.parse("m * x + c");
+
+const getTangentPoint = (delta) => {
+  const deltaX = xScale.invert(x + delta);
+
+  const tangentPoint = {
+    x: deltaX,
+    y: lineEquation.eval({
+      m: gradient,
+      x: deltaX,
+      c: yIntercept
+    })
+  };
+
+  return tangentPoint;
+};
+
+const length = xScale(200);
+
+const tangentPoint1 = getTangentPoint(+ length);
+const tangentPoint2 = getTangentPoint(- length);
+
+g.select('.tangent')
+  .attr('x1', xScale(tangentPoint1.x))
+  .attr('y1', yScale(tangentPoint1.y))
+  .attr('x2', xScale(tangentPoint2.x))
+  .attr('y2', yScale(tangentPoint2.y));
+{% endcodeblock %}
+
+-  Line 1 creates a derivative function from the equation of the curve.
+-  The derivative function is evaluted to get the gradient or slope for the US viewers on line 3.
+-  The ```c``` constant or y-intercept of the equation of the line ```y = mx + c``` is retrieved on line 5.
+-  Mathjs is employed to create an expression in the format of ```y = mx + c```.
+-  A ```getTangentPoint``` function is created that will be used to get the points at either end of the function.
+-  Lines 24 - 26 create 2 points for ```x``` that will be far off the length and height of the svg document to give the impression of stretching off to infinity.
+- Each point gets its ```y``` value by calling the ```getTangentPoint``` funtion on line 9 that in turn will solve for ```x``` for the equation of the line function previously created on line 7.
+- Once we have the pair of points, the line can be plotted on lines 29 - 33.
+
+You can see the end result <a href="http://www.d3geometry.com/functions?uid=8888" target="_blank">here</a>.
+
+The following util function will return the y-intercept for a point and gradient:
+
+{% codeblock yintercpet.js %}
+export function getYIntercept(vertex, slope) {
+  return vertex.y - (slope * vertex.x);
+}
+{% endcodeblock %}
+
+I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
