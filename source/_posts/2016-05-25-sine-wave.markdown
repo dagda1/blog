@@ -1,0 +1,26 @@
+---
+layout: post
+title: "Animating a sine wave with d3.js and MathJax"
+date: 2016-05-25 21:42:50 +0100
+comments: true
+categories: JavaScript d3.js MathJax
+---
+I have spent the last year learning some of the maths I should have learned 25 years ago.  One thing that I found interesting was the relationship between an input angle of the <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank">unit circle</a> and its coordinate on a sine wave graph.  Below is an animated gif of the end result of my toils or you can see the real page <a href="http://www.d3geometry.com/sine" target="_blank">here</a>.
+
+{% img /images/animated-sine.gif %}
+
+This animation would have greatly helped me understand the relationship between the two abstractions if it had existed earlier.  With new media and animations we can illustrate things much better than old school textbooks.
+
+A sine wave is a mathmatical curve that describes a smooth repetitive oscillation and the <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank">unit circle</a>  is a circle of radius 1 centred at the origin ```(0, 0)```.  The unit circle can be used to find special trigonometric ratios as well as aid in graphing.  There is also a real number line wrapped around the circle that serves as the input value when evaluating trig functions.
+
+There are a couple of important facts that I wanted to capture in the animation:
+
+1. I want to show where the input value of the unit circle corresponds to the ```(x, y)``` coordinate on the horizontal axis of the sine wave.
+
+2. How the right angle is formed by the angle of the radius moving counterclockwise around the unit circle.
+
+### Basic Setup
+
+{% img /images/sine-setup.png %}
+
+The basic setup of the above consists of a pair of d3.js x and y axis and some basic d3.js svg lines and circles.  These are basic d3.js shapes and I don't want to dilute this post with too much basic detail, you can find the source <a href="https://github.com/dagda1/d3-geometry/blob/master/client/app/components/sine-wave.js" target="_blank">here</a> and I have blogged previously about some simpler svg documents, <a href="http://www.thesoftwaresimpleton.com/blog/2015/09/20/first-d3/" target="_blank">here</a> and <a href="http://www.thesoftwaresimpleton.com/blog/2015/10/31/perpendicular/" target="_blank">here</a>.  I have used <a href="https://www.mathjax.org/" target="_blank">MathJax</a> for the pi labels of unit circle but I will get to that later.
