@@ -5,32 +5,58 @@ date: 2016-05-25 21:42:50 +0100
 comments: true
 categories: JavaScript d3.js MathJax
 ---
-I have spent the last year learning some of the maths I should have learned about 27 years ago.  One of the things that I have found interesting while learning maths is the relationship between the <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank">unit circle</a> a sine wave graph of ```y = sin(x)```.    
+Below is an animated gif of the end result of this post or you can see the real page <a href="http://www.d3geometry.com/sine" target="_blank">here</a>.
 
-A sine wave is a mathmatical curve that describes a smooth repetitive oscillation and the <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank">unit circle</a>  is a circle of radius 1 centred at the origin ```(0, 0)```.  The unit circle can be used to find special trigonometric ratios as well as aid in graphing.  There is also a real number line wrapped around the circle that serves as the input value when evaluating trig functions.
+The full and current source can be found <a href="https://github.com/dagda1/d3-geometry/blob/master/client/app/components/sine-wave.js" target="_blank">here</a>.
 
-One journey around the unit circle is 360 degrees or 2 pi in radians.  A sine wave shows the excursion around the circle in happening in time.  A sine wave is ultimately a circle expressed in time.  I have used <a href="https://github.com/d3/d3/wiki/SVG-Axes" target="_blank">d3.js axis</a> to create an animation to show this relationship. 
+{% img /images/animated-sinewave.gif %}
+
+I have spent the last year learning some of the maths I should have learned about 27 years ago.  One of the things that I have found interesting while learning maths is the relationship between the <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank">unit circle</a> and a sine wave graph of ```y = sin(x)```.
+
+A sine wave is a mathmatical curve that describes a smooth repetitive oscillation and the <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank">unit circle</a>  is a circle of radius 1 centred at the origin ```(0, 0)```.  The unit circle can be used to find special trigonometric ratios as well as aid in graphing.  There is also a real number line wrapped around the circle that serves as the input value when evaluating trig functions such as sine and cosine.
+
+A sine wave is a <a href="https://en.wikipedia.org/wiki/Periodic_function" target="_blank">periodic function</a> or a function that repeats itself at regular intervals.  The most important examples of periodic functions are the trigonometric functions that repeat themselves over intervals of <i>2π</i>.  One journey around the unit circle is 360 degrees or <i>2π</i> in <a href="https://en.wikipedia.org/wiki/Radian" target="_blank">radians</a>.  A sine wave shows the excursion around the circle happening in time and is ultimately a circle expressed in time.  I have used <a href="https://d3js.org/" target="_blank">d3.js</a> to illlustrate how the journey around the circle corresponds to the sine wave movement over time.
 
 There are a number of concepts that I wanted to capture in the animation:
 
 1. Illustrate where the input value of the unit circle corresponds to the ```(x, y)``` coordinate on the horizontal axis of the sine wave.
 
-2. Demonstrate how the right angle is formed by the angle of the radius moving counterclockwise around the unit circle.
+2. Demonstrate how the right angle is formed by the angle of the radius moving counter-clockwise around the unit circle.
 
-3. Show the number scale of the unit circle in radians as PI ratios in proper mathmatical notation in the browser.  <a href="https://www.mathjax.org/" target="_blank">MathJax</a> appears to be the only show in town that fits this requiremnt.
+3. Show the number scale of the unit circle in radians as  ratios in proper mathmatical notation in the browser in both the unit circle and the x axis of the sine graph.  <a href="https://www.mathjax.org/" target="_blank">MathJax</a> appears to be the only show in town that fits this requiremnt.
 
-Below is an animated gif of the end result of my toils or you can see the real page <a href="http://www.d3geometry.com/sine" target="_blank">here</a>.
-
-{% img /images/animated-sine.gif %}
-
-This process of creating graphs from the unit circle is often called "unwrapping" the unit circle.
+This process of creating graphs from the unit circle is often called **unwrapping** the unit circle.
 
 ### Unit Circle Setup
 
-{% img /images/unit-circle.gif %}
+{% img /images/unitcircle.gif %}
 
-The first step is to create the basic shapes that will illustrate the unit circle and use cartesian coordinates from the previously created scales to position them on the svg document:
+The first step is to create the basic shapes that will illustrate the unit circle and use <a href="https://en.wikipedia.org/wiki/Cartesian_coordinate_system" target="_blank">cartesian coordinates</a> to position them.  D3.js has an excelent <a href="https://www.dashingd3js.com/d3js-scales" target="_blank">scale</a> abstraction that allows you to deal in a finer grained scale than pixels.  I can now think of the dimensions of the svg document as a 20 x 20 grid which makes positioning things easier to reason about.
 
+{% codeblock scale.js %}
+  componentDidMount() {
+    const el = this.refs.sine;
+
+    const dimensions = this.getDimensions();
+
+    const xScale = d3.scale.linear()
+            .domain([0, 20])
+            .range([0, dimensions.width]);
+
+    const yScale = d3.scale.linear()
+            .domain([0, 20])
+            .range([dimensions.height, 0]);
+
+    const svg = d3.select(el).append("svg")
+            .attr('class', 'svg-container')
+            .attr("width", dimensions.width)
+            .attr("height", dimensions.height);
+
+{% endcodeblock %}
+
+On **lines 6** and **10** of the above code, horizontal ```x``` and vertical ```y``` scales are created and bound to two variables.  These d3 ```scale``` functions take the input domain of 0 to 20 and map it to an output range of either the viewport width for the horizontal ```x``` axis or the viewport height for the vertical ```y``` axis. It is much easier to think of cartesian coordinates ranging from 0 to 20 than the very fine grained pixel scale.
+
+With the scales in place, it is much easier to start positioning the elements:
 {% codeblock shapes.js %}
     const initialX = xScale(12);
     const initialY = yScale(15);
@@ -92,11 +118,11 @@ The first step is to create the basic shapes that will illustrate the unit circl
 
 {% endcodeblock %}
 
-An svg <a href="https://developer.mozilla.org/en/docs/Web/SVG/Element/g" target="_blank">group</a> element or a ```g``` element is created on line 5.  All elements will be added to this group or container.  Transformations applied to an svg group or ```g``` element are applied to all elements in the group which is extremely useful.
+An svg <a href="https://developer.mozilla.org/en/docs/Web/SVG/Element/g" target="_blank">group</a> element or a ```g``` element is created on **line 5**.  All elements will be added to this group or container.  Transformations applied to an svg group or ```g``` element are applied to all elements in the group which makes it extremely useful.
 
-The 3 sides of the right angle triangle are created and bound to the ```adjacent```, ```opposite``` and ```hypotenuse``` variables using the d3.js svg line shape.  The initial values of their ```x1```, ```x2```, ```y1``` and ```y2``` coordinates are irrelevant at this stage, they will be set on each **tick** of the animation.
+The three lines that will form the right angle triangle are created and bound to the ```adjacent```, ```opposite``` and ```hypotenuse``` variables using the d3.js svg line shape.  The initial values of the triangle line's ```x1```, ```x2```, ```y1``` and ```y2``` coordinates are irrelevant at this stage, they will be set on each **tick** of the animation.  It is just important to get them onto the document during the initialisation phase.
 
-The larger unit circle is created and appended onto the group on line 10 of the above snippet and another smaller circle is added on line 38 which will indicate what the input value of the unit circle is by setting the ```cx``` and ```cy``` coordinates of the circle on each tick of the animation to simulate it moving counterclockwise around the larget unit circle.
+The larger unit circle is created and appended onto the group on **line 10** of the above snippet and another smaller circle is added on line 38 which will be positioned counter-clockwise  around the large circle by setting its ```cx``` and ```cy``` coordinates on each **tick** of the animation.  This will give the impression that the small circle is rotating around the larger circle.
 
 Below is how things look so far:
 
@@ -108,7 +134,7 @@ The next stage is to add the number line in radians of the unit circle:
 
 {% img /images/number-scale.png %}
 
-In order to divide the circle into 8 lines and position the labels, I can kill 2 birds with 1 stone and create an array of objects with label and angle properties that I can iterate over and create the lines and labels:
+In order to divide the circle into 8 lines and position the labels, I can kill two birds with one stone by creating an array of objects which have label and angle properties that I can iterate over and create the lines and labels:
 
 {% codeblock scale.js %}
 addRadianNumberLine(container) {
@@ -143,22 +169,22 @@ addRadianNumberLine(container) {
 }
 {% endcodeblock %}
 
-Lines 2 to 11 define the array of objects to iterate over.  Each object contains a ```val``` property that can be thought of as an angle to move counterclockwise around the unit circle for each element in the array.  There is also a label property which is the value of the angle in radians or ```degrees * pi/180``` if you want to convert from degrees to radians.  The cryptic syntax of the label is written <a href="https://en.wikibooks.org/wiki/LaTeX/Mathematics" target="_blank">LaTex</a>, which allows you to define mathmatical notation that can be displayed in the browser.  Mathjax will later parse these labels into authentic looking math symbols in the browser. More on my difficulties with this fact at the end of the post.
+**Lines 2** to **11** define the array of objects to iterate over.  Each object contains a ```val``` property that can be thought of as an angle to move counter-clockwise around the unit circle for each element in the array.  There is also a label property which is the text of the angle in radians.  The cryptic syntax of the label is written in <a href="https://en.wikibooks.org/wiki/LaTeX/Mathematics" target="_blank">LaTex</a>, which allows you to define mathmatical notation that can be displayed in the browser.  <a href="https://www.mathjax.org/" target="_blank">Mathjax</a> will later parse these labels into authentic looking math symbols in the browser. More on my difficulties with MathJax at the end of the post.
 
-On lines 12 and 13 the ```x``` and ```y``` coordinates are determined for each angle value in the iteration.  ```cos(x)``` is evalutated for the horizontal or ```x``` property of the coordinate of each element in the array and ```sin(y)``` is evaluated for each vertical or ```y``` property of the coordinate.  Both ```x``` and ```y``` are multiplied by the radius to determine where ```x``` and ```y``` are on the circumference of the circle.
+On **lines 12** and **13** the ```x``` and ```y``` coordinates are determined for each angle value in the array.  By finding the ```cos(x) * radius``` and ```sin(x) * radius``` of each angle in the iteration of objects, I can ascertain the (```x```, ```y```) coordinates of the point on the circumference of where to position the radian label and of where do draw the dividing line that will show the number scale on my unit circle.
 
-Lines 15 to 16 add offset values to ensure the labels all appear outside of the circle.
+**Lines 15** to **16** add offset values for each ```x``` and ```y``` coordinate to ensure the labels all appear outside of the circle and not flush on the circumference.
 
-Line 18 adds a new svg group element and the textual label is added to this newly created group.
+**Line 18** adds a new svg group element and the textual label is added to this newly created group.
 
-Line 24 simply adds a line from the centre of the circle to the ```x``` and ```y``` coordinates on the circumference.
+**Line 24** simply adds a line from the centre of the circle to the ```x``` and ```y``` coordinates on the circumference.
 
 Before MathJax does the parsing, the circle looks like this:
 
 {% img /images/pre-mathjax.png %}
 
 
-A similar approach is used to create the sine graph axis but instead of iterating over an array, a pair of <a href="https://github.com/d3/d3/wiki/SVG-Axes" target="_blank">d3.js axis</a> are created and in the x-axis instance, latex symbols are employed for the <a href="https://github.com/d3/d3/wiki/SVG-Axes#tickValues" target="_blank">tickValues</a> of this axis.
+A similar approach is used to create the sine graph axis but instead of iterating over an array, a pair of <a href="https://github.com/d3/d3/wiki/SVG-Axes" target="_blank">d3.js axis</a> are created and latex syntax is used for the <a href="https://github.com/d3/d3/wiki/SVG-Axes#tickValues" target="_blank">tickValues</a> of the x-axis.
 
 {% codeblock axis.js %}
 addSineAxis(state) {
@@ -199,14 +225,10 @@ The basic setup is now complete:
 
 {% img /images/setup.png %}
 
-### Animating the Sinewave
-Now to the meat and potato of the piece, namely animating a smooth sine wave.  The sine wave is mathmatically a very simple curve and a very simple graph.  It is a simple ```x```-```y``` plot with the x-axis representing time and the y-axis representing angular displacement around the unit circle.
-
-My first step is to create a hash of values that I am going to pass into the animation function that will set the new position of the elements on each tick of the animation. After that, the animation is kicked off with a call to ```drawGraph```:
+### Animating the unit circle
+My first step is to create a hash of values that I have unimaginatively called ```state``` that serves as a container for all the elements and dimensions that I am going to need to transform the svg elements on the documents.  I am going to pass this ```state``` object into the animation function that will set the new position of the elements on each **tick** of the animation. After that, the animation is kicked off with a call to ```drawGraph```:
 
 {% codeblock drawGraph.js %}
-let time = 0;
-
 const state = {
   initialX: initialX,
   initialY: initialY,
@@ -220,11 +242,14 @@ const state = {
   hypotenuse: hypotenuse,
   joiningLine, joiningLine,
   verticalDot: verticalDot,
-  time: time
+  xIncrement: 0,
+  time: 0
 };
 
 this.drawGraph(state);
 {% endcodeblock %}
+
+Arguably the most important value in the above is the ```time``` property on **line 15** which will provide the ```x``` value of the horizontal value of the sine graph.  This will be incremented on each tick of the animation.
 
 The ```drawGraph``` function is below:
 
@@ -233,11 +258,22 @@ drawGraph(state) {
   const increase = ((Math.PI * 2) / 360);
 
   state.time += increase;
+  state.xIncrement += increase;
 
   this.drawSineWave(state);
 
+  if(state.xIncrement > (Math.PI * 2)) {
+    state.xIncrement = increase;
+  }
+
+  const axisDotX = state.xScaleAxis(state.xIncrement);
+
+  state.axisDot
+    .attr('cx', axisDotX)
+    .attr('cy', 0);
+
   const dx = radius * Math.cos(state.time);
-  const dy = radius * -Math.sin(state.time); // counter clockwise
+  const dy = radius * -Math.sin(state.time); // counter-clockwise
 
   state.dot
     .attr('cx', dx)
@@ -269,16 +305,140 @@ drawGraph(state) {
 }
 {% endcodeblock %}
 
-Every time the ```drawGraph``` function is called, the ```time``` property of the ```state``` variable is incremented by roughly 1 degree on line 4 to simulate time moving along the x axis.
+Every time the ```drawGraph``` function is called, the ```time``` property of the ```state``` variable is incremented by roughly 1 degree on **line 4** to simulate time moving along the x axis.  I do the same on **line 5** for the circle that travels along the ```x``` axis.  I have a separate counter as I need to reset it to zero each time the ```xIncrement``` variable exceeds <i>2π</i>.
 
-Line 6 calls the ```drawSine``` function that draws the sine wave on each tick of the animation.
+**Line 7** calls the ```drawSine``` function that draws the sine wave on each tick of the animation.  More on this later.
 
-Lines 8 and 9 use the incremented ```time``` variable to find the ```cos(x)``` horizontal value and ```sin(y)``` vertical coordinate of where both the small circle that rotates counterclockwise around the unit circle (line 11) and also where to place the vertex of the right angle triangle which will denote the end point of the hypotenuse on the circumference (line 15).  The other vertices of the triangle are positioned relative to the centre point of the circle and the (```cos(x)```, ```sin(y)```) coordinate.
+**Lines 9** to **17** positions the small circle that traverses along the horizontal ```x```.  The counter for this coordinate is reset each time it exceeds <i>2π</i>.
 
-Line 37 calls <a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame" target="_blank">requestAnimationFrame</a> that tells the browser that you wish to perform an animation and requests the browser call a specific function (```drawGraph```) in this instance, before the next browser repaint.
+The rest of the code in this function takes care of finding and positoning the shapes on the unit circle to simulate the small circle rotating counter-clockwise on the unit circle and constructing the right angle triangle.
 
-I am also using a lesser known property of <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_objects/Function/bind" target="_blank">bind</a> that allows you to create a new partially applied function with some or all of the arguments already bound each time it is called.  I have blogged about this previously <a href="http://www.thesoftwaresimpleton.com/blog/2014/03/05/dry-up-with-bind/">here</a>.  In this case, the ```state``` hash will be bound every time the function is called.  I use this technique a lot in javascript land.
+**Lines 19** and **20** find the next ```x``` and ```y``` coordinates of the next point on the circumference to position the small circle that rotates the larger circle and bind them to the variables ```dy``` and ```dx```.  I use minus in the expression ```radius * -Math.sin(state.time)``` because we want to simultate rotating back counter-clockwise.  Once we have this coordintate it is easy to position the three lines that make up the right angled triangle on **lines 26** to **38**.
 
+**Line 49** calls <a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame" target="_blank">requestAnimationFrame</a> which tells the browser that you wish to perform an animation and requests the browser call a specific function, ```drawGraph``` in this instance, before the next browser repaint.
 
+I am also using a lesser known overload of <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_objects/Function/bind" target="_blank">bind</a> on **line 37** that creates a new partially applied function with some or all of the arguments already bound each time it is called.  I have blogged about this previously <a href="http://www.thesoftwaresimpleton.com/blog/2014/03/05/dry-up-with-bind/">here</a>.  In this case, the ```state``` hash will be bound every time the function is called because I am passing it into ```bind``` as an extra argument after ```this```.  I use this technique a lot in javascript land.
 
+###Animating the Sine wave
 
+Now to the meat and potato of the piece, namely animating a smooth sine wave.  The sine wave is mathmatically a very simple curve and a very simple graph.  It is a simple ```x```-```y``` plot with the x-axis representing time and the y-axis representing angular displacement around the unit circle.
+
+Below is the ```drawSineWave``` function that is called on each **tick** of the animation:
+
+{% codeblock drawSine.js %}
+drawSineWave(state) {
+  d3.select('.sine-curve').remove();
+
+  const sineData = d3.range(0, 54)
+          .map(x => x * 10 / 84)
+          .map((x) => {
+            return {x: x, y: - Math.sin(x - state.time)};
+          });
+
+  const sine = d3.svg.line()
+          .interpolate('monotone')
+          .x( (d) => {return state.xScaleAxis(d.x);})
+          .y( (d) => {return state.yScaleAxis(d.y);});
+
+  state.graphContainer.append('path')
+          .datum(sineData)
+          .attr('class', 'sine-curve')
+          .attr('d', sine);
+  }
+{% endcodeblock %}
+
+The fist step on **line 2** is to remove the previously plotted curve before recreating it on each tick of the animation.
+
+**Lines 4** to **8** creates the points that will be used to plot the sine graph against.
+
+One **Line 4** the an array of integers is initialized using the d3 ```range``` function, this will create an array of 54 elements ***ranging*** from 0 to 53:
+
+```[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13...etc...53]```
+
+The upper bound of the array which is 53 is chosen to fill the available width in the viewport
+
+I will come back to why the calculation on **line 5** is needed but on **line 6** I do a further ```map``` of the array that was initialised on **line 4** to create an ```x``` and ```y``` coordinate for each element in the array that can be used to plot the sine wave.  The ```x``` coordinate is simply the element of the array and y is calculated by getting the negative ```sine``` of ```x``` because we are simulating the sine wave moving counter-clockwise.  For each tick of the animation we simply subtract the ```state.time``` variable that we have used previously from ```x```.  If you look at the animation, you can see how the small circle in the middle of the unit circle moves up and down at exactly the same rate.   Maths in action!
+
+Below is how the sine wave looks without the  transformation ```.map(x => x * 10 / 84)``` applied to the original array:
+
+{% img /images/jagged.gif %}
+
+If we just use integers to plot the points we get the rough sine wave but if we use floats, we get a much smoother flowing sine wave.  I multiply each value by 10 to space it out across the width and then divide by 84 to ensure I get a float back.  84 was arrived at by trial and error to ensure the wave spans across the graph.
+
+Once I have my coordinates to plot the curve, the following code takes care of creating the curve on each animation tick:
+
+{% codeblock monotone.js %}
+  const sineData = d3.range(0, 54)
+          .map(x => x * 10 / 85)
+          .map((x) => {
+            return {x: x, y: - Math.sin(x - state.time)};
+          });
+
+  const sine = d3.svg.line()
+          .interpolate('monotone')
+          .x( (d) => {return state.xScaleAxis(d.x);})
+          .y( (d) => {return state.yScaleAxis(d.y);});
+
+  state.graphContainer.append('path')
+    .datum(sineData)
+    .attr('class', 'sine-curve')
+    .attr('d', sine);
+{% endcodeblock %}
+**Lines 7** to **10** define a d3 line function that will be used by the svg <a href="https://www.w3.org/TR/SVG/paths.html#PathElement" target="_blank">path element</a> on **lines 12** to **15**.  The d3 ```line``` function can be thought of as a path generator for a line or in this case a curve as the interpolation mode is set to <a href="https://en.wikipedia.org/wiki/Monotone_cubic_interpolation" target="_blank">montone interpolation</a> in order to create a smooth curve for the sine wave. The ```line``` function will take the data array (```sineData```) and convert it into the rather cryptic <a href="https://developer.mozilla.org/en/docs/Web/SVG/Tutorial/Paths" target="_blank">svg path mini language</a> instructions that the svg path element on **lines 12** to **15** will use to construct the curve.  We define accessor functions on **lines 9** and **10** that will be called for every ```x``` and ```y``` coordinate of the ```sineData``` array on **line 1**.  A monotone interpolation will then be performed by the path function for each point.  Every ```x``` and ```y``` is mapped to the correct scale on **lines 3** and **4**.
+
+**Lines 12** to **15** attach the path element and sets its data via the ```datum``` attribute.  The ```d``` attribute sets the path data or the mini language of path commands that the line function on **line 7** will generate.  The ```x``` and ```y``` accessors of the ```line``` function are invoked exactly once for each element in the array.
+
+### MathJax
+All that remains is to tell MathJax to parse the latex into math symbols.  I cannot believe how hard I found this.  Below is how the code ended up after a lot of coffee, profanity and self doubt:
+
+{% codeblock mathjax.js %}
+addMathJax(svg) {
+  const continuation = () => {
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
+      }
+    });
+
+    MathJax.Hub.Register.StartupHook("End", function() {
+      setTimeout(() => {
+        svg.selectAll('.tick').each(function(){
+          var self = d3.select(this),
+               g = self.select('text>span>svg');
+
+          if(g[0][0] && g[0][0].tagName === 'svg') {
+            g.remove();
+            self.append(function(){
+              return g.node();
+            });
+          }
+        });
+      }, 500);
+    });
+
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, svg.node()]);
+  };
+
+  wait((window.hasOwnProperty('MathJax')), continuation.bind(this));
+}
+{% endcodeblock %}
+
+First of all MathJax did not seem to play nicely with <a href="https://facebook.github.io/react/" target="_blank">react</a>, I have to use a ```wait``` function to suspend execution until the MathJax is available.  On **lines 12** to **18** can best be desribed as extreme hackery.  I have tagged any element on the svg document that contains latex with the ```tick``` css class.  I add a hook to mathjax that is called whenever it has done its first parse, I then remove the svg element that was added by MathJax and re-add it again.  This causes MathJax to reparse the markup and the symbols are rendered correctly.  I don't know if it was the fact that this is a react site that made this so difficult but it really did not play well with this site.
+
+The ```wait``` function is below for completeness:
+
+{% codeblock wait.js %}
+export function wait(condition, func, counter = 0) {
+  if(condition || counter > 10) {
+    return func();
+  }
+
+  setTimeout(wait.bind(null, condition, func, (counter + 1)), 30);
+};
+{% endcodeblock %}
+
+###Epilogue
+I found this hugely enjoyable and I am more than satisfied with the result.  This probably means I should get out more.
+
+If you disagree with any of the above or can suggest better ways then please leave a comment below.
