@@ -23,6 +23,8 @@ Below is an animated gif of the end result of my toils or you can see the real p
 
 {% img /images/animated-sine.gif %}
 
+This process of creating graphs from the unit circle is often called "unwrapping" the unit circle.
+
 ### Unit Circle Setup
 
 {% img /images/unit-circle.gif %}
