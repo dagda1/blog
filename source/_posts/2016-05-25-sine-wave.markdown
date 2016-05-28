@@ -5,13 +5,11 @@ date: 2016-05-25 21:42:50 +0100
 comments: true
 categories: JavaScript d3.js MathJax
 ---
-I have spent the last year learning some of the maths I should have learned 25 years ago.  One thing that I found interesting was the relationship between an input angle of the <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank">unit circle</a> and its coordinate on a sine wave graph.  The chances of forgetting all this are high and I wanted to do something practical to enforce what I have learned.  Below is an animated gif of the end result of my toils or you can see the real page <a href="http://www.d3geometry.com/sine" target="_blank">here</a>.
-
-{% img /images/animated-sine.gif %}
-
-This animation would have greatly helped me understand the relationship between the two abstractions if it had existed earlier.  With new media and animations we can illustrate things much better than old school textbooks.
+I have spent the last year learning some of the maths I should have learned about 27 years ago.  One of the things that I have found interesting while learning maths is the relationship between the <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank">unit circle</a> a sine wave graph of ```y = sin(x)```.    
 
 A sine wave is a mathmatical curve that describes a smooth repetitive oscillation and the <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank">unit circle</a>  is a circle of radius 1 centred at the origin ```(0, 0)```.  The unit circle can be used to find special trigonometric ratios as well as aid in graphing.  There is also a real number line wrapped around the circle that serves as the input value when evaluating trig functions.
+
+One journey around the unit circle is 360 degrees or 2 pi in radians.  A sine wave shows the excursion around the circle in happening in time.  A sine wave is ultimately a circle expressed in time.  I have used <a href="https://github.com/d3/d3/wiki/SVG-Axes" target="_blank">d3.js axis</a> to create an animation to show this relationship. 
 
 There are a number of concepts that I wanted to capture in the animation:
 
@@ -19,7 +17,11 @@ There are a number of concepts that I wanted to capture in the animation:
 
 2. Demonstrate how the right angle is formed by the angle of the radius moving counterclockwise around the unit circle.
 
-3. Show the number scale of the radians as PI ratios.  <a href="https://www.mathjax.org/" target="_blank">MathJax</a> appears to be the only show in town that fits this requiremnt.
+3. Show the number scale of the unit circle in radians as PI ratios in proper mathmatical notation in the browser.  <a href="https://www.mathjax.org/" target="_blank">MathJax</a> appears to be the only show in town that fits this requiremnt.
+
+Below is an animated gif of the end result of my toils or you can see the real page <a href="http://www.d3geometry.com/sine" target="_blank">here</a>.
+
+{% img /images/animated-sine.gif %}
 
 ### Unit Circle Setup
 
@@ -103,8 +105,6 @@ The next stage is to add the number line in radians of the unit circle:
 ### Number Scale
 
 {% img /images/number-scale.png %}
-
-One journey around the a circle is 360 degrees or 2 pi in radians.  A sine wave shows the excursion around the circle in happening in time.  A sine wave is ultimately a circle expressed in time.
 
 In order to divide the circle into 8 lines and position the labels, I can kill 2 birds with 1 stone and create an array of objects with label and angle properties that I can iterate over and create the lines and labels:
 
