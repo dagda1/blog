@@ -230,20 +230,21 @@ My first step is to create a hash of values that I have unimaginatively called `
 
 {% codeblock drawGraph.js %}
 const state = {
-  initialX: initialX,
-  initialY: initialY,
-  firstAxisXCoord: firstAxisXCoord,
-  graphContainer: graphContainer,
-  xScaleAxis: xScaleAxis,
-  yScaleAxis: yScaleAxis,
-  dot: dot,
-  opposite: opposite,
-  adjacent: adjacent,
-  hypotenuse: hypotenuse,
-  joiningLine, joiningLine,
-  verticalDot: verticalDot,
-  xIncrement: 0,
-  time: 0
+  initialX,
+  initialY,
+  firstAxisXCoord,
+  graphContainer,
+  xScaleAxis,
+  yScaleAxis,
+  dot,
+  opposite,
+  adjacent,
+  hypotenuse,
+  joiningLine,
+  verticalDot,
+  axisDot,
+  time: 0,
+  xIncrement: 0
 };
 
 this.drawGraph(state);
