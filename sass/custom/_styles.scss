@@ -11,3 +11,21 @@
 .gist-data.gist-syntax > div > table > tbody > tr > td.line-numbers{
   padding: 0px 3px 0 2px !IMPORTANT;
 }
+
+.skullduggery {
+	width: 0;
+	height: 0; 
+	border-left: 200px solid transparent;  /* left arrow slant */
+	border-right: 200px solid transparent; /* right arrow slant */
+	border-bottom: 200px solid #2f2f2f; /* bottom, add background color here */
+	font-size: 0;
+	line-height: 0;
+}
+
+.skullduggery:after {
+  position: absolute;
+  color: #fff;
+  left: -250px;
+  text-align: center;
+  content: "face 1";
+}

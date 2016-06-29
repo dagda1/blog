@@ -1,0 +1,80 @@
+---
+layout: post
+title: "Animated 3d Pyramid with CSS3"
+date: 2016-06-28 20:17:14 +0100
+comments: true
+categories: css3 css
+---
+In the deep dark past of at least 4 years ago, most developers used jquery to animate things in the browser.  These transformations or tranlations usually amounted to a basic <a href="http://api.jquery.com/fadein/" target="_blank">fade</a>  or a jquery <a href="http://api.jquery.com/animate/" target="_blank">animate</a> for the more adventurous.  These animations where quite clunky and slow but easy to orchestrate.
+
+Then along came <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations" target="_blank">css animations</a> with their promise of <a href="https://www.sitepoint.com/introduction-to-hardware-acceleration-css-animations/" target="_blank">hardware accelaration</a>.
+
+Browser incompatabilities had limited the reach of css3 animations until the new edge IE brower consigning the older versions of IE to the rubbish bin.
+
+What is lesser know about the new css3 animations are their 3d qualities and I was pretty amazed how easy it was to cobble together a 3d pyramid.
+
+##Pyramid Container
+The pyramid will be constructed of four divs that are chopped to look like triangles.  The first step is to create one div that is chopped to look like a triangle.
+
+Below is the react component that has the <a href="https://facebook.github.io/react/docs/jsx-in-depth.html" target="_blank">jsx</a> that will render the html.
+{% codeblock tpyramid %}
+export default class Pyramid extends Component {
+  render(el, props) {
+    return (
+      <div className="row">
+        <div className="row">
+          <div className="pyramid-parent">
+            <div className="triangle"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+};
+{% endcodeblock %}
+
+```Line 6``` contains the opening tag for the ```pyramid-parent``` div that will act as a container for the 4 divs that will make up the individual sides of the pyramid.
+
+The css for the ```pyramid-parent``` is below:
+
+{% codeblock parent.css %}
+.pyramid-parent {
+  position: relative;
+  margin: 100px auto;
+  height: 500px;
+  width: 100px;
+  transform-style: preserve-3d;
+  transform-origin: 116px 200px 116px;
+}
+{% endcodeblock %}
+
+The two slightly exoritc looking rules in the above are the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style" target="_blank">transofrm-style</a> rule on ```line 6``` which specifies how the children of an element are positioned in 3d space or are flattened.  The default is ```flat``` and a value of ```preserve-3d``` instructs the browser to position the elements in 3d-space.  Without this property set, the pyramid would appear as a 2d triangle.
+
+The <a href="https://developer.mozilla.org/en/docs/Web/CSS/transform-origin" target="_blank">transform-origin</a> rule on ```line 7``` coordinates along with the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform" target="_blank">transform</a> property to specify where the origin of where the transform takes place.  By setting this rule, the pyramid can rotate in a centred position rather than in a circular motion. In this example the origin of the tranform is being offset 116px to the left, 200px down 166px closer to along the z axis.  More on this below:
+
+##Coordinate System
+{% img /images/coordinate-system.gif %}
+
+It is important to realise that the coordinate system used by css transforms is slightly different than the 3d coordinate system you may have previously learned in geometry.  In the css coordinate system, the ```y-axis``` and the ```z-axis``` are the positioned the other way round from what I learned in maths with the ```y-axis``` acting as the vertical axis and the ```z-axis``` acting as the guage to slide elements forwards or backwards from the user.
+
+##CSS Triangles
+Some slight of hand and a bit of css skullduggery is required to create an equilateral triangle like below:
+
+<div class="skullduggery"></div>
+
+Below is the css that creates the effect:
+
+{% codeblock skullduggery.css %}
+.skullduggery {
+	width: 0;
+	height: 0;
+	border-left: 200px solid transparent;  /* left arrow slant */
+	border-right: 200px solid transparent; /* right arrow slant */
+	border-bottom: 200px solid #2f2f2f; /* bottom, add background color here */
+	font-size: 0;
+	line-height: 0;
+}
+{% endcodeblock %}
+
+The secret to these triangles is creating giant borders to the two perpendicular sides to the direction you would like the triangle to point.  Make the opposite side's border the same size and background colour.  The larger the border, the larger the triangle.
+
