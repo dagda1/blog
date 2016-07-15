@@ -1,51 +1,49 @@
 ---
 layout: post
-title: "Animated 3d Pyramid with CSS3 and SASS"
+title: "Animated 3D Pyramid with CSS3 and SASS"
 date: 2016-06-28 20:17:14 +0100
 comments: true
 categories: css3 css
 ---
-Below is the end result of this post or you can see a live demo <a href="http://www.d3geometry.com/pyramid" target="_blank">here</a>.
+Below is the end result of this post or you can see a live demo <a href="http://www.d3geometry.com/pyramid" target="_blank">here</a>.  This will not work for IE11 or before.
 
 <div class="center-text">
     {% img /images/3dpyramid.png  %}
 </div>
 
-<a href="https://api.jquery.com/category/effects/" target="_blank">JQuery</a> used to be the defacto way of creating smooth transitions between elements but now <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations" target="_blank">css animations</a> and their promise of <a href="https://www.sitepoint.com/introduction-to-hardware-acceleration-css-animations/" target="_blank">hardware accelaration</a> are becoming a standard in all modern browsers.  Vendor prefixed css rules are now disappearing into the ether as the standard becomes ratified.
+The sass/css of this post can be found on github <a href="https://github.com/dagda1/d3-geometry/blob/master/client/app/styles/pyramid.scss" target="_blank">here</a>.
 
-I've only just recently discovered the 3d qualities of css3 and I found it pretty easy to cobble together <a href="http://www.d3geometry.com/cube" target="_blank">this rotating cube</a>.
+In the dark ages of at least 4 years ago, <a href="https://api.jquery.com/category/effects/" target="_blank">jQuery</a> used to be the defacto way of creating smooth transitions between elements but now <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations" target="_blank">css animations</a> and their promise of <a href="https://www.sitepoint.com/introduction-to-hardware-acceleration-css-animations/" target="_blank">hardware accelaration</a> are becoming a standard in all modern browsers.  Vendor prefixed css rules are now disappearing into the ether with the usual exception of internet explorer as the standard becomes ratified.
+
+I've only just recently discovered the 3D qualities of css3 and I found it pretty easy to cobble together <a href="http://www.d3geometry.com/cube" target="_blank">this rotating cube</a>.  You can find the css/sass <a href="https://github.com/dagda1/d3-geometry/blob/master/client/app/styles/cube.scss" target="_blank">here</a>.
+
+I then created a <a href="http://www.d3geometry.com/hexagon" target="_blank">hexagon</a> which was pretty similar.  Here is the <a href="https://github.com/dagda1/d3-geometry/blob/master/client/app/styles/hexagon.scss" target="_blank">sass</a>.
 
 I then tried to create the pyramid in the screenshot above which took me considerably longer to acheive the end result.
 
 ##CSS Coordinate System
 {% img /images/coordinate-system.gif %}
 
-Before diving into the code, it is important to realise that the coordinate system used by css transforms to position elements is slightly different than the 3d coordinate system you may have previously learned in geometry.  In the css coordinate system, the ```y-axis``` and the ```z-axis``` are the positioned the other way round from what I learned in maths with the ```y-axis``` acting as the vertical axis and the ```z-axis``` acting as the guage to slide elements forwards or backwards from the user.
+Before diving into the code, it is important to realise that the coordinate system used by css transforms to position elements is slightly different than the 3D coordinate system you may have previously learned in geometry.  In the css coordinate system, the ```y-axis``` and the ```z-axis``` are the positioned the other way round from what I learned in maths with the ```y-axis``` acting as the vertical axis and the ```z-axis``` acting as the guage to slide elements forwards or backwards from the user.
 
 ##Pyramid Container
-The pyramid will be constructed of five divs.  Four divs will make up the triangular faces and rectangular div will make up the base.
+The pyramid will be constructed of five divs with four divs making up the triangular faces and a rectangular div for the base.
 
-Below is the react component that has the <a href="https://facebook.github.io/react/docs/jsx-in-depth.html" target="_blank">jsx</a> that will render the html.
+Below is the markup of the pyramid structure:
 {% codeblock pyramid.html %}
-export default class Pyramid extends Component {
-  render(el, props) {
-    return (
-      <div className="row">
-        <div className="row">
-          <div className="pyramid-container col-lg-1 col-md-4 col-xs-4 col-md-offset-5 col-xs-offset-5">
-            <div id="pyramid">
-              <div className="base"></div>
-              <div className="front"></div>
-              <div className="back"></div>
-              <div className="right"></div>
-              <div className="left"></div>
-            </div>
-          </div>
-        </div>
+<div class="row">
+  <div class="row">
+    <div class="pyramid-container">
+      <div id="pyramid">
+        <div class="base"></div>
+        <div class="front"></div>
+        <div class="back"></div>
+        <div class="right"></div>
+        <div class="left"></div>
       </div>
-    );
-  }
-};
+    </div>
+  </div>
+</div>
 {% endcodeblock %}
 
 ```Line 6``` contains the opening tag for the ```pyramid-parent``` div that will act as a container for the pyramid structure.
@@ -69,7 +67,7 @@ The ```pyramid-parent``` element encloses a further div with an id of ```pyramid
 }
 {% endcodeblock %}
 
-The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style" target="_blank">transofrm-style</a> rule on ```line 6``` which specifies how the children of an element are positioned in 3d space or are flattened.  The default is ```flat``` and a value of ```preserve-3d``` instructs the browser to position the elements in 3d-space.  Without this property set, the pyramid would appear as a 2d triangle.  The screenshot below shows how the pyramid looks withou the ```preserve-3d``` value set:
+The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style" target="_blank">transofrm-style</a> rule on ```line 6``` specifies how the children of an element are positioned in 3D space or are simply flattened.  The default is ```flat``` and a value of ```preserve-3d``` instructs the browser to position the elements in 3D-space.  Without this property set, the pyramid would appear as a 2d triangle.  The screenshot below shows how the pyramid looks without the ```preserve-3d``` value set:
 
 {% img /images/pancake.png%}
 
@@ -96,38 +94,38 @@ Below is the css that creates the effect:
 The secret to these triangles is creating giant borders to the two perpendicular sides to the direction you would like the triangle to point.  Make the opposite side's border the same size and background colour.  The larger the border, the larger the triangle.
 
 ##Pyramid Maths
-Unsurprisingly, positioning elements in 3D is considerably more difficult than in 2D and thankfully, the trigonomic ratios came to the rescue to correctly judge both the lenght of the elements and the angles of the pyramid.
+Unsurprisingly, positioning elements in 3D is considerably more difficult than in 2D and thankfully, the trigonomic ratios came to the rescue to correctly judge both the length of the elements and the angles of the pyramid.
 
 Below is an image that labels the important parts of the pyramid:
 {% img /images/pyramidrules.jpg %}
 
-All positioning takes place around the yellow right angle triangle in the above diagram. I first of all determined that I would like an angle of 60°. for the slant angle of the triangle or the angle that is on the base of the triangle and at the bottom of the apthem.  With this angle and assigining a width to the base of the triangle, I could work out the height of pyramid and the <a href="http://www.ditutor.com/solid_gometry/apothem_pyramid.html" target="_blank">apothem</a> or the slant height of a lateral face of the pyramid.
+All positioning takes place around the yellow right angle triangle in the above diagram. I first of all determined that I would like an angle of 60° for the slant angle of the triangle or the angle  between the <a href="http://www.ditutor.com/solid_gometry/apothem_pyramid.html" target="_blank">apothem</a> and the base.  The apothem is the slant height of a lateral face of the pyramid.  With this angle and assigining a width to the base of the triangle, I could work out both the height of pyramid and the apothem height.
 
-Once I know this, I can determine the lengths of:
+Once I know this, I can determine the lengths:
 
-- apothem (height of triangle) = (1/2 Base) / cos(α)
-- height of the pyramid = (1/2 Base) * tan(α)
-
+- apothem = (1/2 Base) / cos(α)
+- height = (1/2 Base) * tan(α)
+- apex angle = 180 - 90 - α
 Where α = 60° and I took the Base = 270px.
 
-One of the nice features of <a href="http://sass-lang.com/" target="_blank">sass</a> is that we can use <a href="https://robots.thoughtbot.com/sass-variables" target="_blank">variables</a> like we would in a normal programming language that stop me repeating the same values in css and also mean I can calculate other values from existing variables, something very lacking in current css.
+One of the nice features of <a href="http://sass-lang.com/" target="_blank">sass</a> is that we can use <a href="https://robots.thoughtbot.com/sass-variables" target="_blank">variables</a> like you would in a normal programming language to stop repeating the same values in css and also mean I can calculate other values from existing variables, something very lacking in current css.
 
 {% codeblock variables.scss %}
 $base: 270px;
 $half-base: ($base / 2);
-$apothem: 270px;  //(1/2 base) / cos(theta)
-$rotate-X: 30deg;
+$apothem: 270px;  //(1/2 base) / cos(α)
+$apex-angle: 30deg; // apex angle = 180 - 90(right-angle) - α
 $base-move: 0 - ($apothem - $half-base);
 {% endcodeblock %}
 
-I am using node-sass and I could not find a way of using the trig functions in the sass.  This is possible with compass in ruby sass bu I don't konw of a way in node-sass of achieving this so I had to calculate the value of the apothem height in a calculator first.
+I am using <a href="https://github.com/sass/node-sass" target=_blank">node-sass</a> and I could not find a way of using the trig functions in the sass.  This is possible with compass in ruby sass but I don't know of a way in node-sass of achieving this so I had to calculate the value of the apothem height in a calculator first.
 
+What I wanted to achieve with these vaiables was to be able to only set the ```$base``` width variable and every other value would be derived from that.  Sadly as I cannot reference the trigonomic cosine trig function from the sass, I had to manually set the ```$apothem``` or slant height variable.
 
+The ```$apex-angle``` on **line 4** is the angle each triangle will be rotated along the ```x``` axis in order to tilt each triangle into the centre or apex.
 
 ##Constructing the pyramid
-NI will now break down the steps I took arrange the base and four sides of the pyramid.  I will omit the many wrong turns I took in getting here.
-
-
+I will now break down the steps I took to arrange the base and four sides of the pyramid.  I will omit the many wrong turns I took in getting here.
 
 Below is another view of the markup that makes up the pyramid:
 {% codeblock hyramid.html %}
@@ -141,7 +139,6 @@ Below is another view of the markup that makes up the pyramid:
   </div>
 </div>
 {% endcodeblock %}
-
 
 Below are the css rules that are assigned to the ```base``` div or rectangular base of the pyramid:
 {% codeblock base.css %}
@@ -157,6 +154,101 @@ Below are the css rules that are assigned to the ```base``` div or rectangular b
     content: "5";
     left: 112px !important;
     top: 93px !important;
+  }}
+{% endcodeblock %}
+
+The width and height of the div are set on **lines 3 and 4** and the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform" target="_blank">transform property</a> on **line 6** is arguably the most important css3 property when it comes to positioning elements in the 3D space.  This property allows you to rotate or move elements in each of the ```x```, ```y``` or ```z``` 3D coordinate axes.  With the ```base``` div, I use <a href="https://docs.webplatform.org/wiki/css/functions/rotateX()" target="_blank">rotateX</a> to rotate the element 90° along the ```x``` or horizontal axis axis to give the impression the div is lying flat and viewed at an angle.
+
+The <a href="https://docs.webplatform.org/wiki/css/functions/translate3d()" target="_blank">translate3d</a> property  is also used to move the div along the ```z``` axis.  The ```translate3d``` property takes 3 values that can be used to move the element along the ```x```, ```y``` or ```z``` axis respectively.  In this example I am using the ```$base-move``` variable that was derived from the base div width to shift the div away from the user along the ```z``` axis.
+{% codeblock base.scss %}
+$base-move: 0 - ($apothem - $half-base);
+.base {
+  transform: rotateX(90deg) translate3d(0px, 0px, $base-move);
+}
+{% endcodeblock %}
+This shifts the div along the ```z``` axis or appears to move the div away from the user.  This value is important when it comes to positioning the four bases of the triangle divs.  Below is how the base looks with these rules applied:
+
+{% img /images/base.png %}
+
+The following generic rules are applied to the triangle divs:
+{% codeblock traingles.scss %}
+#pyramid div:not(.base) {
+  position: absolute;
+  border-left: $half-base solid transparent;
+  border-right: $half-base solid transparent;
+  border-bottom: $apothem solid;
+  transform-origin: $half-base $apothem 0; /* bottom of trangle (1/2 Base, Apothem) */
+  opacity: .5;
+}
+{% endcodeblock %}
+
+The <a href="https://developer.mozilla.org/en/docs/Web/CSS/transform-origin" target="_blank">transform-origin</a> property on **line 6** provides a convenient way to control the origin about which transforms using the css ```transform``` are applied.
+
+Below is how the front face of the pyramid looks without the ```transform-origin``` property set:
+
+{% img /images/untransformed.png %}
+
+And below is a screenshot with it set:
+
+{% img /images/transformed.png %}
+
+Each face will be moved along the ```x``` or horizontal axis by half the base width and will be moved down the ```y``` axis by the apothem or slant height.  ```transform-origin``` must be used with the ```transform``` property as it only changes the positioning of transformed elements.
+
+Each triangle will be rotated by a multiple of 90° to orient each triangle for a different face of the pyramid (respctively 0°, 90°, 180°, 270°).
+
+With this in mind, each triangle will have its own rules to set this, in the case of the front face, the following css properties are set:
+
+{% codeblock front.scss %}
+#pyramid div.front {
+  border-bottom-color: #e04545;
+  transform: rotateY(0deg) translate3d(0px, 0px, $half-base) rotateX($rotate-X);
+
+  &:after {
+    content: "1";
   }
 }
 {% endcodeblock %}
+
+The next face has the same rules except the ```rotateY``` property which is increased by 90°.
+
+{% codeblock back.scss %}
+#pyramid div.back {
+  border-bottom-color: #ccaf5a;
+  transform: rotateY(90deg) translate3d(0px, 0px, $half-base) rotateX($rotate-X);
+
+  &:after {
+    content: "2";
+  }
+}
+{% endcodeblock %}
+
+{% img /images/back.png %}
+
+Until all triangles are positioned:
+
+{% img /images/all.png %}
+
+###Animating the pyramid
+
+The <a href="https://developer.mozilla.org/en/docs/Web/CSS/@keyframes" target="_blank">keyFrames</a> rules allows you to gradually change one set of css rules for another which is specified in the ```from``` and ```to``` properties in the code below:
+
+{% codeblock keyframes.scss %}
+@keyframes spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+{% endcodeblock %}
+
+In the above code the a gradual rotation around the ```y``` axis is specified by starting at 0 degrees and completing at 360 degrees.  Once the keyframes rules are specified you then need to associate it with an element via the <a href="http://www.w3schools.com/cssref/css3_pr_animation.asp" target="_blank">animation</a> property.
+
+{% codeblock animation.scss %}
+#pyramid {
+  animation: spin 8s infinite linear;
+}
+{% endcodeblock %}
+
+The name of the keyframes animation is specified along with the length of the animation.  The ```infinite``` values states that the animation will continue infinitely and ```linear``` specifies that the animation speed is constant throughout the animation.
