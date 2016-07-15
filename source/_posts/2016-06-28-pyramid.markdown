@@ -1,30 +1,45 @@
 ---
 layout: post
-title: "Animated 3d Pyramid with CSS3"
+title: "Animated 3d Pyramid with CSS3 and SASS"
 date: 2016-06-28 20:17:14 +0100
 comments: true
 categories: css3 css
 ---
-In the deep dark past of at least 4 years ago, most developers used jquery to animate things in the browser.  These transformations or tranlations usually amounted to a basic <a href="http://api.jquery.com/fadein/" target="_blank">fade</a>  or a jquery <a href="http://api.jquery.com/animate/" target="_blank">animate</a> for the more adventurous.  These animations where quite clunky and slow but easy to orchestrate.
+Below is the end result of this post or you can see a live demo <a href="http://www.d3geometry.com/pyramid" target="_blank">here</a>.
 
-Then along came <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations" target="_blank">css animations</a> with their promise of <a href="https://www.sitepoint.com/introduction-to-hardware-acceleration-css-animations/" target="_blank">hardware accelaration</a>.
+<div class="center-text">
+    {% img /images/3dpyramid.png  %}
+</div>
 
-Browser incompatabilities had limited the reach of css3 animations until the new edge IE brower consigning the older versions of IE to the rubbish bin.
+<a href="https://api.jquery.com/category/effects/" target="_blank">JQuery</a> used to be the defacto way of creating smooth transitions between elements but now <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations" target="_blank">css animations</a> and their promise of <a href="https://www.sitepoint.com/introduction-to-hardware-acceleration-css-animations/" target="_blank">hardware accelaration</a> are becoming a standard in all modern browsers.  Vendor prefixed css rules are now disappearing into the ether as the standard becomes ratified.
 
-What is lesser know about the new css3 animations are their 3d qualities and I was pretty amazed how easy it was to cobble together a 3d pyramid.
+I've only just recently discovered the 3d qualities of css3 and I found it pretty easy to cobble together <a href="http://www.d3geometry.com/cube" target="_blank">this rotating cube</a>.
+
+I then tried to create the pyramid in the screenshot above which took me considerably longer to acheive the end result.
+
+##CSS Coordinate System
+{% img /images/coordinate-system.gif %}
+
+Before diving into the code, it is important to realise that the coordinate system used by css transforms to position elements is slightly different than the 3d coordinate system you may have previously learned in geometry.  In the css coordinate system, the ```y-axis``` and the ```z-axis``` are the positioned the other way round from what I learned in maths with the ```y-axis``` acting as the vertical axis and the ```z-axis``` acting as the guage to slide elements forwards or backwards from the user.
 
 ##Pyramid Container
-The pyramid will be constructed of four divs that are chopped to look like triangles.  The first step is to create one div that is chopped to look like a triangle.
+The pyramid will be constructed of five divs.  Four divs will make up the triangular faces and rectangular div will make up the base.
 
 Below is the react component that has the <a href="https://facebook.github.io/react/docs/jsx-in-depth.html" target="_blank">jsx</a> that will render the html.
-{% codeblock tpyramid %}
+{% codeblock pyramid.html %}
 export default class Pyramid extends Component {
   render(el, props) {
     return (
       <div className="row">
         <div className="row">
-          <div className="pyramid-parent">
-            <div className="triangle"></div>
+          <div className="pyramid-container col-lg-1 col-md-4 col-xs-4 col-md-offset-5 col-xs-offset-5">
+            <div id="pyramid">
+              <div className="base"></div>
+              <div className="front"></div>
+              <div className="back"></div>
+              <div className="right"></div>
+              <div className="left"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -33,35 +48,37 @@ export default class Pyramid extends Component {
 };
 {% endcodeblock %}
 
-```Line 6``` contains the opening tag for the ```pyramid-parent``` div that will act as a container for the 4 divs that will make up the individual sides of the pyramid.
+```Line 6``` contains the opening tag for the ```pyramid-parent``` div that will act as a container for the pyramid structure.
 
 The css for the ```pyramid-parent``` is below:
 
 {% codeblock parent.css %}
 .pyramid-parent {
-  position: relative;
-  margin: 100px auto;
-  height: 500px;
-  width: 100px;
+  perspective: 800px;
+}
+
+{% endcodeblock %}
+
+The <a href="https://developer.mozilla.org/en/docs/Web/CSS/perspective" target="_blank">perspective</a> rule on **line 2** defines how the depth of the 3D scene is rendered.  Think of perspective as a distance from the viewer to the object.  If you apply 3D transforms without setting the perspective, elements appear flattened.
+
+The ```pyramid-parent``` element encloses a further div with an id of ```pyramid``` that has the following css rules assigned to it:
+
+{% codeblock pyramid.css %}
+#pyramid {
   transform-style: preserve-3d;
-  transform-origin: 116px 200px 116px;
 }
 {% endcodeblock %}
 
-The two slightly exoritc looking rules in the above are the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style" target="_blank">transofrm-style</a> rule on ```line 6``` which specifies how the children of an element are positioned in 3d space or are flattened.  The default is ```flat``` and a value of ```preserve-3d``` instructs the browser to position the elements in 3d-space.  Without this property set, the pyramid would appear as a 2d triangle.
+The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style" target="_blank">transofrm-style</a> rule on ```line 6``` which specifies how the children of an element are positioned in 3d space or are flattened.  The default is ```flat``` and a value of ```preserve-3d``` instructs the browser to position the elements in 3d-space.  Without this property set, the pyramid would appear as a 2d triangle.  The screenshot below shows how the pyramid looks withou the ```preserve-3d``` value set:
 
-The <a href="https://developer.mozilla.org/en/docs/Web/CSS/transform-origin" target="_blank">transform-origin</a> rule on ```line 7``` coordinates along with the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform" target="_blank">transform</a> property to specify where the origin of where the transform takes place.  By setting this rule, the pyramid can rotate in a centred position rather than in a circular motion. In this example the origin of the tranform is being offset 116px to the left, 200px down 166px closer to along the z axis.  More on this below:
+{% img /images/pancake.png%}
 
-##Coordinate System
-{% img /images/coordinate-system.gif %}
-
-It is important to realise that the coordinate system used by css transforms is slightly different than the 3d coordinate system you may have previously learned in geometry.  In the css coordinate system, the ```y-axis``` and the ```z-axis``` are the positioned the other way round from what I learned in maths with the ```y-axis``` acting as the vertical axis and the ```z-axis``` acting as the guage to slide elements forwards or backwards from the user.
 
 ##CSS Triangles
-Some slight of hand and a bit of css skullduggery is required to create an equilateral triangle like below:
+The first challenge was how to create triangles using only css.  Some slight of hand and a bit of css skullduggery is required to create an equilateral triangle like below:
 
 <div class="skullduggery"></div>
-
+<br/>
 Below is the css that creates the effect:
 
 {% codeblock skullduggery.css %}
@@ -78,3 +95,68 @@ Below is the css that creates the effect:
 
 The secret to these triangles is creating giant borders to the two perpendicular sides to the direction you would like the triangle to point.  Make the opposite side's border the same size and background colour.  The larger the border, the larger the triangle.
 
+##Pyramid Maths
+Unsurprisingly, positioning elements in 3D is considerably more difficult than in 2D and thankfully, the trigonomic ratios came to the rescue to correctly judge both the lenght of the elements and the angles of the pyramid.
+
+Below is an image that labels the important parts of the pyramid:
+{% img /images/pyramidrules.jpg %}
+
+All positioning takes place around the yellow right angle triangle in the above diagram. I first of all determined that I would like an angle of 60°. for the slant angle of the triangle or the angle that is on the base of the triangle and at the bottom of the apthem.  With this angle and assigining a width to the base of the triangle, I could work out the height of pyramid and the <a href="http://www.ditutor.com/solid_gometry/apothem_pyramid.html" target="_blank">apothem</a> or the slant height of a lateral face of the pyramid.
+
+Once I know this, I can determine the lengths of:
+
+- apothem (height of triangle) = (1/2 Base) / cos(α)
+- height of the pyramid = (1/2 Base) * tan(α)
+
+Where α = 60° and I took the Base = 270px.
+
+One of the nice features of <a href="http://sass-lang.com/" target="_blank">sass</a> is that we can use <a href="https://robots.thoughtbot.com/sass-variables" target="_blank">variables</a> like we would in a normal programming language that stop me repeating the same values in css and also mean I can calculate other values from existing variables, something very lacking in current css.
+
+{% codeblock variables.scss %}
+$base: 270px;
+$half-base: ($base / 2);
+$apothem: 270px;  //(1/2 base) / cos(theta)
+$rotate-X: 30deg;
+$base-move: 0 - ($apothem - $half-base);
+{% endcodeblock %}
+
+I am using node-sass and I could not find a way of using the trig functions in the sass.  This is possible with compass in ruby sass bu I don't konw of a way in node-sass of achieving this so I had to calculate the value of the apothem height in a calculator first.
+
+
+
+##Constructing the pyramid
+NI will now break down the steps I took arrange the base and four sides of the pyramid.  I will omit the many wrong turns I took in getting here.
+
+
+
+Below is another view of the markup that makes up the pyramid:
+{% codeblock hyramid.html %}
+<div class="pyramid-container">
+  <div id="pyramid">
+    <div class="base"></div>
+    <div class="front"></div>
+    <div class="back"></div>
+    <div class="right"></div>
+    <div class="left"></div>
+  </div>
+</div>
+{% endcodeblock %}
+
+
+Below are the css rules that are assigned to the ```base``` div or rectangular base of the pyramid:
+{% codeblock base.css %}
+.base {
+  position: absolute;
+  width: $base;
+  height: $base;
+  background-color: rgba(147,81,166,0.9);
+  transform: rotateX(90deg) translate3d(0px, 0px, $base-move);
+  opacity: .5;
+
+  &:after {
+    content: "5";
+    left: 112px !important;
+    top: 93px !important;
+  }
+}
+{% endcodeblock %}

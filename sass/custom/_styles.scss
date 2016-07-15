@@ -12,14 +12,59 @@
   padding: 0px 3px 0 2px !IMPORTANT;
 }
 
-.skullduggery {
+.pyramid-container {
+  perspective: 800px;
+}
+
+.center-text {
+  text-align: center;
+}
+
+#pyramid {
+  position: relative;
+  margin-left: 120px;
+  height: 200px;
+  width: 100px;
+  transform-style: preserve-3d;
+  //transform-origin: 116px 200px 116px;
+}
+
+.skullduggery, #pyramid div {
 	width: 0;
-	height: 0; 
+	height: 0;
 	border-left: 200px solid transparent;  /* left arrow slant */
 	border-right: 200px solid transparent; /* right arrow slant */
 	border-bottom: 200px solid #2f2f2f; /* bottom, add background color here */
 	font-size: 0;
 	line-height: 0;
+  opacity: .5;
+}
+
+#pyramid div {
+  position: absolute;
+}
+
+#pyramid div:nth-child(1) {
+  transform: translateZ(-800em);
+}
+
+#pyramid div:nth-child(2) {
+  transform: rotateY(180deg) translateZ(8em);
+}
+
+#pyramid div:nth-child(3) {
+  transform: rotateY(90deg) translateZ(8em);
+}
+
+#pyramid div:nth-child(4) {
+  transform: rotateY(-90deg) translateZ(8em);
+}
+
+#pyramid div:nth-child(5) {
+  transform: rotateX(90deg) translateZ(8em);
+}
+#pyramid div:nth-child(6) {
+  transform: rotateX(-90deg) translateZ(8em);
 }
 
 .skullduggery:after {
