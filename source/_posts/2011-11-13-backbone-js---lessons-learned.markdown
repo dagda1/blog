@@ -5,7 +5,7 @@ date: 2011-11-13 13:14
 comments: true
 categories: JavaScript Backbone.js
 ---
-I have been using <a href="http://documentcloud.github.com/backbone/" target="_blank">Backbone.js</a> for a few months now and I have found the learning curve to be a steep one.  As is the case with any flexible framework, there are a number of ways of doing anything in Backbone.js and I think the framework could do with some tightening up to stop users having to roll their own custom implementations for common scenarios such as disposing of views.
+I have been using <a href="http://backbonejs.org/" target="_blank">Backbone.js</a> for a few months now and I have found the learning curve to be a steep one.  As is the case with any flexible framework, there are a number of ways of doing anything in Backbone.js and I think the framework could do with some tightening up to stop users having to roll their own custom implementations for common scenarios such as disposing of views.
 
 For those that have been sleeping under a rock recently, <a href="http://documentcloud.github.com/backbone/" target="_blank">Backbone.js</a> is a client side MVC framework that should not require any introduction.  The client side MVC framework seems to be a bit of a du jour thing at the moment but I think it is important to have some sort of organisational structure around JavaScript or the looseness of the language can quickly turn any javascript code into the now infamous ball of mud.  Backbone.js is one way of achieving such a conformity.
 
