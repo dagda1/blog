@@ -9,7 +9,7 @@ I've recently been working on an online application form in the form of a multis
 
 ## Use a router
 
-The initial appeal appeal of the SPA was that it negated the need to go to the server to render new content.  The problem is that a newly server rendered page works great with a screen reader but when you change routes in an SPA, the screen reader does not know that there is new content.
+The initial appeal of the SPA was that it negated the need to go to the server to render new content.  An SPA that does not transition to different views with different urls makes it not a great experience for any decent sized SPA. The problem is that a newly server rendered page works great with a screen reader but when you change routes in an SPA, the screen reader does not know that there is new content.
 
 One solution is to have a container component that checks for changes in the react-router `location` property and focus on an element at the top of the viewport each time the `location` changes.
 
@@ -90,7 +90,7 @@ export const Link: React.StatelessComponent<LinkProps> = ({ href, onClick, child
 
 ## Use a component library
 
-Using a component library that is outside of the context of the business rules is a great choice. I have controlled components for even simple html elements like `input`, `label` etc.  This allows me ensure that I am consistent about things like <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA" target="_blank">aria attributes</a>.  Somebody remarked in a code review that React was broken if I needed to create components for things like and `input` but they missed the point.  Below is a simple `input` component that I use instead of the default react element:
+Using a component library that is outside of the context of the business rules is a great choice. I have controlled components for even simple html elements like `input`, `label` etc.  This allows me ensure that I am consistent about things like <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA" target="_blank">aria attributes</a>.  Somebody remarked in a code review that React was broken if I needed to create components for things like an `input` but they missed the point.  Below is a simple `input` component that I use instead of the default react element:
 
 {%codeblock Input.js %}
 export const Input: React.StatelessComponent<InputProps> = ({
@@ -206,11 +206,11 @@ export const FormInput = FormControl(Input);
 
 The higher order component above takes care of displaying an error below each invalid field but a screen reader will not automatically pick this up unless the user tabs onto the form control.
 
-To counter act this we supply a validation summary.  Below is an exmple of such a validaion summary from <a href="https://govuk-elements.herokuapp.com/errors/example-form-validation-multiple-questions" target="_blank">gov.uk</a> that I based our validation summary on:
+To counteract this we supply a validation summary.  Below is an exmple of such a validaion summary from <a href="https://govuk-elements.herokuapp.com/errors/example-form-validation-multiple-questions" target="_blank">gov.uk</a> that I based our validation summary on:
 
 {% img /images/accessibility.png %}
 
-At first glance this is complete overkill for 2 fields but in the context of a screen reader, this is great practice.  In the event of an error, focus is placed on the `h2` element in the `ValidationSummary` component and a link is created for each validation error.  The link's `href` is a bookmark link to the invalid element.  When the user tabs off the `h2`, they get an explanation of the error and a chance to jump to the form element and fix the problem.
+At first glance this is complete overkill for 2 fields but in the context of a screen reader, this is a great practice.  In the event of an error, focus is placed on the `h2` element in the `ValidationSummary` component and a link is created for each validation error.  The link's `href` is a bookmark link to the invalid element.  When the user tabs off the `h2`, they get an explanation of the error and a chance to jump to the form element and fix the problem.
 
 We used <a href="https://redux-form.com/7.1.2/" target="_blank">redux-form</a> and the following component was used to create a validation summary for all redux-form errors:
 
