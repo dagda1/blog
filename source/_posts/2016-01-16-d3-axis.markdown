@@ -9,7 +9,7 @@ I am available for work right now, if you are interested then <a href="mailto:da
 
 Up until now when I have been dealing with <a href="http://d3js.org/" target="_blank">d3.js's</a>  axes components, I have always kept the axes positive, i.e. both the x and y axes where showing values greater than 0.
 
-I have been hacking around with <a href="http://www.d3geometry.com/functions" target="_blank">this</a> fun side project that takes the input of an algebraic expression and plots a graph for a sample range of values for x.  You can checkout the source code <a href="https://github.com/dagda1/d3-geometry" target="_blank">here</a> if you are interested.
+I have been hacking around with <a href="http://www.d3geometry.com/functions" target="_blank">this</a> fun side project that takes the input of an algebraic expression and plots a graph for a sample range of values for x.  You can checkout the source code <a href="https://github.com/dagda1/d3-geometry/blob/master/client/app/components/FunctionPlot/FunctionPlot.js" target="_blank">here</a> if you are interested.
 
 Below is a screenshot of the end result:
 
