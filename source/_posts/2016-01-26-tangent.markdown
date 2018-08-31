@@ -5,7 +5,7 @@ date: 2016-01-26 07:05:17 +0000
 comments: true
 categories: JavaScript d3.js math.js
 ---
-I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
+I am available for work right now, if you are interested then <a href="mailto:paul.cowan@cutting.scot">email</a> me directly.
 
 Following on from my <a href="http://www.thesoftwaresimpleton.com/blog/2016/01/16/d3-axis/" target="_blank">last post</a> on axes positioning, I have added the functionality to add a tangent to the curve on ```mousemove```.  You can see a working example <a href="http://www.d3geometry.com/functions?uid=8888" target="_blank">here</a> by dragging the mouse over the svg document.
 
@@ -208,4 +208,4 @@ export function getYIntercept(vertex, slope) {
 }
 {% endcodeblock %}
 
-I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
+I am available for work right now, if you are interested then <a href="mailto:paul.cowan@cutting.scot">email</a> me directly.

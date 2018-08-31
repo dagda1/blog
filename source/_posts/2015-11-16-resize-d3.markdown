@@ -5,7 +5,7 @@ date: 2015-11-16 13:25:56 +0000
 comments: true
 categories: JavaScript d3.js
 ---
-I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
+I am available for work right now, if you are interested then <a href="mailto:paul.cowan@cutting.scot">email</a> me directly.
 
 Following on from my last two posts, <a href="http://www.thesoftwaresimpleton.com/blog/2015/10/31/perpendicular/" target="_blank">Perpendicular Bisectors of a Triangle With d3.js</a> and <a href="http://www.thesoftwaresimpleton.com/blog/2015/10/24/altitude/" target="_blank">Altitude of a Triangle With d3.js</a>, I want to document how I ensured that my svg tranformation is resized to scale during a resize event or if the user selection can change.
 
@@ -278,4 +278,4 @@ After all this, I take great pleasure in resizing the window and watching everyt
 
 You can checkout the <a href="https://github.com/dagda1/d3-geometry" target="_blank">github repo</a> that contains all the code for this.
 
-I am available for work right now, if you are interested then <a href="mailto:dagda1@scotalt.net">email</a> me directly.
+I am available for work right now, if you are interested then <a href="mailto:paul.cowan@cutting.scot">email</a> me directly.
