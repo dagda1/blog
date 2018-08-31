@@ -1,116 +1,123 @@
 ---
 layout: post
-title: "Higher Kinded Types in typescript"
-date: 2018-04-14 14:01:52 +0100
+title: "Narrowing a union type"
+date: 2018-08-31 18:01:52 +0100
 comments: true
 categories: typescript javascript
 ---
-Higher kinded types are not currently possible in typescript but let us start by explaining why they exist.
+In typescript, a union type describes a value that can be one of several types separated by the vertical `|` bar, for example:
+{% codeblock text.js %}
+let text: string | string[];
 
-In functional programming there is the concept of a <a href="https://en.wikipedia.org/wiki/Functor" target="_blank">functor</a>.  A functor is simply something that can be mapped over.  In OOP speak, we'd call it a **mappable** or some sort of container such as `Array` that contains a `map` function.
+text = 'text';
 
-A very simple javascript example would be:
+text = ['text1', 'text2'];
+{% endcodeblock %}
+In the above code `text` can either be a string or an array of strings.
 
-{% codeblock mappable.js %}
-const isEven = x => x % 2 === 0
+Problems arise in union types because you can only access members that are common to all types in the union.
 
-console.log([1,2,3,4].map(isEven))
-// => [false, true, false, true]
+I have recently been commiting code to [afterjs](https://github.com/jaredpalmer/after.js) to add better type safety to the existing code.
+
+On one of [my PRs](https://github.com/jaredpalmer/after.js/pull/166) I created the following union to model all the component types that afterjs might have to deal with when deciding whether or not the component is loaded via a [dynamic import](https://webpack.js.org/guides/code-splitting/).  The compponent might be an `AyncComponent` that knows how to load itself via a dynamic import or it might be a react-router aware component or just a plain old react component.  I created the following union:
+
+{% codeblock union.js %}
+export type AsyncRouteableComponent<Props = any> =
+  | AsyncRouteComponentType<RouteComponentProps<Props>>
+  | React.ComponentType<RouteComponentProps<Props>>
+  | React.ComponentType<Props>;
 {% endcodeblock %}
 
-The above example is mapping over an Array and it is mapping from an array of `int` to an array of `bool`.  In this example, the `Array` is the functor.  The functor keeps its shape meaning the same number of elements exist after the mapping operation but each element could potentially change.
+An `AsyncRouteableComonent` will have the following interface that gets added in a previous type.
 
-A functor can be thought of as a container with a `map` function.  A functor is mapping between categories, meaning that it can map from type `a` to type `b`.  The functor in the above example is the array and the type `a` would be int with type `b` the bool.
-
-In haskell, functor has the following type signature:
-
-{% codeblock functor.hs %}
-class Functor f where
-  fmap :: (a -> b) -> f a -> f b
-{% endcodeblock %}
-
-You can think of `fmap` as **functor map**.
-
-If we consider the type signature for `fmap` again:
-
-{% codeblock fmap.hs %}
-fmap :: (a -> b) -> f a -> f b
-{% endcodeblock %}
-
-What might not be obvious is that `f`, `a` and `b` from the above are actually type parameters.  Any lowercase type in haskell is a type parameter.
-
-The more specialised `Functor` instance for lists looks like this:
-
-{% codeblock instance.hs %}
-instance Functor [] where
-  fmap = map
-{% endcodeblock %}
-
-The existing list `map` function is used for the `fmap` implementation.  `map` has the following signture:
-
-{% codeblock map.hs %}
-map :: (a -> b) -> [a] -> [b]
-{% endcodeblock %}
-
-If we now start filling in the type parameters for functor, then the `f` type parameter is the type constructor `[]` or would be the array in the javascript example above.  Remember the functor is the box or container that contains the `fmap` function.
-
-The functor mapping function `(a, b) -> f a -> f b` defines the mapping of a functor of type `a` to a functor of type `b`.  Another way to think of this is an `f` of `a` and `f` of `b` or in this case a list of `a` or a list of `b`.
-
-The more specialised version of `fmap` for list looks like this:
-
-{% codeblock f.hs %}
-fmap :: (a -> b) -> [a] -> [b]
-{% endcodeblock %}
-
-Hopefully it is clear that `f` is the container or `list` in this specific instance that maps a list of `a` to a list of `b`.
-
-In the above example `f` is the higher kinded type and both `a` and `b` are both type parameters.
-
-A higher kinded type (**HKT**) is simply a type parameter that takes a type parameter.  The equivolence with higher order function **HOF** is that an HOF can take a function as an argument.
-
-## Kinds
-
-In haskell, there are types and there are kinds.  You have concreate types like `Int`, `Bool` and `String`.  All of these are the kind `*`.  Why?  Because they cannot take any type parameters.
-
-`[a]` is a parameterised type because it takes one concrete type and has the form `* -> *` and is called a first order type.
-
-A higher kinded type abstracts the parameterised type `[]` and has the form `(* -> *) -> *`.
-
-In functor, `f` is of kind `(* -> *) -> *` and `a` or `b` are of kind `*` which is often referred to as the ground type.
-
-## Where is the typescript?
-
-Now when we try and define functor in typescript, we quickly come unstuck trying to define an `f` of `a` to an `f` of `b` because typescript does not support higher kinded types or type parameters that take type parameters.
-
-{% codeblock functor.js %}
-interface Functor<F> {
-  map<A, B>(f: (a: A) => B, fa: ?): ?
+{% codeblock AsyncRouteableComponent.js %}
+interface AsyncComponent {
+  getInitialProps: (props: DocumentProps) => any;
+  load?: () => Promise<React.ReactNode>;
 }
 {% endcodeblock %}
 
-A number of the functional typescript libraries like <a href="https://github.com/gcanti/fp-ts" target="_blank">fp-ts</a> have come up with a similar work around for the lack of higher kinded types.
-
-They all have a similar interface:
-
-{% codeblock HKT.js %}
-interface HKT<F, A> {
-  readonly _F: F;
-  readonly _A: A;
+## Type Guards
+There is also in typescript the concept of <a href="https://medium.com/@OlegVaraksin/narrow-interfaces-in-typescript-5dadbce7b463" target="_blank">`Type Guards`</a>.  A type guard is an expression that performs a runtime check that guarantees that you have the requested type.  I came up with this type guard to ensure I am dealing with an `AsyncRouteableComponent`:
+{% codeblock guard.js %}
+export function isAsyncComponent(Component: AsyncRouteableComponent): Component is AsyncRouteComponentType<any> {
+  return (<AsyncRouteComponentType<any>>Component).load !== undefined;
+{% endcodeblock %}
+Any time `isAsyncComponent` is called, typescript will *narrow* the specific variable to that specific type:
+{% codeblock narrow.js %}
+if (isAsyncComponent(component)) {
+    component.load().then(() => doStuff)
 }
 {% endcodeblock %}
+There is a gotcha though and I encountered it with this code:
+{% codeblock problem.js %}
+  const match = routes.find((route: AsyncRouteProps) => {
+    const matched = matchPath(pathname, route);
 
-`HKT` takes 2 type parameters `F` and `A`. Thinking in terms of kinds, `F` represents the first class parameterised type `(* -> *)` and `_A` represents the ground type `*`.
+    if (matched && route.component && isAsyncComponent(route.component)) {
+      promises.push(
+        route.component.load
+          ? route.component.load().then(() => route.component.getInitialProps({ matched, ...ctx }))
+          : route.component.getInitialProps({ matched, ...ctx })
+      );
+    }
 
-We can now define functor like this:
+    return !!matched;
+  });
 
-{% codeblock functor.js %}
-export interface Functor<F> {
-  map<A, B>(f: (a: A) => B, fa: HKT<F, A>): HKT<F, B>
-}
+  return {
+    match,
+    data: (await Promise.all(promises))[0]
+  };
+{% endcodeblock %}
+Typescript narrows the code in all cases due to the `isAsyncComponent` type guard on line 4 apart from in the resolve handler of line 7:
+{% codeblock resolve.js %}
+load(() => route.component.getInitialProps({ matched, ...ctx}))`
 {% endcodeblock %}
 
-The above code is now equivalent to the haskell version, we have a `map` function that maps over a container or box of `A` and returns a container or box of `B`.
+The `route.component` in the anonomus function that resolves after `load` gives  the following compiler error:
 
-Hopefully higher kinded types will land in typescript soon but until then I think this is a very inventive solution to a difficult problem.
+>> Property 'getInitialProps' does not exist on type 'AsyncRouteableComponent<any>'.
+>>  Property 'getInitialProps' does not exist on type 'ComponentClass<RouteComponentProps<any, StaticContext>>'.
 
+Typescript has not narrowed the scope because it cannot find a `getInitialProps` member on all types of the union.
 
+It turns out narrowing for a mutable variable such as `route` does not apply inside callbacks such as the anonymous function resolve handler because typescript does not trust that the local variable will not be reassigned before the callback executes.  There is a whole big thread about it [here](https://github.com/Microsoft/TypeScript/issues/7662). 
+
+The workaround is to copy `route.component` to a local variable before the route guard is called.
+
+Here is the working solution:
+
+{% codeblock working.js %}
+import { matchPath } from 'react-router-dom';
+import { AsyncRouteProps, InitialProps } from './types';
+import { isAsyncComponent } from './utils';
+
+export async function loadInitialProps(routes: AsyncRouteProps[], pathname: string, ctx: any): Promise<InitialProps> {
+  const promises: Promise<any>[] = [];
+
+  const match = routes.find((route: AsyncRouteProps) => {
+    const matched = matchPath(pathname, route);
+
+    const component = route.component;
+
+    if (matched && component && isAsyncComponent(component)) {
+      promises.push(
+        component.load
+          ? component.load().then(() => component.getInitialProps({ matched, ...ctx }))
+          : component.getInitialProps({ matched, ...ctx })
+      );
+    }
+
+    return !!matched;
+  });
+
+  return {
+    match,
+    data: (await Promise.all(promises))[0]
+  };
+}
+
+{% endcodeblock %}
+
+The copy happens on line 11 with `const` used to ensure the local variable cannot be reassigned, typescript is satisfied that it cannot be reassigned and the scope is narrowed for the union and the correct scope is applied.
