@@ -1,0 +1,116 @@
+---
+layout: post
+title: "React heaxagon component"
+date: 2018-09-06 19:26:24 +0100
+comments: true
+categories: JavaScript typescript d3.js svg reactjs
+---
+
+I am writing this because I could not find anything adequate in my interweb searches for how to draw a hexagon using a [svg polygon](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/polygon)
+
+What I wanted to do was create an svg polygon in the guise of a react component.  I wanted to supply a size property and the component would magically know how to create the coordinates that can be used for the [points](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/points) attribute of the polygon.  
+
+## Hexagon Maths
+{% img /images/hexagon.png %}
+
+In the figure above, the angles `a`, `b`, `c`, `d`,`e` and `f` are the *central angles* of a hexagon.  The number of central angles of a polygon is always the same as the number of sides.
+
+As you can see above all the central angles of the polygon will always form a complete circle.  Hence the central angles will always add up to 360∘.  Since a regular polygon has all equal sides, then the central angles of the polygon are equal.
+
+To find the central angles of a polygon:
+
+1. First identify the number of sides `n`.
+2. Then divide by 360∘.
+
+The central angle of a hexagon is therefore 60∘
+
+I create coordinates at 0, 60, 120, 180, 240 and 360 and the `<polygon />` component will join the vertices to create a hexagon.
+
+I can use the trigonometry functions of `cos` and `sin` to get a coordinate or point if I know the **central angle** of the polygon and the length of each side of the polygon.  `cosine` can give me the `x` coordinate and `sine` can give me the `y` coordinate.
+
+## Show me the code
+
+Armed with this knowledge I can now work out the points by just knowing the length of a side and an optional central `point` object that gives me a starting position to place the `polygon`.
+
+{% codeblock getPoints.js %}
+export const getPoints = (hexagonType: HexagonType, size: number, center: Point): Point[] => {
+  return [0, 1, 2, 3, 4, 5].map((n) => {
+    const turnHexagon = hexagonType === HexagonType.pointy ? 30 : 0;
+    const degrees = 60 * n - turnHexagon;
+    const radians = (Math.PI / 180) * degrees;
+
+    return new Point({
+      x: center.x + size * Math.cos(radians),
+      y: center.y + size * Math.sin(radians)
+    });
+  });
+};
+{% endcodeblock %}
+
+The function takes a `HexagonType` typescript enum as an argument and on **line 3**, I create a `turnHexagon` variable that adds an offset (or not) to have the hexagon positioned with a point:
+
+{% img /images/pointy.png %} 
+
+or flat 
+
+{% img /images/flat.png %}
+
+Line 4 - `const degrees = 60 * n - turnHexagon;` will give the angle of the next central angle for each coordinate by increasing the angle by 60∘ each time.
+
+Line 5 - `const radians = (Math.PI / 180) * degrees;` converts degrees into [radians](https://en.wikipedia.org/wiki/Radian).  `Math.cos` and `Math.sin` expect the argument to be in radians and not degrees.  I initially got this wrong.
+
+The code below will work out the `x` and `y` coordinates of each of the six points.
+
+{% codeblock ret.js %}
+return new Point({
+  x: center.x + size * Math.cos(radians),
+  y: center.y + size * Math.sin(radians)
+});
+{% endcodeblock %}
+
+Here is a [jsfiddle](https://jsfiddle.net/dagda1/38hoyaup/4/) with a plain js version and below is the reat component in it's entirety:
+
+{% codeblock hexagon.js %}
+import * as React from 'react';
+import { range } from 'lodash';
+import { Point } from '../../model/point';
+import { degreesToRadians } from '../../util/trigonometry';
+
+export enum HexagonType {
+  flat = 'flat',
+  pointy = 'pointy'
+}
+
+export interface HexagonProps {
+  size: number;
+  hexagonType?: HexagonType;
+  center?: Point;
+  className?: string;
+}
+
+export const getPoints = (hexagonType: HexagonType, size: number, center: Point): Point[] => {
+  return range(0, 6).map((n) => {
+    const turnHexagon = hexagonType === HexagonType.pointy ? 30 : 0;
+    const degrees = 60 * n - turnHexagon;
+    const radians = degreesToRadians(degrees);
+
+    return new Point({
+      x: center.x + size * Math.cos(radians),
+      y: center.y + size * Math.sin(radians)
+    });
+  });
+};
+
+export const Hexagon: React.SFC<HexagonProps> = ({
+  hexagonType = HexagonType.pointy,
+  size = 25,
+  center = new Point({ x: 0, y: 0 }),
+  className
+}) => {
+  const points = getPoints(hexagonType, size, center)
+    .map((p) => p.toArray())
+    .join(' ');
+
+  return <polygon points={points} className={className} />;
+};
+{% endcodeblock %}

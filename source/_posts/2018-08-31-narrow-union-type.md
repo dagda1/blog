@@ -1,10 +1,11 @@
 ---
 layout: post
-title: "Narrowing a union type"
+title: "Narrowing a union type in typescript and a gotcha with callbacks"
 date: 2018-08-31 18:01:52 +0100
 comments: true
 categories: typescript javascript
 ---
+## Narrowing a union type
 In typescript, a union type describes a value that can be one of several types separated by the vertical `|` bar, for example:
 {% codeblock text.js %}
 let text: string | string[];
@@ -49,6 +50,7 @@ if (isAsyncComponent(component)) {
     component.load().then(() => doStuff)
 }
 {% endcodeblock %}
+## Gotcha
 There is a gotcha though and I encountered it with this code:
 {% codeblock problem.js %}
   const match = routes.find((route: AsyncRouteProps) => {
@@ -70,9 +72,9 @@ There is a gotcha though and I encountered it with this code:
     data: (await Promise.all(promises))[0]
   };
 {% endcodeblock %}
-Typescript narrows the code in all cases due to the `isAsyncComponent` type guard on line 4 apart from in the resolve handler of line 7:
+Typescript narrows the scope in all cases due to the `isAsyncComponent` type guard on line 4 apart from in the anonymous function resolve handler of the `load` promise on line 7:
 {% codeblock resolve.js %}
-load(() => route.component.getInitialProps({ matched, ...ctx}))`
+load().then(() => route.component.getInitialProps({ matched, ...ctx }))
 {% endcodeblock %}
 
 The `route.component` in the anonomus function that resolves after `load` gives  the following compiler error:
@@ -82,7 +84,7 @@ The `route.component` in the anonomus function that resolves after `load` gives 
 
 Typescript has not narrowed the scope because it cannot find a `getInitialProps` member on all types of the union.
 
-It turns out narrowing for a mutable variable such as `route` does not apply inside callbacks such as the anonymous function resolve handler because typescript does not trust that the local variable will not be reassigned before the callback executes.  There is a whole big thread about it [here](https://github.com/Microsoft/TypeScript/issues/7662). 
+It turns out narrowing for a mutable variable such as `route.component` does not apply inside callbacks such as the anonymous function resolve handler because typescript does not trust that the local variable will not be reassigned before the callback executes.  There is a whole big thread about it [here](https://github.com/Microsoft/TypeScript/issues/7662). 
 
 The workaround is to copy `route.component` to a local variable before the route guard is called.
 
