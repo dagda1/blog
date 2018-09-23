@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "emberjs - arrayComputed"
-date: 2014-02-4 08:40:38 +0000
+date: 2014-02-04 08:40:38 +0000
 comments: true
 categories:  JavaScript Ember
 ---
